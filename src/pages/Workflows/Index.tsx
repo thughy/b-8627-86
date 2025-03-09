@@ -26,6 +26,10 @@ export default function WorkflowsPage() {
     setSelectedPipeline,
     handleDealClick,
     handleCreateAsset,
+    handleCreateTask,
+    handleCreateNote,
+    handleCreateDocument,
+    handleCreateEmail,
     handleEditDeal,
     handleDeleteDeal,
     handleCancelDeal,
@@ -82,6 +86,10 @@ export default function WorkflowsPage() {
           onDeleteDeal={handleDeleteDeal}
           onCancelDeal={handleCancelDeal}
           onCreateAsset={handleCreateAsset}
+          onCreateTask={handleCreateTask}
+          onCreateNote={handleCreateNote}
+          onCreateDocument={handleCreateDocument}
+          onCreateEmail={handleCreateEmail}
         />
       </div>
     </DashboardLayout>

@@ -27,11 +27,16 @@ export const useWorkflowState = () => {
     setIsDealModalOpen,
     handleDealClick, 
     handleCreateAsset, 
+    handleCreateTask,
+    handleCreateNote,
+    handleCreateDocument,
+    handleCreateEmail,
     handleEditDeal, 
     handleDeleteDeal: deleteAction, 
     handleCancelDeal: cancelAction, 
     handleCreateDeal,
-    handleCloseDealModal
+    handleCloseDealModal,
+    getChatPreview
   } = useDealActions();
   
   const { handleDragEnd } = useDragAndDrop(stages, deals, setDeals);
@@ -83,11 +88,16 @@ export const useWorkflowState = () => {
     setSelectedPipeline,
     handleDealClick,
     handleCreateAsset,
+    handleCreateTask,
+    handleCreateNote,
+    handleCreateDocument,
+    handleCreateEmail,
     handleEditDeal,
     handleDeleteDeal,
     handleCancelDeal,
     handleDragEnd,
     handleCreateDeal,
-    handleCloseDealModal
+    handleCloseDealModal,
+    getChatPreview
   };
 };

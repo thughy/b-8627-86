@@ -25,6 +25,38 @@ export const useDealActions = () => {
     });
   };
 
+  const handleCreateTask = (dealId: string) => {
+    console.log(`Criando tarefa para deal ${dealId}`);
+    toast({
+      title: "Tarefa adicionada",
+      description: `Uma nova tarefa foi adicionada ao negócio.`,
+    });
+  };
+
+  const handleCreateNote = (dealId: string) => {
+    console.log(`Criando nota para deal ${dealId}`);
+    toast({
+      title: "Nota adicionada",
+      description: `Uma nova nota foi adicionada ao negócio.`,
+    });
+  };
+
+  const handleCreateDocument = (dealId: string) => {
+    console.log(`Criando documento para deal ${dealId}`);
+    toast({
+      title: "Documento adicionado",
+      description: `Um novo documento foi adicionado ao negócio.`,
+    });
+  };
+
+  const handleCreateEmail = (dealId: string) => {
+    console.log(`Criando email para deal ${dealId}`);
+    toast({
+      title: "Email adicionado",
+      description: `Um novo email foi adicionado ao negócio.`,
+    });
+  };
+
   const handleEditDeal = (deal: Deal) => {
     console.log('Editando deal:', deal);
     toast({
@@ -84,6 +116,10 @@ export const useDealActions = () => {
     setIsDealModalOpen,
     handleDealClick,
     handleCreateAsset,
+    handleCreateTask,
+    handleCreateNote,
+    handleCreateDocument,
+    handleCreateEmail,
     handleEditDeal,
     handleDeleteDeal,
     handleCancelDeal,
