@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Search, Filter, Download, Upload, FileText, MoreHorizontal } from "lucide-react";
+import { Plus, Search, Filter, Upload, FileText, MoreHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { 
   DropdownMenu,
@@ -18,6 +18,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { formatDate } from "@/lib/utils";
 import { getTemplates } from "../services/settingsService";
 import { Template } from "@/pages/Workflows/models/WorkflowModels";
@@ -26,6 +33,8 @@ const TemplateLibrary = () => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [templates, setTemplates] = useState<Template[]>(getTemplates());
+  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
+  const [showSpecifications, setShowSpecifications] = useState(false);
 
   const filteredTemplates = templates.filter((template) => 
     template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -66,6 +75,11 @@ const TemplateLibrary = () => {
     });
   };
 
+  const handleShowSpecifications = (template: Template) => {
+    setSelectedTemplate(template);
+    setShowSpecifications(true);
+  };
+
   const getTypeLabel = (type: Template['type']) => {
     switch (type) {
       case 'workflow':
@@ -83,6 +97,19 @@ const TemplateLibrary = () => {
       default:
         return null;
     }
+  };
+
+  const renderSpecificationItems = (data: Record<string, any>) => {
+    return Object.entries(data).map(([key, value]) => (
+      <div key={key} className="py-2 border-b last:border-0">
+        <div className="font-medium">{key}</div>
+        <div className="text-sm text-muted-foreground">
+          {typeof value === 'object' 
+            ? JSON.stringify(value, null, 2) 
+            : String(value)}
+        </div>
+      </div>
+    ));
   };
 
   return (
@@ -146,8 +173,19 @@ const TemplateLibrary = () => {
                   <div className="col-span-1 text-muted-foreground">
                     v{template.version}
                   </div>
-                  <div className="col-span-2 text-muted-foreground">
-                    {template.description ? template.description.substring(0, 50) + (template.description.length > 50 ? '...' : '') : 'Sem especificações'}
+                  <div className="col-span-2 text-muted-foreground flex items-center">
+                    <div className="truncate mr-2">
+                      {Object.values(template.data).slice(0, 1).join(", ")}
+                      {Object.values(template.data).length > 1 && "..."}
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => handleShowSpecifications(template)}
+                      className="h-6 w-6 p-0"
+                    >
+                      <FileText className="h-4 w-4" />
+                    </Button>
                   </div>
                   <div className="col-span-1 hidden md:block text-muted-foreground">
                     {formatDate(template.updatedAt)}
@@ -187,6 +225,33 @@ const TemplateLibrary = () => {
             )}
           </div>
         </div>
+
+        {selectedTemplate && (
+          <Dialog open={showSpecifications} onOpenChange={setShowSpecifications}>
+            <DialogContent className="max-w-2xl max-h-[80vh] overflow-auto">
+              <DialogHeader>
+                <DialogTitle className="flex items-center">
+                  <span className="mr-2">Especificações do Template</span>
+                  {getTypeLabel(selectedTemplate.type)}
+                </DialogTitle>
+                <DialogDescription>
+                  {selectedTemplate.name} (v{selectedTemplate.version})
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 mt-4">
+                <div className="bg-muted p-4 rounded-md">
+                  <h3 className="text-lg font-medium mb-2">Dados do Template</h3>
+                  <div className="divide-y">
+                    {renderSpecificationItems(selectedTemplate.data)}
+                  </div>
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Atualizado em: {formatDate(selectedTemplate.updatedAt)}
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
       </CardContent>
     </Card>
   );
