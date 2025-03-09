@@ -46,7 +46,7 @@ export const getChannelsData = (): ChannelProps[] => {
     {
       id: "sms",
       name: "SMS",
-      icon: React.createElement(MessageSquare, { className: "h-5 w-5 text-purple-500" }),
+      icon: React.createElement(Phone, { className: "h-5 w-5 text-purple-500" }),
       configFields: [
         {
           id: "smsProvider",
