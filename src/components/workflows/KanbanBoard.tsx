@@ -2,7 +2,11 @@
 import React from "react";
 import { Stage, Deal } from "@/pages/Workflows/models/WorkflowModels";
 import { Button } from "@/components/ui/button";
-import { Plus, User, DollarSign, Calendar, Tag, MessageSquare, Award, Building } from "lucide-react";
+import { 
+  Plus, User, DollarSign, Calendar, Tag, MessageSquare, 
+  Award, Building, FileText, CheckSquare, Mail, File, 
+  HeartPulse, Calendar as CalendarIcon
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DropResult } from "react-beautiful-dnd";
@@ -156,69 +160,115 @@ const KanbanBoard = ({
                         >
                           <div className={`h-1.5 w-full ${topBarColor}`}></div>
                           <CardContent className="p-3">
+                            {/* Top row: Title and Type */}
                             <div className="flex items-center justify-between mb-2">
-                              <h4 className="font-medium text-sm">{deal.title}</h4>
+                              <h4 className="font-medium text-sm truncate pr-2">{deal.title}</h4>
                               <Badge 
                                 variant="outline" 
-                                className={cn("text-xs font-semibold flex items-center px-2 py-1", typeBadge.color)}
+                                className={cn("text-xs font-semibold flex items-center px-2 py-0.5", typeBadge.color)}
                               >
                                 {typeBadge.icon}
-                                {deal.type || "Não definido"}
+                                {deal.type || "N/D"}
                               </Badge>
                             </div>
                             
-                            <div className="space-y-2 mt-2">
-                              {/* Customer info */}
-                              {deal.customerName && (
-                                <div className="flex items-center text-xs space-x-1.5">
-                                  <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10">
+                            <div className="space-y-2">
+                              {/* Row: Customer and Interest */}
+                              <div className="flex items-start justify-between gap-2">
+                                {/* Customer info */}
+                                <div className="flex items-start text-xs space-x-1.5 flex-1">
+                                  <div className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-primary/10 mt-0.5">
                                     <User className="h-3 w-3 text-primary" />
                                   </div>
-                                  <div className="flex-1 truncate">
-                                    <span className="font-medium">{deal.customerName}</span>
+                                  <div className="flex-1 min-w-0">
+                                    <span className="font-medium block truncate">
+                                      {deal.customerName || "Não definido"}
+                                    </span>
                                     {deal.customerOrganization && (
-                                      <span className="ml-1">
+                                      <span className="text-muted-foreground text-xs flex items-center">
                                         <Building className="h-3 w-3 inline mr-0.5" />
-                                        {deal.customerOrganization}
+                                        <span className="truncate">{deal.customerOrganization}</span>
                                       </span>
                                     )}
                                   </div>
                                 </div>
-                              )}
-                              
-                              {/* Deal amount */}
-                              <div className="flex items-center text-xs space-x-1.5">
-                                <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10">
-                                  <DollarSign className="h-3 w-3 text-primary" />
-                                </div>
-                                <span className="font-medium">{formatCurrency(deal.amount)}</span>
+                                
+                                {/* Interest */}
+                                {deal.interests && (
+                                  <div className="flex items-start text-xs space-x-1.5 flex-shrink-0">
+                                    <div className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-pink-500/10 mt-0.5">
+                                      <HeartPulse className="h-3 w-3 text-pink-500" />
+                                    </div>
+                                    <span className="truncate max-w-[80px]">{deal.interests}</span>
+                                  </div>
+                                )}
                               </div>
                               
-                              {/* Dates */}
-                              <div className="flex items-center text-xs space-x-1.5">
-                                <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10">
-                                  <Calendar className="h-3 w-3 text-primary" />
+                              {/* Row: Start Date and End Date */}
+                              <div className="flex items-start justify-between gap-2">
+                                {/* Start Date */}
+                                <div className="flex items-start text-xs space-x-1.5 flex-1">
+                                  <div className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-indigo-500/10 mt-0.5">
+                                    <Calendar className="h-3 w-3 text-indigo-500" />
+                                  </div>
+                                  <span className="truncate">{formatDate(deal.startDate)}</span>
                                 </div>
-                                <span>{formatDate(deal.startDate)}</span>
+                                
+                                {/* End Date */}
+                                {deal.endDate && (
+                                  <div className="flex items-start text-xs space-x-1.5 flex-shrink-0">
+                                    <div className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-orange-500/10 mt-0.5">
+                                      <CalendarIcon className="h-3 w-3 text-orange-500" />
+                                    </div>
+                                    <span className="truncate">{formatDate(deal.endDate)}</span>
+                                  </div>
+                                )}
                               </div>
-
-                              {/* Status */}
-                              <div className="flex items-center justify-between text-xs">
+                              
+                              {/* Row: Amount and Status */}
+                              <div className="flex items-center justify-between gap-2">
+                                {/* Amount */}
+                                <div className="flex items-center text-xs space-x-1.5 flex-1">
+                                  <div className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500/10">
+                                    <DollarSign className="h-3 w-3 text-emerald-500" />
+                                  </div>
+                                  <span className="font-medium">{formatCurrency(deal.amount)}</span>
+                                </div>
+                                
+                                {/* Status */}
                                 <Badge variant={getStatusBadgeVariant(deal.status)}>
                                   {getStatusText(deal.status)}
                                 </Badge>
-                                
-                                {deal.status === 'lost' && deal.reasonForLoss && (
-                                  <span className="text-xs text-muted-foreground">
-                                    {deal.reasonForLoss}
-                                  </span>
-                                )}
+                              </div>
+                              
+                              {/* Content counters */}
+                              <div className="flex items-center justify-start gap-2 text-xs pt-1 text-muted-foreground">
+                                <div className="flex items-center gap-0.5">
+                                  <MessageSquare className="h-3 w-3" />
+                                  <span>3</span>
+                                </div>
+                                <div className="flex items-center gap-0.5">
+                                  <File className="h-3 w-3" />
+                                  <span>2</span>
+                                </div>
+                                <div className="flex items-center gap-0.5">
+                                  <CheckSquare className="h-3 w-3" />
+                                  <span>4</span>
+                                </div>
+                                <div className="flex items-center gap-0.5">
+                                  <FileText className="h-3 w-3" />
+                                  <span>1</span>
+                                </div>
+                                <div className="flex items-center gap-0.5">
+                                  <Mail className="h-3 w-3" />
+                                  <span>2</span>
+                                </div>
                               </div>
                             </div>
                             
                             {/* Chat preview */}
                             {chatPreview && chatPreview.length > 0 && (
-                              <div className="mt-3 pt-2 border-t border-border/40">
+                              <div className="mt-2 pt-2 border-t border-border/40">
                                 <div className="flex items-center text-xs space-x-1.5 mb-1">
                                   <MessageSquare className="h-3 w-3 text-muted-foreground" />
                                   <span className="font-medium">Últimas mensagens</span>
