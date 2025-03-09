@@ -14,7 +14,7 @@ import {
 interface AgentListProps {
   agents: Agent[];
   onEditAgent?: (agent: Agent) => void;
-  onDeleteAgent?: (agent: Agent) => void;
+  onDeleteAgent?: (agentId: string) => void;
   onEdit?: (agent: Agent) => void;
   onDelete?: (agentId: string) => void;
 }
@@ -43,7 +43,7 @@ const AgentList = ({ agents, onEditAgent, onDeleteAgent, onEdit, onDelete }: Age
 
   const handleDelete = (agent: Agent) => {
     if (onDeleteAgent) {
-      onDeleteAgent(agent);
+      onDeleteAgent(agent.id);
     } else if (onDelete) {
       onDelete(agent.id);
     }
