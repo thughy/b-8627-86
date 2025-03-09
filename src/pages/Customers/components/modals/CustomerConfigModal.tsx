@@ -29,7 +29,9 @@ const CustomerConfigModal: React.FC<CustomerConfigModalProps> = ({
   onDelete,
   customer
 }) => {
-  const [activeTab, setActiveTab] = useState(customer?.type || "person");
+  const [activeTab, setActiveTab] = useState<"person" | "organization">(
+    customer?.type || "person"
+  );
   const [formData, setFormData] = useState<Partial<Customer>>(
     customer || {
       name: "",
@@ -44,9 +46,9 @@ const CustomerConfigModal: React.FC<CustomerConfigModalProps> = ({
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleTypeChange = (type: string) => {
+  const handleTypeChange = (type: "person" | "organization") => {
     setActiveTab(type);
-    setFormData(prev => ({ ...prev, type: type as "person" | "organization" }));
+    setFormData(prev => ({ ...prev, type }));
   };
 
   const handleSubmit = () => {
