@@ -72,13 +72,13 @@ const AgentConfigModal: React.FC<AgentConfigModalProps> = ({
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           formData={formData}
-          onProfileChange={handleProfileChange}
-          onWorkEnvironmentChange={handleWorkEnvironmentChange}
-          onBusinessRulesChange={handleBusinessRulesChange}
-          onExpertiseChange={handleExpertiseChange}
-          onRagChange={handleRagChange}
-          onToolsChange={handleToolsChange}
-          onStatusChange={handleStatusChange}
+          handleProfileChange={handleProfileChange}
+          handleWorkEnvironmentChange={handleWorkEnvironmentChange}
+          handleBusinessRulesChange={handleBusinessRulesChange}
+          handleExpertiseChange={handleExpertiseChange}
+          handleRagChange={handleRagChange}
+          handleToolsChange={handleToolsChange}
+          handleStatusChange={handleStatusChange}
         />
 
         <DialogFooter className="flex space-x-2 justify-end">

@@ -9,6 +9,9 @@ export interface Customer {
   status: 'active' | 'inactive';
   createdAt: Date;
   updatedAt: Date;
+  // These fields needed for backward compatibility with existing code
+  organization?: string; // Temporary field for backward compatibility
+  cpfCnpj?: string; // Temporary field for backward compatibility
 }
 
 export interface Person extends Customer {

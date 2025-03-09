@@ -1,8 +1,8 @@
 
-import { Customer } from "@/pages/Workflows/models/CustomerModel";
+import { Customer, Person, Organization } from "@/pages/Workflows/models/CustomerModel";
 
 // Dados de exemplo para desenvolvimento
-const mockCustomers: Customer[] = [
+const mockCustomers: Array<Person | Organization> = [
   {
     id: "c1",
     name: "João Silva",
@@ -13,20 +13,20 @@ const mockCustomers: Customer[] = [
     status: "active",
     createdAt: new Date("2023-01-15"),
     updatedAt: new Date("2023-06-20")
-  },
+  } as Person,
   {
     id: "c2",
     name: "Empresa ABC Ltda",
     type: "organization",
     email: "contato@empresaabc.com",
     phone: "(11) 3456-7890",
-    organization: "Empresa ABC",
-    cpfCnpj: "12.345.678/0001-90",
+    tradingName: "Empresa ABC",
+    cnpj: "12.345.678/0001-90",
     address: "Av. Paulista, 1000, São Paulo - SP",
     status: "active",
     createdAt: new Date("2023-02-10"),
     updatedAt: new Date("2023-05-15")
-  },
+  } as Organization,
   {
     id: "c3",
     name: "Maria Oliveira",
@@ -37,20 +37,20 @@ const mockCustomers: Customer[] = [
     status: "inactive",
     createdAt: new Date("2023-03-22"),
     updatedAt: new Date("2023-07-01")
-  },
+  } as Person,
   {
     id: "c4",
     name: "Tech Solutions S.A.",
     type: "organization",
     email: "contato@techsolutions.com",
     phone: "(11) 2345-6789",
-    organization: "Tech Solutions",
-    cpfCnpj: "98.765.432/0001-10",
+    tradingName: "Tech Solutions",
+    cnpj: "98.765.432/0001-10",
     address: "Rua Vergueiro, 500, São Paulo - SP",
     status: "active",
     createdAt: new Date("2023-04-05"),
     updatedAt: new Date("2023-06-10")
-  },
+  } as Organization,
   {
     id: "c5",
     name: "Carlos Ferreira",
@@ -61,20 +61,20 @@ const mockCustomers: Customer[] = [
     status: "active",
     createdAt: new Date("2023-05-18"),
     updatedAt: new Date("2023-08-01")
-  },
+  } as Person,
   {
     id: "c6",
     name: "Global Services Ltda",
     type: "organization",
     email: "contato@globalservices.com",
     phone: "(11) 5678-9012",
-    organization: "Global Services",
-    cpfCnpj: "65.432.198/0001-76",
+    tradingName: "Global Services",
+    cnpj: "65.432.198/0001-76",
     address: "Av. Rebouças, 3000, São Paulo - SP",
     status: "inactive",
     createdAt: new Date("2023-01-25"),
     updatedAt: new Date("2023-07-15")
-  },
+  } as Organization,
   {
     id: "c7",
     name: "Ana Beatriz",
@@ -85,20 +85,20 @@ const mockCustomers: Customer[] = [
     status: "active",
     createdAt: new Date("2023-02-15"),
     updatedAt: new Date("2023-08-20")
-  },
+  } as Person,
   {
     id: "c8",
     name: "Mega Industries S.A.",
     type: "organization",
     email: "contato@megaindustries.com",
     phone: "(11) 4567-8901",
-    organization: "Mega Industries",
-    cpfCnpj: "54.321.098/0001-54",
+    tradingName: "Mega Industries",
+    cnpj: "54.321.098/0001-54",
     address: "Rua Augusta, 2000, São Paulo - SP",
     status: "active",
     createdAt: new Date("2023-03-10"),
     updatedAt: new Date("2023-06-15")
-  }
+  } as Organization
 ];
 
 export const getCustomers = () => {
@@ -117,7 +117,7 @@ export const createCustomer = (customer: Omit<Customer, 'id' | 'createdAt' | 'up
     updatedAt: new Date()
   };
   
-  mockCustomers.push(newCustomer);
+  mockCustomers.push(newCustomer as (Person | Organization));
   return newCustomer;
 };
 
@@ -132,7 +132,7 @@ export const updateCustomer = (id: string, customerData: Partial<Customer>): Cus
     updatedAt: new Date()
   };
   
-  mockCustomers[customerIndex] = updatedCustomer;
+  mockCustomers[customerIndex] = updatedCustomer as (Person | Organization);
   return updatedCustomer;
 };
 
@@ -155,12 +155,22 @@ export const filterCustomers = (filters: {
   // Aplicar filtro de pesquisa
   if (filters.search) {
     const searchLower = filters.search.toLowerCase();
-    filtered = filtered.filter(customer => 
-      customer.name.toLowerCase().includes(searchLower) ||
-      customer.email?.toLowerCase().includes(searchLower) ||
-      customer.organization?.toLowerCase().includes(searchLower) ||
-      customer.cpfCnpj?.toLowerCase().includes(searchLower)
-    );
+    filtered = filtered.filter(customer => {
+      if (customer.name.toLowerCase().includes(searchLower) || 
+          customer.email?.toLowerCase().includes(searchLower)) {
+        return true;
+      }
+      
+      if (customer.type === 'person') {
+        const person = customer as Person;
+        return person.cpfCnpj?.toLowerCase().includes(searchLower) ||
+              person.organizationName?.toLowerCase().includes(searchLower);
+      } else {
+        const org = customer as Organization;
+        return org.tradingName?.toLowerCase().includes(searchLower) ||
+              org.cnpj?.toLowerCase().includes(searchLower);
+      }
+    });
   }
   
   // Aplicar filtro de tipo

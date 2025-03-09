@@ -13,48 +13,39 @@ export const useAgentConfigModal = ({
   onSave, 
   onClose 
 }: UseAgentConfigModalProps) => {
+  const defaultAgent: Partial<Agent> = {
+    profile: {
+      name: "",
+      role: "",
+      goal: ""
+    },
+    workEnvironment: {
+      workflowTitle: "",
+      workflowDescription: "",
+      departmentTitle: "",
+      departmentDescription: "",
+      stageTitle: "",
+      stageDescription: ""
+    },
+    businessRules: {
+      rules: [],
+      restrictions: [],
+      conversationStyle: "professional"
+    },
+    expertise: {
+      knowledge: [],
+      skills: [],
+      examples: [],
+      tasks: []
+    },
+    ragDocuments: [],
+    tools: [],
+    llmModel: "GPT-4",
+    status: "active"
+  };
+
   const [formData, setFormData] = useState<Partial<Agent>>(
-    agent || {
-      profile: {
-        agentName: "",
-        agentRole: "",
-        agentGoal: ""
-      },
-      workEnvironment: {
-        workflowTitle: "",
-        workflowDescription: "",
-        departmentTitle: "",
-        departmentDescription: "",
-        stageTitle: "",
-        stageDescription: ""
-      },
-      businessRules: {
-        rules: [],
-        restrictions: [],
-        conversationStyle: "professional"
-      },
-      expertise: {
-        knowledge: [],
-        skills: [],
-        examples: [],
-        tasks: []
-      },
-      rag: {
-        documents: []
-      },
-      tools: {
-        vision: false,
-        voice: false,
-        call: false,
-        meeting: false,
-        calendar: false,
-        email: false,
-        pdf: false,
-        chat: false,
-        search: false
-      },
-      status: "active"
-    }
+    agent || defaultAgent
   );
 
   const [activeTab, setActiveTab] = useState("profile");
@@ -74,63 +65,68 @@ export const useAgentConfigModal = ({
     setFormData(prev => ({ ...prev, [section]: value }));
   };
 
-  const handleProfileChange = (field: keyof Agent['profile'], value: string) => {
+  const handleProfileChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
       profile: {
-        ...(prev.profile || {}),
+        ...((prev?.profile as any) || {}),
         [field]: value
-      }
+      } as Agent['profile']
     }));
   };
 
-  const handleWorkEnvironmentChange = (field: keyof Agent['workEnvironment'], value: string) => {
+  const handleWorkEnvironmentChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
       workEnvironment: {
-        ...(prev.workEnvironment || {}),
+        ...((prev?.workEnvironment as any) || {}),
         [field]: value
-      }
+      } as Agent['workEnvironment']
     }));
   };
 
-  const handleBusinessRulesChange = (field: keyof Agent['businessRules'], value: any) => {
+  const handleBusinessRulesChange = (field: string, value: any) => {
     setFormData(prev => ({
       ...prev,
       businessRules: {
-        ...(prev.businessRules || {}),
+        ...((prev?.businessRules as any) || {}),
         [field]: value
-      }
+      } as Agent['businessRules']
     }));
   };
 
-  const handleExpertiseChange = (field: keyof Agent['expertise'], value: string[]) => {
+  const handleExpertiseChange = (field: string, value: string[]) => {
     setFormData(prev => ({
       ...prev,
       expertise: {
-        ...(prev.expertise || {}),
+        ...((prev?.expertise as any) || {}),
         [field]: value
-      }
+      } as Agent['expertise']
     }));
   };
 
   const handleRagChange = (documents: string[]) => {
     setFormData(prev => ({
       ...prev,
-      rag: {
-        ...(prev.rag || {}),
-        documents
-      }
+      ragDocuments: documents
     }));
   };
 
-  const handleToolsChange = (tool: keyof Agent['tools'], enabled: boolean) => {
+  const handleToolsChange = (tool: string, enabled: boolean) => {
+    const updatedTools = [...(formData.tools || [])];
+    
+    if (enabled && !updatedTools.includes(tool)) {
+      updatedTools.push(tool);
+    } else if (!enabled) {
+      const index = updatedTools.indexOf(tool);
+      if (index !== -1) {
+        updatedTools.splice(index, 1);
+      }
+    }
+    
     setFormData(prev => ({
       ...prev,
-      tools: {
-        ...(prev.tools || {}),
-        [tool]: enabled
-      }
+      tools: updatedTools
     }));
   };
 

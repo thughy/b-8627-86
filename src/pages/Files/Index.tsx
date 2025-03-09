@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Card, CardContent } from "@/components/ui/card";
-import { File as FileModel, FileFilter } from "./models/FileModel";
+import { File, FileFilter } from "./models/FileModel";
 import { filterFiles } from "./services/fileService";
 import FileHeader from "./components/FileHeader";
 import FileSearch from "./components/FileSearch";
@@ -13,17 +13,17 @@ import FileViewModal from "./components/modals/FileViewModal";
 const FilesPage = () => {
   const { toast } = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<FileModel | null>(null);
-  const [files, setFiles] = useState<FileModel[]>([]);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [filters, setFilters] = useState<FileFilter>({
     search: "",
     type: "all",
-    folder: "all"
+    workflow: "all"
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(5);
 
   useEffect(() => {
     loadFiles();
@@ -37,27 +37,23 @@ const FilesPage = () => {
   };
 
   const handleAddFile = () => {
-    setSelectedFile(null);
-    setIsModalOpen(true);
+    // Handle adding new file
+    toast({
+      title: "Upload de arquivo",
+      description: "Funcionalidade de upload será implementada em breve."
+    });
   };
 
-  const handleViewFile = (file: FileModel) => {
+  const handleViewFile = (file: File) => {
     setSelectedFile(file);
     setIsModalOpen(true);
   };
 
   const handleDeleteFile = (fileId: string) => {
+    // Implement delete logic
     toast({
       title: "Arquivo excluído",
       description: "O arquivo foi excluído com sucesso."
-    });
-    loadFiles();
-  };
-
-  const handleSaveFile = (file: FileModel) => {
-    toast({
-      title: selectedFile ? "Arquivo atualizado" : "Arquivo enviado",
-      description: `O arquivo ${file.name} foi ${selectedFile ? "atualizado" : "enviado"} com sucesso.`
     });
     loadFiles();
   };
@@ -86,10 +82,10 @@ const FilesPage = () => {
             <FileSearch 
               search={filters.search || ""}
               type={filters.type || "all"}
-              folder={filters.folder || "all"}
+              workflow={filters.workflow || "all"}
               onSearchChange={handleSearchChange}
               onTypeChange={(value) => handleFilterChange("type", value)}
-              onFolderChange={(value) => handleFilterChange("folder", value)}
+              onWorkflowChange={(value) => handleFilterChange("workflow", value)}
             />
             
             <FileList
@@ -98,6 +94,7 @@ const FilesPage = () => {
               onDeleteFile={handleDeleteFile}
               currentPage={currentPage}
               totalPages={totalPages}
+              totalItems={totalItems}
               onPageChange={handlePageChange}
               itemsPerPage={itemsPerPage}
             />
@@ -108,8 +105,6 @@ const FilesPage = () => {
           <FileViewModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
-            onSave={handleSaveFile}
-            onDelete={handleDeleteFile}
             file={selectedFile}
           />
         )}

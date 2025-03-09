@@ -1,37 +1,104 @@
 
 import React, { useState } from "react";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { Plus } from "lucide-react";
-import { getAgents } from "../services/settingsService";
-import { Agent } from "@/pages/Workflows/models/WorkflowModels";
-import AgentConfigModal from "./modals/AgentConfigModal";
+import { Card, CardContent } from "@/components/ui/card";
 import AgentFilters from "./agents/AgentFilters";
 import AgentList from "./agents/AgentList";
+import AgentConfigModal from "./modals/AgentConfigModal";
+import { Agent } from "@/pages/Workflows/models/WorkflowModels";
+import { useToast } from "@/hooks/use-toast";
+
+// Example data for demonstration
+const mockAgents: Agent[] = [
+  {
+    id: "agent1",
+    stageId: "stage1",
+    profile: {
+      name: "Assistente de Vendas",
+      role: "Vendedor",
+      goal: "Auxiliar clientes a encontrar o produto ideal."
+    },
+    workEnvironment: {
+      workflowTitle: "Workflow de Vendas",
+      workflowDescription: "Processo de vendas da empresa",
+      departmentTitle: "Departamento Comercial",
+      departmentDescription: "Responsável pelas vendas",
+      stageTitle: "Qualificação de Leads",
+      stageDescription: "Etapa de qualificação de potenciais clientes"
+    },
+    businessRules: {
+      rules: ["Sempre ser educado", "Nunca falar mal da concorrência"],
+      restrictions: ["Não oferecer descontos sem aprovação"],
+      conversationStyle: "professional"
+    },
+    expertise: {
+      knowledge: ["Produtos da empresa", "Técnicas de vendas"],
+      skills: ["Comunicação efetiva", "Negociação"],
+      examples: ["Como lidar com objeções do cliente"],
+      tasks: ["Qualificação de leads", "Agendamento de demonstrações"]
+    },
+    ragDocuments: ["catalogo_produtos.pdf", "politica_precos.pdf"],
+    tools: ["chat", "email", "calendar"],
+    llmModel: "GPT-4",
+    status: "active",
+    createdAt: new Date("2023-01-15"),
+    updatedAt: new Date("2023-05-20")
+  },
+  {
+    id: "agent2",
+    stageId: "stage2",
+    profile: {
+      name: "Assistente de Suporte",
+      role: "Atendente",
+      goal: "Resolver problemas técnicos dos clientes."
+    },
+    workEnvironment: {
+      workflowTitle: "Workflow de Suporte",
+      workflowDescription: "Processo de atendimento ao cliente",
+      departmentTitle: "Suporte Técnico",
+      departmentDescription: "Responsável pelo suporte técnico",
+      stageTitle: "Atendimento Inicial",
+      stageDescription: "Primeira interação com o cliente"
+    },
+    businessRules: {
+      rules: ["Resolver problemas em até 24h", "Seguir o script de atendimento"],
+      restrictions: ["Não culpar outros departamentos por falhas"],
+      conversationStyle: "friendly"
+    },
+    expertise: {
+      knowledge: ["Produtos da empresa", "Soluções para problemas comuns"],
+      skills: ["Comunicação técnica", "Empatia"],
+      examples: ["Como resolver problemas de conexão"],
+      tasks: ["Registro de tickets", "Escalonamento de problemas"]
+    },
+    ragDocuments: ["manual_tecnico.pdf", "procedimentos_suporte.pdf"],
+    tools: ["chat", "email", "call"],
+    llmModel: "GPT-3.5",
+    status: "active",
+    createdAt: new Date("2023-02-10"),
+    updatedAt: new Date("2023-06-15")
+  },
+];
 
 const AgentSettings = () => {
   const { toast } = useToast();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [agents, setAgents] = useState<Agent[]>(getAgents());
+  const [agents, setAgents] = useState<Agent[]>(mockAgents);
+  const [filters, setFilters] = useState({
+    search: "",
+    status: "all",
+    department: "all"
+  });
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedAgent, setSelectedAgent] = useState<Agent | undefined>(undefined);
+  const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
 
-  const filteredAgents = agents.filter((agent) => 
-    agent.profile.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    agent.profile.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    agent.workEnvironment.workflowTitle?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    agent.workEnvironment.departmentTitle?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleFilterChange = (filterName: string, value: string) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterName]: value
+    }));
+  };
 
   const handleAddAgent = () => {
-    setSelectedAgent(undefined);
+    setSelectedAgent(null);
     setIsModalOpen(true);
   };
 
@@ -40,98 +107,100 @@ const AgentSettings = () => {
     setIsModalOpen(true);
   };
 
-  const handleDeleteAgent = (agent: Agent) => {
+  const handleDeleteAgent = (agentId: string) => {
+    setAgents(prev => prev.filter(agent => agent.id !== agentId));
     toast({
-      title: "Remover agente",
-      description: `Tem certeza que deseja remover o agente: ${agent.profile.name}?`,
-      variant: "destructive",
-      action: (
-        <Button 
-          variant="outline" 
-          onClick={() => {
-            setAgents(prev => prev.filter(a => a.id !== agent.id));
-            toast({
-              title: "Agente removido",
-              description: `O agente ${agent.profile.name} foi removido com sucesso.`,
-            });
-          }}
-        >
-          Confirmar
-        </Button>
-      ),
+      title: "Agente excluído",
+      description: "O agente foi removido com sucesso.",
     });
   };
 
   const handleSaveAgent = (agentData: Partial<Agent>) => {
     if (selectedAgent) {
       // Update existing agent
-      setAgents(prev => 
-        prev.map(a => 
-          a.id === selectedAgent.id 
-            ? { ...a, ...agentData, updatedAt: new Date() } 
-            : a
-        )
-      );
+      setAgents(prev => prev.map(agent => 
+        agent.id === selectedAgent.id 
+          ? { ...agent, ...agentData, updatedAt: new Date() } 
+          : agent
+      ));
+      toast({
+        title: "Agente atualizado",
+        description: `O agente ${agentData.profile?.name} foi atualizado com sucesso.`,
+      });
     } else {
-      // Add new agent
+      // Create new agent
       const newAgent: Agent = {
         id: `agent-${Date.now()}`,
-        stageId: agentData.stageId || "stage-default",
-        profile: agentData.profile || {
-          name: "Novo Agente",
-          role: "Função não definida",
-          goal: "Objetivo não definido"
-        },
-        workEnvironment: agentData.workEnvironment || {},
-        businessRules: agentData.businessRules || {},
-        expertise: agentData.expertise || {},
-        ragDocuments: agentData.ragDocuments || [],
-        tools: agentData.tools || [],
-        llmModel: agentData.llmModel || "GPT-4",
-        status: agentData.status || "active",
+        stageId: "stage-default",
+        ...agentData,
         createdAt: new Date(),
         updatedAt: new Date()
-      };
+      } as Agent;
+      
       setAgents(prev => [...prev, newAgent]);
+      toast({
+        title: "Agente criado",
+        description: `O agente ${agentData.profile?.name} foi criado com sucesso.`,
+      });
     }
+    setIsModalOpen(false);
   };
 
+  // Filter agents based on filters
+  const filteredAgents = agents.filter(agent => {
+    // Search filter
+    if (filters.search && 
+        !agent.profile.name.toLowerCase().includes(filters.search.toLowerCase()) &&
+        !agent.profile.role.toLowerCase().includes(filters.search.toLowerCase())) {
+      return false;
+    }
+    
+    // Status filter
+    if (filters.status !== "all" && agent.status !== filters.status) {
+      return false;
+    }
+    
+    // Department filter
+    if (filters.department !== "all" && 
+        agent.workEnvironment.departmentTitle !== filters.department) {
+      return false;
+    }
+    
+    return true;
+  });
+
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <CardTitle>Gerenciamento de Agentes</CardTitle>
-            <CardDescription>
-              Configure e gerencie seus agentes de IA
-            </CardDescription>
-          </div>
-          <Button onClick={handleAddAgent} className="flex-shrink-0">
-            <Plus className="h-4 w-4 mr-2" />
-            Adicionar Agente
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <AgentFilters 
-          searchTerm={searchTerm} 
-          setSearchTerm={setSearchTerm} 
+    <div className="space-y-6">
+      <Card>
+        <CardContent className="p-6">
+          <AgentFilters
+            search={filters.search}
+            status={filters.status}
+            department={filters.department}
+            onSearchChange={(value) => handleFilterChange("search", value)}
+            onStatusChange={(value) => handleFilterChange("status", value)}
+            onDepartmentChange={(value) => handleFilterChange("department", value)}
+            onAddAgent={handleAddAgent}
+          />
+          
+          <AgentList
+            agents={filteredAgents}
+            onEdit={handleEditAgent}
+            onDelete={handleDeleteAgent}
+          />
+        </CardContent>
+      </Card>
+      
+      {isModalOpen && (
+        <AgentConfigModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          agent={selectedAgent}
+          onSave={handleSaveAgent}
+          onDelete={handleDeleteAgent}
         />
-
-        <AgentList 
-          agents={filteredAgents} 
-          onEditAgent={handleEditAgent} 
-          onDeleteAgent={handleDeleteAgent} 
-        />
-      </CardContent>
-
-      <AgentConfigModal 
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        agent={selectedAgent}
-        onSave={handleSaveAgent}
-      />
-    </Card>
+      )}
+    </div>
   );
 };
 
