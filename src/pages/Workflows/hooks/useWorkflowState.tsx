@@ -23,8 +23,6 @@ export const useWorkflowState = () => {
   const { 
     selectedDeal, 
     setSelectedDeal,
-    isDealModalOpen, 
-    setIsDealModalOpen, 
     handleDealClick, 
     handleCreateAsset, 
     handleEditDeal, 
@@ -50,7 +48,6 @@ export const useWorkflowState = () => {
   const handleDeleteDeal = (dealId: string) => {
     const id = deleteAction(dealId);
     setDeals(deals.filter(deal => deal.id !== id));
-    setIsDealModalOpen(false);
   };
 
   // Handle the actual cancellation by updating the deal status
@@ -73,8 +70,6 @@ export const useWorkflowState = () => {
     setSearchTerm,
     selectedDeal,
     setSelectedDeal,
-    isDealModalOpen,
-    setIsDealModalOpen,
     viewMode,
     setViewMode,
     selectedWorkflow,

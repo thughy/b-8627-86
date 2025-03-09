@@ -5,7 +5,6 @@ import WorkflowHeader from './components/WorkflowHeader';
 import WorkflowFilters from './components/WorkflowFilters';
 import DealListView from './components/DealListView';
 import KanbanBoard from '@/components/workflows/KanbanBoard';
-import DealDetailModal from '@/components/workflows/DealDetailModal';
 import { useWorkflowState } from './hooks/useWorkflowState';
 
 export default function WorkflowsPage() {
@@ -17,8 +16,6 @@ export default function WorkflowsPage() {
     searchTerm,
     setSearchTerm,
     selectedDeal,
-    isDealModalOpen,
-    setIsDealModalOpen,
     viewMode,
     setViewMode,
     selectedWorkflow,
@@ -71,15 +68,6 @@ export default function WorkflowsPage() {
           />
         )}
       </div>
-      
-      {selectedDeal && (
-        <DealDetailModal
-          isOpen={isDealModalOpen}
-          onClose={() => setIsDealModalOpen(false)}
-          deal={selectedDeal}
-          onCreateAsset={handleCreateAsset}
-        />
-      )}
     </DashboardLayout>
   );
 }

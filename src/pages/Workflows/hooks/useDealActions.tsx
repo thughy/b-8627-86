@@ -6,11 +6,13 @@ import { useToast } from "@/hooks/use-toast";
 export const useDealActions = () => {
   const { toast } = useToast();
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
-  const [isDealModalOpen, setIsDealModalOpen] = useState(false);
   
   const handleDealClick = (deal: Deal) => {
     setSelectedDeal(deal);
-    setIsDealModalOpen(true);
+    toast({
+      title: "Deal selecionado",
+      description: `Deal "${deal.title}" foi selecionado.`,
+    });
   };
 
   const handleCreateAsset = (dealId: string, asset: Partial<Asset>) => {
@@ -61,8 +63,6 @@ export const useDealActions = () => {
   return {
     selectedDeal,
     setSelectedDeal,
-    isDealModalOpen,
-    setIsDealModalOpen,
     handleDealClick,
     handleCreateAsset,
     handleEditDeal,
