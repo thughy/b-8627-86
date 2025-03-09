@@ -8,12 +8,15 @@ type Attachment = {
   url: string;
 };
 
-type Message = {
+export type Message = {
   id: string;
   text: string;
   sender: 'user' | 'agent';
   timestamp: Date;
   attachments?: Attachment[];
+  // Adding properties needed for compatibility with ChatMessage
+  senderName?: string;
+  content?: string;
 };
 
 export const useChatState = (dealId: string) => {
@@ -31,19 +34,25 @@ export const useChatState = (dealId: string) => {
           id: '1',
           text: 'Olá, como posso ajudar com esse negócio?',
           sender: 'agent',
-          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2)
+          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
+          senderName: 'Assistente',
+          content: 'Olá, como posso ajudar com esse negócio?'
         },
         {
           id: '2',
           text: 'Preciso revisar os termos do contrato antes de fechar.',
           sender: 'user',
-          timestamp: new Date(Date.now() - 1000 * 60 * 60)
+          timestamp: new Date(Date.now() - 1000 * 60 * 60),
+          senderName: 'Você',
+          content: 'Preciso revisar os termos do contrato antes de fechar.'
         },
         {
           id: '3',
           text: 'Claro, vou preparar uma análise dos termos para você.',
           sender: 'agent',
-          timestamp: new Date(Date.now() - 1000 * 60 * 30)
+          timestamp: new Date(Date.now() - 1000 * 60 * 30),
+          senderName: 'Assistente',
+          content: 'Claro, vou preparar uma análise dos termos para você.'
         }
       ];
       
@@ -60,7 +69,9 @@ export const useChatState = (dealId: string) => {
       text,
       sender: 'user',
       timestamp: new Date(),
-      attachments: attachments.length > 0 ? [...attachments] : undefined
+      attachments: attachments.length > 0 ? [...attachments] : undefined,
+      senderName: 'Você',
+      content: text
     };
     
     setMessages(prev => [...prev, userMessage]);
@@ -76,7 +87,9 @@ export const useChatState = (dealId: string) => {
         id: (Date.now() + 1).toString(),
         text: 'Obrigado pela sua mensagem. Vou analisar e retornar em breve.',
         sender: 'agent',
-        timestamp: new Date()
+        timestamp: new Date(),
+        senderName: 'Assistente',
+        content: 'Obrigado pela sua mensagem. Vou analisar e retornar em breve.'
       };
       
       setMessages(prev => [...prev, agentMessage]);
