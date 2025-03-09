@@ -1,27 +1,13 @@
 
 import React, { useState } from "react";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Search, Filter, MoreHorizontal } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { formatDate } from "@/lib/utils";
-import { getCollaborators } from "../services/settingsService";
 import { Collaborator } from "@/pages/Workflows/models/WorkflowModels";
+import { getCollaborators } from "../services/settingsService";
 import CollaboratorConfigModal from "./modals/CollaboratorConfigModal";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
+import CollaboratorsHeader from "./collaborators/CollaboratorsHeader";
+import CollaboratorsSearch from "./collaborators/CollaboratorsSearch";
+import CollaboratorsList from "./collaborators/CollaboratorsList";
 
 const CollaboratorsSettings = () => {
   const { toast } = useToast();
@@ -83,117 +69,22 @@ const CollaboratorsSettings = () => {
     setIsModalOpen(false);
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'active':
-        return <Badge className="bg-green-500 hover:bg-green-600">Ativo</Badge>;
-      case 'inactive':
-        return <Badge className="bg-red-500 hover:bg-red-600">Inativo</Badge>;
-      case 'pending':
-        return <Badge className="bg-yellow-500 hover:bg-yellow-600">Pendente</Badge>;
-      default:
-        return null;
-    }
-  };
-
   return (
     <Card>
       <CardHeader className="pb-3">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <CardTitle>Gerenciamento de Colaboradores</CardTitle>
-            <CardDescription>
-              Configure e gerencie os colaboradores do sistema
-            </CardDescription>
-          </div>
-          <Button onClick={handleAddCollaborator} className="flex-shrink-0">
-            <Plus className="h-4 w-4 mr-2" />
-            Convidar Colaborador
-          </Button>
-        </div>
+        <CollaboratorsHeader onInviteCollaborator={handleAddCollaborator} />
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-          <div className="relative w-full sm:w-96">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar colaboradores..."
-              className="pl-8"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <Button variant="outline" size="icon" className="flex-shrink-0">
-            <Filter className="h-4 w-4" />
-          </Button>
-        </div>
+        <CollaboratorsSearch
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+        />
 
-        <div className="border rounded-md">
-          <div className="grid grid-cols-6 gap-4 p-4 font-medium border-b">
-            <div className="col-span-2">Nome / Função</div>
-            <div className="col-span-1">Email</div>
-            <div className="col-span-1 hidden md:block">Tipo</div>
-            <div className="col-span-1">Status</div>
-            <div className="col-span-1 text-right">Ações</div>
-          </div>
-
-          <div className="divide-y">
-            {filteredCollaborators.length > 0 ? (
-              filteredCollaborators.map((collaborator) => (
-                <div key={collaborator.id} className="grid grid-cols-6 gap-4 p-4 items-center">
-                  <div className="col-span-2">
-                    <div className="font-medium">{collaborator.name}</div>
-                    <div className="text-sm text-muted-foreground">{collaborator.role}</div>
-                  </div>
-                  <div className="col-span-1 text-muted-foreground truncate">
-                    {collaborator.email}
-                  </div>
-                  <div className="col-span-1 hidden md:block text-muted-foreground capitalize">
-                    {collaborator.type}
-                  </div>
-                  <div className="col-span-1">
-                    {getStatusBadge(collaborator.status)}
-                  </div>
-                  <div className="col-span-1 flex justify-end">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleEditCollaborator(collaborator)}>
-                          Editar
-                        </DropdownMenuItem>
-                        {collaborator.status === 'pending' && (
-                          <DropdownMenuItem onClick={() => {
-                            // Simula o reenvio do convite
-                            toast({
-                              title: "Convite reenviado",
-                              description: `Um novo convite foi enviado para ${collaborator.email}.`,
-                            });
-                          }}>
-                            Reenviar convite
-                          </DropdownMenuItem>
-                        )}
-                        <DropdownMenuItem 
-                          onClick={() => handleDeleteCollaborator(collaborator)}
-                          className="text-red-500 focus:text-red-500"
-                        >
-                          {collaborator.status === 'pending' ? 'Cancelar convite' : 'Remover'}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="p-4 text-center text-muted-foreground">
-                Nenhum colaborador encontrado
-              </div>
-            )}
-          </div>
-        </div>
+        <CollaboratorsList
+          collaborators={filteredCollaborators}
+          onEditCollaborator={handleEditCollaborator}
+          onDeleteCollaborator={handleDeleteCollaborator}
+        />
       </CardContent>
 
       <CollaboratorConfigModal 
