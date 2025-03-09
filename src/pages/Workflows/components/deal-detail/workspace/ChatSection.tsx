@@ -12,30 +12,50 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
-import { useChatState } from './hooks/useChatState';
 import { Deal } from '@/pages/Workflows/models/WorkflowModels';
+
+type Attachment = {
+  id: string;
+  name: string;
+  type: string;
+  url: string;
+};
+
+type Message = {
+  id: string;
+  text: string;
+  sender: 'user' | 'agent';
+  timestamp: Date;
+  attachments?: Attachment[];
+};
 
 export interface ChatSectionProps {
   dealId: string;
+  messages: Message[];
+  messageText: string;
+  setMessageText: (text: string) => void;
+  sendMessage: (text: string) => void;
+  typing: boolean;
+  attachments: Attachment[];
+  handleAddAttachment: () => void;
+  handleRemoveAttachment: (index: number) => void;
 }
 
-export const ChatSection: React.FC<ChatSectionProps> = ({ dealId }) => {
-  const { 
-    messages, 
-    sendMessage, 
-    messageText, 
-    setMessageText, 
-    typing, 
-    attachments, 
-    handleAddAttachment, 
-    handleRemoveAttachment 
-  } = useChatState(dealId);
-
+export const ChatSection: React.FC<ChatSectionProps> = ({ 
+  dealId,
+  messages, 
+  messageText, 
+  setMessageText, 
+  sendMessage, 
+  typing, 
+  attachments, 
+  handleAddAttachment, 
+  handleRemoveAttachment 
+}) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (messageText.trim()) {
       sendMessage(messageText);
-      setMessageText('');
     }
   };
 

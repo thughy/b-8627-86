@@ -6,6 +6,7 @@ import ChatSection from './workspace/ChatSection';
 import FocusTabContent from './workspace/FocusTabContent';
 import HistoryTabContent from './workspace/HistoryTabContent';
 import WorkspaceActionButtons from './workspace/WorkspaceActionButtons';
+import { useChatState } from './workspace/hooks/useChatState';
 
 interface DealWorkspaceTabProps {
   deal: Deal;
@@ -25,6 +26,7 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
   onCreateEmail
 }) => {
   const [activeTab, setActiveTab] = React.useState('chat');
+  const chatState = useChatState(deal.id);
 
   // Exemplo de assets para este deal (em um cenário real, viriam da API)
   const dummyAssets: Asset[] = [
@@ -69,7 +71,17 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
         </TabsList>
         
         <TabsContent value="chat" className="border-none p-0">
-          <ChatSection dealId={deal.id} />
+          <ChatSection 
+            dealId={deal.id}
+            messages={chatState.messages}
+            messageText={chatState.messageText}
+            setMessageText={chatState.setMessageText}
+            sendMessage={chatState.sendMessage}
+            typing={chatState.typing}
+            attachments={chatState.attachments}
+            handleAddAttachment={chatState.handleAddAttachment}
+            handleRemoveAttachment={chatState.handleRemoveAttachment}
+          />
         </TabsContent>
         
         <TabsContent value="focus" className="border-none p-0">
