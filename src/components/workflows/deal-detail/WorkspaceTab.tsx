@@ -6,6 +6,7 @@ import ChatSection from './workspace/ChatSection';
 import FocusSection from './workspace/FocusSection';
 import HistorySection from './workspace/HistorySection';
 import { useToast } from '@/hooks/use-toast';
+import { useChatState } from '@/pages/Workflows/components/deal-detail/workspace/hooks/useChatState';
 
 interface WorkspaceTabProps {
   assets: Asset[];
@@ -23,6 +24,9 @@ const WorkspaceTab: React.FC<WorkspaceTabProps> = ({
   const [activeSection, setActiveSection] = useState<string>('chat');
   const [activeWorkspaceTab, setActiveWorkspaceTab] = useState<string>('all');
   const { toast } = useToast();
+  
+  // Get chat state from the useChatState hook
+  const chatState = useChatState(dealId || '');
   
   // Set chat as default active section when deal changes
   useEffect(() => {
@@ -60,7 +64,17 @@ const WorkspaceTab: React.FC<WorkspaceTabProps> = ({
       
       <div className="col-span-5 md:col-span-4 flex flex-col overflow-hidden">
         {activeSection === 'chat' && (
-          <ChatSection dealId={dealId || ''} />
+          <ChatSection 
+            dealId={dealId || ''} 
+            messages={chatState.messages}
+            messageText={chatState.messageText}
+            setMessageText={chatState.setMessageText}
+            sendMessage={chatState.sendMessage}
+            typing={chatState.typing}
+            attachments={chatState.attachments}
+            handleAddAttachment={chatState.handleAddAttachment}
+            handleRemoveAttachment={chatState.handleRemoveAttachment}
+          />
         )}
         
         {activeSection === 'focus' && (
@@ -78,3 +92,4 @@ const WorkspaceTab: React.FC<WorkspaceTabProps> = ({
 };
 
 export default WorkspaceTab;
+
