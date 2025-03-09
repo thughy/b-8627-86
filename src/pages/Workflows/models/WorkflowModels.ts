@@ -131,7 +131,7 @@ export interface Agent {
   updatedAt: Date;
 }
 
-// Add missing interface for Collaborator
+// Define types for collaborators
 export interface Collaborator {
   id: string;
   name: string;
@@ -141,11 +141,11 @@ export interface Collaborator {
   status: string;
   phone?: string;
   hierarchyLevel?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-// Add missing interface for Integration
+// Define types for integrations
 export interface Integration {
   id: string;
   name: string;
@@ -153,8 +153,8 @@ export interface Integration {
   provider: string;
   status: string;
   config?: Record<string, any>;
-  credentials?: Record<string, any>;
-  isActive?: boolean;
+  credentials: Record<string, any>;
+  isActive: boolean;
   createdAt: Date;
-  updatedAt?: Date;
+  updatedAt: Date;
 }

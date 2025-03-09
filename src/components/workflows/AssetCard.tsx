@@ -1,60 +1,99 @@
 
 import React from 'react';
 import { Asset } from '@/pages/Workflows/models/WorkflowModels';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { FileText, Calendar, DollarSign } from 'lucide-react';
+import { MoreHorizontal, Calendar, CreditCard } from 'lucide-react';
+import { formatCurrency, formatDate } from '@/lib/utils';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 interface AssetCardProps {
   asset: Asset;
+  onViewAsset?: (asset: Asset) => void;
+  onEditAsset?: (asset: Asset) => void;
+  onDeleteAsset?: (assetId: string) => void;
 }
 
-const AssetCard: React.FC<AssetCardProps> = ({ asset }) => {
-  const getStatusColor = (status: Asset['status']) => {
-    switch (status) {
-      case 'completed':
-        return 'bg-green-500';
-      case 'processing':
-        return 'bg-blue-500';
-      case 'cancelled':
-        return 'bg-red-500';
-      default:
-        return 'bg-gray-500';
-    }
+const AssetCard: React.FC<AssetCardProps> = ({
+  asset,
+  onViewAsset,
+  onEditAsset,
+  onDeleteAsset
+}) => {
+  const statusColors = {
+    open: 'bg-blue-500',
+    processing: 'bg-amber-500',
+    completed: 'bg-green-500',
+    cancelled: 'bg-red-500'
+  };
+
+  const statusLabels = {
+    open: 'Aberto',
+    processing: 'Processando',
+    completed: 'Concluído',
+    cancelled: 'Cancelado'
+  };
+
+  const handleViewClick = () => {
+    if (onViewAsset) onViewAsset(asset);
   };
 
   return (
-    <Card>
-      <CardContent className="p-4">
-        <div className="flex justify-between items-start">
-          <div>
-            <h3 className="font-medium">{asset.title}</h3>
-            <p className="text-sm text-muted-foreground">{asset.description}</p>
-          </div>
-          <Badge className={getStatusColor(asset.status)}>
-            {asset.status === 'completed' ? 'Concluído' : 
-             asset.status === 'processing' ? 'Processando' : 
-             asset.status === 'cancelled' ? 'Cancelado' : 'Aberto'}
-          </Badge>
+    <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={handleViewClick}>
+      <CardHeader className="p-4 pb-2 flex flex-row items-start justify-between space-y-0">
+        <CardTitle className="text-base font-medium">{asset.title}</CardTitle>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={(e) => {
+              e.stopPropagation();
+              if (onEditAsset) onEditAsset(asset);
+            }}>
+              Editar
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={(e) => {
+              e.stopPropagation();
+              if (onDeleteAsset) onDeleteAsset(asset.id);
+            }} className="text-red-500 focus:text-red-500">
+              Excluir
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </CardHeader>
+      <CardContent className="p-4 pt-2">
+        <div className="text-sm text-muted-foreground mb-3">
+          {asset.description || 'Sem descrição'}
         </div>
         
-        <div className="grid grid-cols-3 gap-2 mt-3 text-sm">
-          <div className="flex items-center">
-            <FileText className="h-4 w-4 mr-1 text-muted-foreground" />
-            <span>{asset.type}</span>
-          </div>
-          {asset.amount && (
-            <div className="flex items-center">
-              <DollarSign className="h-4 w-4 mr-1 text-muted-foreground" />
-              <span>{formatCurrency(asset.amount)}</span>
-            </div>
-          )}
-          <div className="flex items-center">
-            <Calendar className="h-4 w-4 mr-1 text-muted-foreground" />
-            <span>{formatDate(asset.createdAt)}</span>
-          </div>
+        <div className="flex justify-between items-center">
+          <Badge className={statusColors[asset.status] || 'bg-gray-500'}>
+            {statusLabels[asset.status] || 'Desconhecido'}
+          </Badge>
+          <div className="text-sm">{asset.type}</div>
         </div>
+        
+        {(asset.amount !== undefined || asset.startDate || asset.endDate) && (
+          <div className="grid grid-cols-2 gap-2 mt-3 pt-3 border-t text-sm">
+            {asset.amount !== undefined && (
+              <div className="flex items-center gap-1">
+                <CreditCard className="h-3.5 w-3.5 text-muted-foreground" />
+                <span>{formatCurrency(asset.amount)}</span>
+              </div>
+            )}
+            
+            {asset.startDate && (
+              <div className="flex items-center gap-1">
+                <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                <span>{formatDate(asset.startDate)}</span>
+              </div>
+            )}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

@@ -62,8 +62,14 @@ const AssetSettings = () => {
         prev.map(a => a.id === asset.id ? asset : a)
       );
     } else {
-      // Create new asset
-      setAssets(prev => [...prev, asset]);
+      // Create new asset with a new ID
+      const newAsset = {
+        ...asset,
+        id: `asset-${Date.now()}`,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      setAssets(prev => [...prev, newAsset]);
     }
     
     setIsModalOpen(false);
@@ -98,9 +104,8 @@ const AssetSettings = () => {
         <AssetConfigModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          asset={currentAsset}
+          asset={currentAsset || undefined}
           onSave={handleSaveAsset}
-          onDelete={handleDeleteAsset}
         />
       )}
     </div>

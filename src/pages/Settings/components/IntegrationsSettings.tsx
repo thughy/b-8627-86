@@ -1,257 +1,216 @@
 
-import React, { useEffect } from "react";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
-} from "@/components/ui/card";
+import React, { useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Plus, Search, ChevronRight, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
-import { getIntegrations } from "../services/settingsService";
 import { Integration } from "@/pages/Workflows/models/WorkflowModels";
-import IntegrationConfigModal from "./modals/IntegrationConfigModal";
+import { getIntegrations } from "../services/settingsService";
 import { useToast } from "@/hooks/use-toast";
+import IntegrationConfigModal from "./modals/IntegrationConfigModal";
+
+interface IntegrationItemProps {
+  integration: Integration;
+  onSelect: (integration: Integration) => void;
+  onDelete: (integrationId: string) => void;
+}
+
+const IntegrationItem = ({ integration, onSelect, onDelete }: IntegrationItemProps) => {
+  return (
+    <div className="border rounded-md p-4 flex items-center justify-between">
+      <div className="flex items-center space-x-4">
+        <div className={`w-10 h-10 flex items-center justify-center rounded-full ${integration.isActive ? 'bg-primary/10' : 'bg-gray-200'}`}>
+          <span className="text-lg font-semibold">{integration.name.charAt(0)}</span>
+        </div>
+        <div>
+          <h3 className="font-medium">{integration.name}</h3>
+          <p className="text-sm text-muted-foreground">{integration.provider}</p>
+        </div>
+      </div>
+
+      <div className="flex items-center space-x-2">
+        <Badge variant={integration.isActive ? "default" : "outline"}>
+          {integration.isActive ? "Ativo" : "Inativo"}
+        </Badge>
+        <div className="flex space-x-1">
+          <Button variant="ghost" size="icon" onClick={() => onSelect(integration)}>
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+          <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-600" onClick={() => onDelete(integration.id)}>
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const IntegrationsSettings = () => {
   const { toast } = useToast();
-  
-  const [integrations, setIntegrations] = React.useState<Integration[]>([]);
-  const [filteredIntegrations, setFilteredIntegrations] = React.useState<Integration[]>([]);
-  const [searchTerm, setSearchTerm] = React.useState("");
-  const [activeTab, setActiveTab] = React.useState("all");
-  const [modalOpen, setModalOpen] = React.useState(false);
-  const [selectedIntegration, setSelectedIntegration] = React.useState<Partial<Integration> | null>(null);
+  const [integrations, setIntegrations] = useState<Integration[]>([]);
+  const [filteredIntegrations, setFilteredIntegrations] = useState<Integration[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedIntegration, setSelectedIntegration] = useState<Integration | null>(null);
 
-  // Fetch integrations
   useEffect(() => {
-    const loadIntegrations = () => {
-      const integrationData = getIntegrations();
-      setIntegrations(integrationData);
-      setFilteredIntegrations(integrationData);
-    };
-    
     loadIntegrations();
   }, []);
 
-  // Filter integrations based on search and tab
   useEffect(() => {
-    let filtered = integrations;
-    
-    // Apply search filter
     if (searchTerm) {
-      filtered = filtered.filter(integration => 
-        integration.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        integration.type.toLowerCase().includes(searchTerm.toLowerCase())
+      const filtered = integrations.filter(
+        (integration) =>
+          integration.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          integration.provider.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          integration.type.toLowerCase().includes(searchTerm.toLowerCase())
       );
+      setFilteredIntegrations(filtered);
+    } else {
+      setFilteredIntegrations(integrations);
     }
-    
-    // Apply tab filter
-    if (activeTab !== "all") {
-      filtered = filtered.filter(integration => integration.type === activeTab);
-    }
-    
-    setFilteredIntegrations(filtered);
-  }, [searchTerm, activeTab, integrations]);
+  }, [searchTerm, integrations]);
 
-  // Add new integration
-  const handleAddIntegration = () => {
-    setSelectedIntegration(null);
-    setModalOpen(true);
+  const loadIntegrations = () => {
+    const integrationsData = getIntegrations();
+    setIntegrations(integrationsData);
+    setFilteredIntegrations(integrationsData);
   };
 
-  // Edit integration
+  const handleAddIntegration = () => {
+    const newIntegration: Partial<Integration> = {
+      name: "",
+      type: "",
+      provider: "",
+      status: "active",
+      credentials: {},
+      isActive: true,
+    };
+    setSelectedIntegration(null);
+    setIsModalOpen(true);
+  };
+
   const handleEditIntegration = (integration: Integration) => {
     setSelectedIntegration(integration);
-    setModalOpen(true);
+    setIsModalOpen(true);
   };
 
-  // Toggle integration status
-  const handleToggleStatus = (id: string) => {
-    setIntegrations(prev => 
-      prev.map(integration => 
-        integration.id === id 
-          ? { ...integration, isActive: !integration.isActive, status: !integration.isActive ? 'active' : 'inactive' } 
-          : integration
-      )
-    );
-    
-    const integration = integrations.find(i => i.id === id);
-    
-    if (integration) {
-      toast({
-        title: integration.isActive ? "Integração desativada" : "Integração ativada",
-        description: `A integração ${integration.name} foi ${integration.isActive ? "desativada" : "ativada"} com sucesso.`
-      });
-    }
+  const handleDeleteIntegration = (integrationId: string) => {
+    toast({
+      title: "Confirmar exclusão",
+      description: "Tem certeza que deseja excluir esta integração?",
+      variant: "destructive",
+      action: (
+        <Button
+          variant="outline"
+          onClick={() => {
+            const updatedIntegrations = integrations.filter(
+              (item) => item.id !== integrationId
+            );
+            setIntegrations(updatedIntegrations);
+            setFilteredIntegrations(
+              filteredIntegrations.filter((item) => item.id !== integrationId)
+            );
+            toast({
+              title: "Integração excluída",
+              description: "A integração foi excluída com sucesso.",
+            });
+          }}
+        >
+          Confirmar
+        </Button>
+      ),
+    });
   };
 
-  // Handle save integration
-  const handleSaveIntegration = (integration: Partial<Integration>) => {
-    if (selectedIntegration?.id) {
+  const handleSaveIntegration = (integrationData: Partial<Integration>) => {
+    if (selectedIntegration) {
       // Update existing integration
-      setIntegrations(prev => 
-        prev.map(i => 
-          i.id === selectedIntegration.id 
-            ? { ...i, ...integration } as Integration 
-            : i
-        )
+      const updatedIntegrations = integrations.map((item) =>
+        item.id === selectedIntegration.id
+          ? { ...item, ...integrationData, updatedAt: new Date() }
+          : item
       );
-      
+      setIntegrations(updatedIntegrations);
       toast({
         title: "Integração atualizada",
-        description: `A integração ${integration.name} foi atualizada com sucesso.`
+        description: "A integração foi atualizada com sucesso.",
       });
     } else {
       // Create new integration
       const newIntegration: Integration = {
         id: `integration-${Date.now()}`,
-        name: integration.name || "",
-        type: integration.type || "",
-        provider: integration.provider || "",
-        status: "active",
-        isActive: true,
-        credentials: integration.credentials || {},
+        name: integrationData.name || "Nova Integração",
+        type: integrationData.type || "api",
+        provider: integrationData.provider || "Personalizado",
+        status: integrationData.status || "active",
+        credentials: integrationData.credentials || {},
+        isActive: integrationData.isActive !== undefined ? integrationData.isActive : true,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
-      
-      setIntegrations(prev => [...prev, newIntegration]);
-      
+      setIntegrations([...integrations, newIntegration]);
       toast({
-        title: "Integração adicionada",
-        description: `A integração ${newIntegration.name} foi adicionada com sucesso.`
+        title: "Integração criada",
+        description: "A nova integração foi criada com sucesso.",
       });
     }
-    
-    setModalOpen(false);
-  };
-
-  // Delete integration
-  const handleDeleteIntegration = (id: string) => {
-    const integration = integrations.find(i => i.id === id);
-    
-    setIntegrations(prev => prev.filter(i => i.id !== id));
-    
-    if (integration) {
-      toast({
-        title: "Integração removida",
-        description: `A integração ${integration.name} foi removida com sucesso.`
-      });
-    }
-    
-    if (selectedIntegration?.id === id) {
-      setSelectedIntegration(null);
-      setModalOpen(false);
-    }
+    setIsModalOpen(false);
   };
 
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Integrações</CardTitle>
-              <CardDescription>Gerencie integrações com outras plataformas</CardDescription>
-            </div>
-            <Button onClick={handleAddIntegration}>
-              <Plus className="mr-2 h-4 w-4" />
-              Nova Integração
-            </Button>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row gap-4 sm:items-center mt-4">
-            <div className="relative w-full sm:w-96">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar integrações..."
-                className="pl-8"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            
-            <Tabs defaultValue="all" className="w-full sm:w-auto" value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5">
-                <TabsTrigger value="all">Todos</TabsTrigger>
-                <TabsTrigger value="crm">CRM</TabsTrigger>
-                <TabsTrigger value="email">Email</TabsTrigger>
-                <TabsTrigger value="chat">Chat</TabsTrigger>
-                <TabsTrigger value="other">Outros</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
-        </CardHeader>
-        
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-            {filteredIntegrations.map((integration) => (
-              <Card key={integration.id} className="overflow-hidden">
-                <div className="p-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <div className="font-medium">{integration.name}</div>
-                      <div className="text-sm text-muted-foreground">{integration.provider}</div>
-                    </div>
-                    <div className="flex space-x-1">
-                      <Badge variant={integration.isActive ? "default" : "outline"}>
-                        {integration.isActive ? "Ativo" : "Inativo"}
-                      </Badge>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => handleEditIntegration(integration)}>
-                            Editar
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleToggleStatus(integration.id)}>
-                            {integration.isActive ? "Desativar" : "Ativar"}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleDeleteIntegration(integration.id)} className="text-red-500">
-                            Excluir
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-muted p-3">
-                  <div className="text-xs">Tipo: <span className="font-medium capitalize">{integration.type}</span></div>
-                </div>
-              </Card>
-            ))}
-            
-            {filteredIntegrations.length === 0 && (
-              <div className="col-span-full text-center p-8 border rounded-md bg-muted/20">
-                <p className="text-muted-foreground">Nenhuma integração encontrada</p>
+        <CardContent className="p-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div className="text-xl font-semibold">Integrações</div>
+            <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+              <div className="relative w-full md:w-64">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar integrações..."
+                  className="pl-8"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
-            )}
+              <Button onClick={handleAddIntegration}>
+                <Plus className="h-4 w-4 mr-2" />
+                Nova Integração
+              </Button>
+            </div>
           </div>
+
+          {filteredIntegrations.length === 0 ? (
+            <div className="border rounded-md p-8 text-center">
+              <p className="text-muted-foreground">
+                {searchTerm
+                  ? "Nenhuma integração encontrada para esta busca."
+                  : "Nenhuma integração configurada. Clique em 'Nova Integração' para adicionar."}
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {filteredIntegrations.map((integration) => (
+                <IntegrationItem
+                  key={integration.id}
+                  integration={integration}
+                  onSelect={handleEditIntegration}
+                  onDelete={handleDeleteIntegration}
+                />
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
-      
-      {modalOpen && (
+
+      {isModalOpen && (
         <IntegrationConfigModal
-          isOpen={modalOpen}
-          onClose={() => setModalOpen(false)}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
           integration={selectedIntegration}
           onSave={handleSaveIntegration}
-          onDelete={handleDeleteIntegration}
         />
       )}
     </div>
