@@ -11,8 +11,7 @@ interface AgentConfigModalProps {
 }
 
 const AgentConfigModal = (props: AgentConfigModalProps) => {
-  if (!props.isOpen) return null;
-  
+  // Sempre renderizamos o componente, mas deixamos o controle de visibilidade para o Dialog no AgentModalContainer
   return <AgentModalContainer {...props} />;
 };
 
