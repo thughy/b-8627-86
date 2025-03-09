@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Trash } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 
 export type ParameterType = 'text' | 'number' | 'date' | 'switch' | 'url' | 'file';
 
@@ -50,24 +51,10 @@ const ParameterItem = ({ param, index, onParamChange, onRemoveParameter }: Param
         )}
         {param.type === 'switch' && (
           <div className="flex items-center mt-1">
-            <Button
-              type="button"
-              variant={param.value ? "default" : "outline"}
-              size="sm"
-              onClick={() => onParamChange(index, true)}
-              className="rounded-r-none"
-            >
-              Sim
-            </Button>
-            <Button
-              type="button"
-              variant={!param.value ? "default" : "outline"}
-              size="sm"
-              onClick={() => onParamChange(index, false)}
-              className="rounded-l-none"
-            >
-              Não
-            </Button>
+            <Switch
+              checked={param.value}
+              onCheckedChange={(checked) => onParamChange(index, checked)}
+            />
           </div>
         )}
         {param.type === 'url' && (
