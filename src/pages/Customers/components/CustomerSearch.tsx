@@ -28,7 +28,7 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({
         <Input
           type="search"
           placeholder="Buscar por nome, email, CPF/CNPJ..."
-          className="pl-8"
+          className="pl-8 thin-border"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
         />
@@ -36,10 +36,10 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <Select value={type} onValueChange={onTypeChange}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full thin-border">
               <SelectValue placeholder="Filtrar por tipo" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="dropdown-content">
               <SelectItem value="all" className="flex items-center gap-2">
                 <FilterX className="h-4 w-4" />
                 <span>Todos os tipos</span>
@@ -57,10 +57,10 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({
         </div>
         <div>
           <Select value={status} onValueChange={onStatusChange}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full thin-border">
               <SelectValue placeholder="Filtrar por status" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="dropdown-content">
               <SelectItem value="all">Todos os status</SelectItem>
               <SelectItem value="active">Ativo</SelectItem>
               <SelectItem value="inactive">Inativo</SelectItem>

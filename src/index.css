@@ -54,12 +54,12 @@
 /* Ajustes para inputs, selects e dropdowns */
 .thin-border {
   @apply border border-[#2A2A2A] hover:border-[#3A3A3A] focus:border-[#444444];
-  border-width: 1px !important;
+  border-width: 0.5px !important;
 }
 
 .dropdown-content {
   @apply border border-[#2A2A2A] bg-[#222222] shadow-lg;
-  border-width: 1px !important;
+  border-width: 0.5px !important;
 }
 
 @media (max-width: 768px) {

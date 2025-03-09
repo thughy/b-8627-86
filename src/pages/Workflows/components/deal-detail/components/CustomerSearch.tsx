@@ -43,19 +43,19 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ value, onChange }) => {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className="w-full justify-between thin-border"
         >
           {value ? getSelectedCustomerName() : "Selecione um cliente..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[300px] p-0">
+      <PopoverContent className="w-[300px] p-0 dropdown-content">
         <Command>
           <CommandInput 
             placeholder="Buscar cliente..." 
             value={searchQuery}
             onValueChange={setSearchQuery}
-            className="h-9"
+            className="h-9 thin-border"
           />
           {loading ? (
             <div className="py-6 text-center text-sm text-muted-foreground">

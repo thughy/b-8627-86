@@ -32,7 +32,7 @@ const AddParameterForm = ({ onAddParameter }: AddParameterFormProps) => {
             placeholder="Nome do parâmetro"
             value={newParamName}
             onChange={(e) => setNewParamName(e.target.value)}
-            className="mt-1"
+            className="mt-1 thin-border"
           />
         </div>
         <div>
@@ -41,10 +41,10 @@ const AddParameterForm = ({ onAddParameter }: AddParameterFormProps) => {
             value={newParamType} 
             onValueChange={(value) => setNewParamType(value as ParameterType)}
           >
-            <SelectTrigger id="paramType" className="mt-1">
+            <SelectTrigger id="paramType" className="mt-1 thin-border">
               <SelectValue placeholder="Tipo do parâmetro" />
             </SelectTrigger>
-            <SelectContent className="bg-popover">
+            <SelectContent className="bg-popover dropdown-content">
               <SelectItem value="text" className="flex items-center gap-2">
                 <Type className="h-4 w-4" />
                 <span>Texto</span>

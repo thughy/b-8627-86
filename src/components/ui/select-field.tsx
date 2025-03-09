@@ -38,10 +38,10 @@ const SelectField: React.FC<SelectFieldProps> = ({
   if (!label) {
     return (
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger id={id}>
+        <SelectTrigger id={id} className="thin-border">
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="dropdown-content">
           <SelectGroup>
             {options.map((option) => (
               <SelectItem key={option.value} value={option.value}>
@@ -58,10 +58,10 @@ const SelectField: React.FC<SelectFieldProps> = ({
   return (
     <FormField id={id} label={label} required={required}>
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger id={id}>
+        <SelectTrigger id={id} className="thin-border">
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="dropdown-content">
           <SelectGroup>
             {options.map((option) => (
               <SelectItem key={option.value} value={option.value}>

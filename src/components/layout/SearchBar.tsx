@@ -18,7 +18,7 @@ const SearchBar = () => {
         value={searchQuery}
         onChange={handleSearch}
         placeholder="Buscar..."
-        className="pl-8 pr-4 py-2 bg-muted w-full rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
+        className="pl-8 pr-4 py-2 bg-[#1a1a1a] w-full rounded-md focus:outline-none focus:ring-1 focus:ring-primary thin-border"
       />
     </div>
   );

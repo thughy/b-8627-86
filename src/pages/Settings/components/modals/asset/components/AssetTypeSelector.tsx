@@ -48,7 +48,7 @@ const AssetTypeSelector = ({
             value={newTypeName}
             onChange={(e) => setNewTypeName(e.target.value)}
             placeholder="Nome do novo tipo"
-            className="flex-1"
+            className="flex-1 thin-border"
             autoFocus
           />
           <Button 
@@ -57,6 +57,7 @@ const AssetTypeSelector = ({
             onClick={handleAddNewType}
             disabled={!newTypeName.trim()}
             title="Salvar"
+            className="thin-border"
           >
             <Check className="h-4 w-4" />
           </Button>
@@ -65,6 +66,7 @@ const AssetTypeSelector = ({
             size="icon"
             onClick={handleCancel}
             title="Cancelar"
+            className="thin-border"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -75,10 +77,10 @@ const AssetTypeSelector = ({
             value={selectedType} 
             onValueChange={onTypeChange}
           >
-            <SelectTrigger id="type" className="flex-1">
+            <SelectTrigger id="type" className="flex-1 thin-border">
               <SelectValue placeholder="Selecione o tipo" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="dropdown-content">
               {availableTypes.map((type) => (
                 <SelectItem key={type} value={type}>{type}</SelectItem>
               ))}
@@ -91,6 +93,7 @@ const AssetTypeSelector = ({
               size="icon"
               onClick={onAddTypeClick || (() => setIsAddingNewType(true))}
               title="Adicionar novo tipo"
+              className="thin-border"
             >
               <Plus className="h-4 w-4" />
             </Button>

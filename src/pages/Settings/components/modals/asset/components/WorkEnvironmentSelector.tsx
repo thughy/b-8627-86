@@ -39,10 +39,10 @@ const WorkEnvironmentSelector = ({
               workflowDescription: workflows.find(w => w.title === value)?.description || ""
             })}
           >
-            <SelectTrigger id="workflowTitle">
+            <SelectTrigger id="workflowTitle" className="thin-border">
               <SelectValue placeholder="Selecione o workflow" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="dropdown-content">
               {workflows.map((workflow) => (
                 <SelectItem key={workflow.id} value={workflow.title}>{workflow.title}</SelectItem>
               ))}
@@ -59,10 +59,10 @@ const WorkEnvironmentSelector = ({
               departmentTitle: value
             })}
           >
-            <SelectTrigger id="departmentTitle">
+            <SelectTrigger id="departmentTitle" className="thin-border">
               <SelectValue placeholder="Selecione o departamento" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="dropdown-content">
               {departments.map((department) => (
                 <SelectItem key={department.id} value={department.title}>{department.title}</SelectItem>
               ))}
@@ -79,10 +79,10 @@ const WorkEnvironmentSelector = ({
               stageTitle: value
             })}
           >
-            <SelectTrigger id="stageTitle">
+            <SelectTrigger id="stageTitle" className="thin-border">
               <SelectValue placeholder="Selecione o estágio" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="dropdown-content">
               {stages.map((stage) => (
                 <SelectItem key={stage.id} value={stage.title}>{stage.title}</SelectItem>
               ))}

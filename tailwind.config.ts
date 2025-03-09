@@ -42,6 +42,14 @@ export default {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
         },
+        accent: {
+          DEFAULT: "#333333",
+          foreground: "#FFFFFF",
+        },
+        muted: {
+          DEFAULT: "#1d1d1d",
+          foreground: "#a0a0a0",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
