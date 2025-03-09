@@ -69,24 +69,58 @@ const AgentConfigModal = ({
     }));
   };
 
-  const handleBusinessRulesChange = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      businessRules: {
-        ...prev.businessRules!,
-        [field]: value
-      }
-    }));
+  const handleBusinessRulesChange = (field: string, value: string | string[]) => {
+    // Corrigindo para aceitar tanto string como array de strings
+    if (field === "rules") {
+      // Se for o campo "rules", garantimos que seja um array
+      const rulesArray = typeof value === 'string' 
+        ? value.split('\n').filter(r => r.trim()) 
+        : value;
+      
+      setFormData(prev => ({
+        ...prev,
+        businessRules: {
+          ...prev.businessRules!,
+          rules: rulesArray
+        }
+      }));
+    } else {
+      // Para outros campos como conversationStyle, mantemos como string
+      setFormData(prev => ({
+        ...prev,
+        businessRules: {
+          ...prev.businessRules!,
+          [field]: value
+        }
+      }));
+    }
   };
 
-  const handleExpertiseChange = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      expertise: {
-        ...prev.expertise!,
-        [field]: value
-      }
-    }));
+  const handleExpertiseChange = (field: string, value: string | string[]) => {
+    // Corrigindo para aceitar tanto string como array de strings
+    if (field === "knowledge" || field === "skills") {
+      // Se for campos que devem ser arrays, garantimos o formato correto
+      const itemsArray = typeof value === 'string' 
+        ? value.split('\n').filter(item => item.trim()) 
+        : value;
+      
+      setFormData(prev => ({
+        ...prev,
+        expertise: {
+          ...prev.expertise!,
+          [field]: itemsArray
+        }
+      }));
+    } else {
+      // Para outros campos, mantemos como string
+      setFormData(prev => ({
+        ...prev,
+        expertise: {
+          ...prev.expertise!,
+          [field]: value
+        }
+      }));
+    }
   };
 
   const handleToolsChange = (value: string) => {
@@ -244,7 +278,7 @@ const AgentConfigModal = ({
                 <Textarea 
                   id="rules"
                   value={formData.businessRules?.rules?.join('\n') || ""}
-                  onChange={(e) => handleBusinessRulesChange("rules", e.target.value.split('\n'))}
+                  onChange={(e) => handleBusinessRulesChange("rules", e.target.value)}
                   placeholder="Uma regra por linha"
                   rows={3}
                 />
@@ -265,7 +299,7 @@ const AgentConfigModal = ({
                 <Textarea 
                   id="knowledge"
                   value={formData.expertise?.knowledge?.join('\n') || ""}
-                  onChange={(e) => handleExpertiseChange("knowledge", e.target.value.split('\n'))}
+                  onChange={(e) => handleExpertiseChange("knowledge", e.target.value)}
                   placeholder="Um conhecimento por linha"
                   rows={3}
                 />
@@ -276,7 +310,7 @@ const AgentConfigModal = ({
                 <Textarea 
                   id="skills"
                   value={formData.expertise?.skills?.join('\n') || ""}
-                  onChange={(e) => handleExpertiseChange("skills", e.target.value.split('\n'))}
+                  onChange={(e) => handleExpertiseChange("skills", e.target.value)}
                   placeholder="Uma habilidade por linha"
                   rows={3}
                 />
