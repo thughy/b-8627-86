@@ -1,12 +1,12 @@
 
 import React from "react";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogFooter, 
-  DialogHeader, 
-  DialogTitle 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Agent } from "@/pages/Workflows/models/WorkflowModels";
@@ -16,42 +16,54 @@ import { useAgentConfigModal } from "@/pages/Settings/hooks/useAgentConfigModal"
 interface AgentConfigModalProps {
   isOpen: boolean;
   onClose: () => void;
-  agent?: Agent;
-  onSave: (agent: Partial<Agent>) => void;
+  onSave: (agent: Agent) => void;
+  onDelete: (agentId: string) => void;
+  agent: Agent | null;
 }
 
-const AgentConfigModal = ({ 
-  isOpen, 
-  onClose, 
-  agent, 
-  onSave 
-}: AgentConfigModalProps) => {
+const AgentConfigModal: React.FC<AgentConfigModalProps> = ({
+  isOpen,
+  onClose,
+  onSave,
+  onDelete,
+  agent
+}) => {
   const {
+    formData,
     activeTab,
     setActiveTab,
-    departments,
-    pipelines,
-    stages,
-    formData,
     handleProfileChange,
     handleWorkEnvironmentChange,
     handleBusinessRulesChange,
     handleExpertiseChange,
-    handleRagDocumentsChange,
-    handleToolToggle,
-    handleLLMModelChange,
+    handleRagChange,
+    handleToolsChange,
     handleStatusChange,
-    handleSubmit
-  } = useAgentConfigModal(agent, onSave);
+    handleSubmit,
+    isEditMode
+  } = useAgentConfigModal({
+    agent,
+    onSave,
+    onClose
+  });
+
+  const handleDelete = () => {
+    if (agent?.id) {
+      onDelete(agent.id);
+      onClose();
+    }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{agent ? "Editar Agente" : "Novo Agente"}</DialogTitle>
+          <DialogTitle>
+            {agent ? "Editar Agente" : "Novo Agente"}
+          </DialogTitle>
           <DialogDescription>
-            {agent 
-              ? "Edite as informações do agente existente." 
+            {agent
+              ? "Atualize as configurações do agente de IA."
               : "Configure um novo agente de IA para seu workflow."}
           </DialogDescription>
         </DialogHeader>
@@ -60,22 +72,30 @@ const AgentConfigModal = ({
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           formData={formData}
-          departments={departments}
-          pipelines={pipelines}
-          stages={stages}
-          handleProfileChange={handleProfileChange}
-          handleWorkEnvironmentChange={handleWorkEnvironmentChange}
-          handleBusinessRulesChange={handleBusinessRulesChange}
-          handleExpertiseChange={handleExpertiseChange}
-          handleRagDocumentsChange={handleRagDocumentsChange}
-          handleToolToggle={handleToolToggle}
-          handleLLMModelChange={handleLLMModelChange}
-          handleStatusChange={handleStatusChange}
+          onProfileChange={handleProfileChange}
+          onWorkEnvironmentChange={handleWorkEnvironmentChange}
+          onBusinessRulesChange={handleBusinessRulesChange}
+          onExpertiseChange={handleExpertiseChange}
+          onRagChange={handleRagChange}
+          onToolsChange={handleToolsChange}
+          onStatusChange={handleStatusChange}
         />
 
         <DialogFooter className="flex space-x-2 justify-end">
-          <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button onClick={handleSubmit}>Salvar</Button>
+          <Button variant="outline" onClick={onClose}>
+            Cancelar
+          </Button>
+          {agent && (
+            <Button 
+              variant="destructive" 
+              onClick={handleDelete}
+            >
+              Excluir
+            </Button>
+          )}
+          <Button onClick={handleSubmit}>
+            Salvar
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { File } from "@/pages/Files/models/FileModel";
 import FileListItem from "./FileListItem";
@@ -11,6 +10,7 @@ import {
   PaginationPrevious,
   PaginationEllipsis
 } from "@/components/ui/pagination";
+import { getPageRange } from "@/lib/utils";
 
 interface FileListProps {
   files: File[];
@@ -18,6 +18,7 @@ interface FileListProps {
   onDeleteFile: (fileId: string) => void;
   currentPage: number;
   totalPages: number;
+  totalItems: number;
   onPageChange: (page: number) => void;
   itemsPerPage: number;
 }
@@ -28,6 +29,7 @@ const FileList: React.FC<FileListProps> = ({
   onDeleteFile,
   currentPage,
   totalPages,
+  totalItems,
   onPageChange,
   itemsPerPage
 }) => {
@@ -113,9 +115,9 @@ const FileList: React.FC<FileListProps> = ({
   return (
     <div className="border rounded-md">
       <div className="grid grid-cols-5 gap-4 p-4 font-medium border-b">
-        <div className="col-span-2">Nome do arquivo</div>
-        <div className="col-span-1">Pasta / Localização</div>
-        <div className="col-span-1">Tamanho / Data</div>
+        <div className="col-span-2">Nome do Arquivo</div>
+        <div className="col-span-1">Tipo</div>
+        <div className="col-span-1">Pasta</div>
         <div className="col-span-1 text-right">Ações</div>
       </div>
 
@@ -170,7 +172,7 @@ const FileList: React.FC<FileListProps> = ({
             </PaginationContent>
           </Pagination>
           <div className="text-center text-sm text-muted-foreground mt-2">
-            Mostrando {files.length} de {Math.min(totalItems, itemsPerPage * currentPage)} resultados
+            Mostrando {files.length} de {totalItems} resultados
           </div>
         </div>
       )}

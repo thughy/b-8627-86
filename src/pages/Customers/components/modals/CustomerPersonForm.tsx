@@ -1,18 +1,20 @@
 
 import React from "react";
-import { Customer } from "@/pages/Workflows/models/CustomerModel";
+import { Customer, Person } from "@/pages/Workflows/models/CustomerModel";
 import FormField from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface CustomerPersonFormProps {
-  formData: Partial<Customer>;
-  onChange: (field: keyof Customer, value: any) => void;
+  formData: Partial<Person>;
+  onChange: (field: keyof Person, value: any) => void;
+  organizations?: { id: string; name: string }[];
 }
 
 const CustomerPersonForm: React.FC<CustomerPersonFormProps> = ({
   formData,
-  onChange
+  onChange,
+  organizations = []
 }) => {
   return (
     <div className="space-y-4">
@@ -53,6 +55,34 @@ const CustomerPersonForm: React.FC<CustomerPersonFormProps> = ({
           onChange={(e) => onChange("cpfCnpj", e.target.value)}
           placeholder="000.000.000-00"
         />
+      </FormField>
+
+      <FormField id="organizationId" label="Organização">
+        <Select
+          value={formData.organizationId || ""}
+          onValueChange={(value) => {
+            onChange("organizationId", value);
+            // Find the organization name if an ID is selected
+            if (value) {
+              const org = organizations.find(o => o.id === value);
+              if (org) {
+                onChange("organizationName", org.name);
+              }
+            } else {
+              onChange("organizationName", "");
+            }
+          }}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Selecione uma organização (opcional)" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">Sem organização</SelectItem>
+            {organizations.map(org => (
+              <SelectItem key={org.id} value={org.id}>{org.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </FormField>
 
       <FormField id="address" label="Endereço">

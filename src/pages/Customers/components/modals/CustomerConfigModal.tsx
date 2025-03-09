@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -10,9 +10,10 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Customer } from "@/pages/Workflows/models/CustomerModel";
+import { Customer, Person, Organization } from "@/pages/Workflows/models/CustomerModel";
 import CustomerPersonForm from "./CustomerPersonForm";
 import CustomerOrganizationForm from "./CustomerOrganizationForm";
+import { filterCustomers } from "@/pages/Customers/services/customerService";
 
 interface CustomerConfigModalProps {
   isOpen: boolean;
@@ -32,7 +33,7 @@ const CustomerConfigModal: React.FC<CustomerConfigModalProps> = ({
   const [activeTab, setActiveTab] = useState<"person" | "organization">(
     customer?.type || "person"
   );
-  const [formData, setFormData] = useState<Partial<Customer>>(
+  const [formData, setFormData] = useState<Partial<Person | Organization>>(
     customer || {
       name: "",
       type: "person",
@@ -41,18 +42,43 @@ const CustomerConfigModal: React.FC<CustomerConfigModalProps> = ({
       status: "active"
     }
   );
+  const [organizations, setOrganizations] = useState<{id: string, name: string}[]>([]);
 
-  const handleChange = (field: keyof Customer, value: any) => {
+  useEffect(() => {
+    // Load organizations for the dropdown in person form
+    if (activeTab === "person") {
+      const result = filterCustomers({ type: "organization" });
+      const orgList = result.customers
+        .filter(c => c.type === "organization")
+        .map(org => ({ id: org.id, name: org.name }));
+      setOrganizations(orgList);
+    }
+  }, [activeTab]);
+
+  const handleChange = (field: keyof (Person | Organization), value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleTypeChange = (type: "person" | "organization") => {
     setActiveTab(type);
-    setFormData(prev => ({ ...prev, type }));
+    // Reset the form when changing types
+    setFormData({
+      ...customer,
+      type,
+      name: customer?.name || "",
+      email: customer?.email || "",
+      phone: customer?.phone || "",
+      status: customer?.status || "active"
+    });
   };
 
   const handleSubmit = () => {
-    onSave(formData as Customer);
+    const updatedCustomer = {
+      ...formData,
+      type: activeTab,
+    } as Customer;
+    
+    onSave(updatedCustomer);
     onClose();
   };
 
@@ -89,14 +115,15 @@ const CustomerConfigModal: React.FC<CustomerConfigModalProps> = ({
 
           <TabsContent value="person" className="space-y-4 mt-4">
             <CustomerPersonForm 
-              formData={formData} 
+              formData={formData as Partial<Person>} 
               onChange={handleChange}
+              organizations={organizations}
             />
           </TabsContent>
 
           <TabsContent value="organization" className="space-y-4 mt-4">
             <CustomerOrganizationForm 
-              formData={formData} 
+              formData={formData as Partial<Organization>} 
               onChange={handleChange}
             />
           </TabsContent>

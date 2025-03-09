@@ -1,13 +1,13 @@
 
 import React from "react";
-import { Customer } from "@/pages/Workflows/models/CustomerModel";
+import { Organization } from "@/pages/Workflows/models/CustomerModel";
 import FormField from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface CustomerOrganizationFormProps {
-  formData: Partial<Customer>;
-  onChange: (field: keyof Customer, value: any) => void;
+  formData: Partial<Organization>;
+  onChange: (field: keyof Organization, value: any) => void;
 }
 
 const CustomerOrganizationForm: React.FC<CustomerOrganizationFormProps> = ({
@@ -25,11 +25,11 @@ const CustomerOrganizationForm: React.FC<CustomerOrganizationFormProps> = ({
         />
       </FormField>
 
-      <FormField id="organization" label="Nome Fantasia">
+      <FormField id="tradingName" label="Nome Fantasia">
         <Input
-          id="organization"
-          value={formData.organization || ""}
-          onChange={(e) => onChange("organization", e.target.value)}
+          id="tradingName"
+          value={formData.tradingName || ""}
+          onChange={(e) => onChange("tradingName", e.target.value)}
           placeholder="Digite o nome fantasia"
         />
       </FormField>
@@ -55,12 +55,12 @@ const CustomerOrganizationForm: React.FC<CustomerOrganizationFormProps> = ({
         </FormField>
       </div>
 
-      <FormField id="cpfCnpj" label="CNPJ">
+      <FormField id="cnpj" label="CNPJ">
         <Input
-          id="cpfCnpj"
-          value={formData.cpfCnpj || ""}
-          onChange={(e) => onChange("cpfCnpj", e.target.value)}
-          placeholder="00.000.000/0000-00"
+          id="cnpj"
+          value={formData.cnpj || ""}
+          onChange={(e) => onChange("cnpj", e.target.value)}
+          placeholder="00.000.000/0001-00"
         />
       </FormField>
 

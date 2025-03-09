@@ -1,131 +1,156 @@
 
 import { useState, useEffect } from "react";
 import { Agent } from "@/pages/Workflows/models/WorkflowModels";
-import { getStages, getPipelines, getDepartments } from "@/pages/Settings/services/workflowDataService";
 
-export const useAgentConfigModal = (
-  onSave: (agent: Partial<Agent>) => void,
-  agent?: Agent
-) => {
-  const [activeTab, setActiveTab] = useState("profile");
-  const [departments, setDepartments] = useState([]);
-  const [pipelines, setPipelines] = useState([]);
-  const [stages, setStages] = useState([]);
+interface UseAgentConfigModalProps {
+  agent: Agent | null;
+  onSave: (agent: Agent) => void;
+  onClose: () => void;
+}
+
+export const useAgentConfigModal = ({ 
+  agent, 
+  onSave, 
+  onClose 
+}: UseAgentConfigModalProps) => {
   const [formData, setFormData] = useState<Partial<Agent>>(
     agent || {
       profile: {
-        name: "",
-        role: "",
-        goal: ""
+        agentName: "",
+        agentRole: "",
+        agentGoal: ""
       },
-      workEnvironment: {},
-      businessRules: {},
-      expertise: {},
-      ragDocuments: [],
-      tools: [],
-      llmModel: "gpt-4o",
+      workEnvironment: {
+        workflowTitle: "",
+        workflowDescription: "",
+        departmentTitle: "",
+        departmentDescription: "",
+        stageTitle: "",
+        stageDescription: ""
+      },
+      businessRules: {
+        rules: [],
+        restrictions: [],
+        conversationStyle: "professional"
+      },
+      expertise: {
+        knowledge: [],
+        skills: [],
+        examples: [],
+        tasks: []
+      },
+      rag: {
+        documents: []
+      },
+      tools: {
+        vision: false,
+        voice: false,
+        call: false,
+        meeting: false,
+        calendar: false,
+        email: false,
+        pdf: false,
+        chat: false,
+        search: false
+      },
       status: "active"
     }
   );
 
+  const [activeTab, setActiveTab] = useState("profile");
+
   useEffect(() => {
-    setDepartments(getDepartments());
-    setPipelines(getPipelines());
-    setStages(getStages());
-  }, []);
-
-  const handleProfileChange = (key: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      profile: {
-        ...prev.profile,
-        [key]: value
-      }
-    }));
-  };
-
-  const handleWorkEnvironmentChange = (key: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      workEnvironment: {
-        ...prev.workEnvironment,
-        [key]: value
-      }
-    }));
-  };
-
-  const handleBusinessRulesChange = (key: string, value: string | string[]) => {
-    setFormData((prev) => ({
-      ...prev,
-      businessRules: {
-        ...prev.businessRules,
-        [key]: value
-      }
-    }));
-  };
-
-  const handleExpertiseChange = (key: string, value: string | string[]) => {
-    setFormData((prev) => ({
-      ...prev,
-      expertise: {
-        ...prev.expertise,
-        [key]: value
-      }
-    }));
-  };
-
-  const handleRagDocumentsChange = (documents: string[]) => {
-    setFormData((prev) => ({
-      ...prev,
-      ragDocuments: documents
-    }));
-  };
-
-  const handleToolToggle = (tool: string, enabled: boolean) => {
-    setFormData((prev) => {
-      const currentTools = prev.tools || [];
-      if (enabled && !currentTools.includes(tool)) {
-        return { ...prev, tools: [...currentTools, tool] };
-      } else if (!enabled && currentTools.includes(tool)) {
-        return { ...prev, tools: currentTools.filter((t) => t !== tool) };
-      }
-      return prev;
-    });
-  };
-
-  const handleLLMModelChange = (model: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      llmModel: model
-    }));
-  };
-
-  const handleStatusChange = (status: "active" | "paused" | "blocked") => {
-    setFormData((prev) => ({
-      ...prev,
-      status
-    }));
-  };
+    if (agent) {
+      setFormData(agent);
+    }
+  }, [agent]);
 
   const handleSubmit = () => {
-    onSave(formData);
+    onSave(formData as Agent);
+    onClose();
+  };
+
+  const handleChange = <K extends keyof Agent>(section: K, value: Agent[K]) => {
+    setFormData(prev => ({ ...prev, [section]: value }));
+  };
+
+  const handleProfileChange = (field: keyof Agent['profile'], value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      profile: {
+        ...(prev.profile || {}),
+        [field]: value
+      }
+    }));
+  };
+
+  const handleWorkEnvironmentChange = (field: keyof Agent['workEnvironment'], value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      workEnvironment: {
+        ...(prev.workEnvironment || {}),
+        [field]: value
+      }
+    }));
+  };
+
+  const handleBusinessRulesChange = (field: keyof Agent['businessRules'], value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      businessRules: {
+        ...(prev.businessRules || {}),
+        [field]: value
+      }
+    }));
+  };
+
+  const handleExpertiseChange = (field: keyof Agent['expertise'], value: string[]) => {
+    setFormData(prev => ({
+      ...prev,
+      expertise: {
+        ...(prev.expertise || {}),
+        [field]: value
+      }
+    }));
+  };
+
+  const handleRagChange = (documents: string[]) => {
+    setFormData(prev => ({
+      ...prev,
+      rag: {
+        ...(prev.rag || {}),
+        documents
+      }
+    }));
+  };
+
+  const handleToolsChange = (tool: keyof Agent['tools'], enabled: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      tools: {
+        ...(prev.tools || {}),
+        [tool]: enabled
+      }
+    }));
+  };
+
+  const handleStatusChange = (status: Agent['status']) => {
+    setFormData(prev => ({ ...prev, status }));
   };
 
   return {
+    formData,
     activeTab,
     setActiveTab,
-    departments,
-    pipelines,
-    stages,
-    formData,
+    handleChange,
     handleProfileChange,
     handleWorkEnvironmentChange,
     handleBusinessRulesChange,
     handleExpertiseChange,
-    handleRagDocumentsChange,
-    handleToolToggle,
-    handleLLMModelChange,
+    handleRagChange,
+    handleToolsChange,
     handleStatusChange,
-    handleSubmit
+    handleSubmit,
+    isEditMode: !!agent
   };
 };

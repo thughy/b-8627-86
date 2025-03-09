@@ -1,10 +1,9 @@
 
 import React from "react";
-import { Customer } from "@/pages/Workflows/models/CustomerModel";
+import { Customer, Person, Organization } from "@/pages/Workflows/models/CustomerModel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, UserCircle, Building } from "lucide-react";
-import { formatDate } from "@/lib/utils";
 
 interface CustomerListItemProps {
   customer: Customer;
@@ -17,12 +16,16 @@ const CustomerListItem: React.FC<CustomerListItemProps> = ({
   onEdit,
   onDelete
 }) => {
+  const isPerson = customer.type === "person";
+  const person = customer as Person;
+  const organization = customer as Organization;
+
   return (
     <div className="grid grid-cols-5 gap-4 p-4 items-center">
       <div className="col-span-2">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
-            {customer.type === "person" ? (
+            {isPerson ? (
               <UserCircle className="h-5 w-5 text-primary" />
             ) : (
               <Building className="h-5 w-5 text-primary" />
@@ -31,9 +34,9 @@ const CustomerListItem: React.FC<CustomerListItemProps> = ({
           <div className="flex flex-col">
             <span className="font-medium">{customer.name}</span>
             <span className="text-xs text-muted-foreground">
-              {customer.type === "organization" 
-                ? customer.organization || "Organização" 
-                : customer.cpfCnpj || "Sem CPF/CNPJ"}
+              {isPerson
+                ? person.organizationName || (person.cpfCnpj ? `CPF: ${person.cpfCnpj}` : "Sem vinculação")
+                : organization.tradingName || (organization.cnpj ? `CNPJ: ${organization.cnpj}` : "Sem CNPJ")}
             </span>
           </div>
         </div>
