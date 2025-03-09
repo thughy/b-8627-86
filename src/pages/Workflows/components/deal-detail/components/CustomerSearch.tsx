@@ -1,11 +1,11 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Check, ChevronsUpDown, User, Building } from 'lucide-react';
-import { Customer } from '@/pages/Workflows/models/CustomerModel';
+import { Customer, Person, Organization } from '@/pages/Workflows/models/CustomerModel';
 import { filterCustomers } from '@/pages/Customers/services/customerService';
 import { cn } from '@/lib/utils';
 
@@ -83,9 +83,9 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ value, onChange }) => {
                         <Building className="mr-2 h-4 w-4" />
                       )}
                       <span>{customer.name}</span>
-                      {customer.type === 'person' && customer.organizationName && (
+                      {customer.type === 'person' && (
                         <span className="ml-2 text-xs text-muted-foreground">
-                          ({customer.organizationName})
+                          {(customer as Person).organization && `(${(customer as Person).organization})`}
                         </span>
                       )}
                     </div>
