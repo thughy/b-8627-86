@@ -8,13 +8,12 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { formatDistanceToNow } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { Edit, Trash, X, User, Calendar, DollarSign, Hash, MessageCircle, FileText, CheckSquare } from 'lucide-react';
+import { Edit, Trash, X } from 'lucide-react';
 import DealParametersTab from './deal-detail/DealParametersTab';
 import DealWorkspaceTab from './deal-detail/DealWorkspaceTab';
+import DealStatusBadge from './deal-detail/DealStatusBadge';
+import DealSummaryCards from './deal-detail/DealSummaryCards';
+import DealCounters from './deal-detail/DealCounters';
 
 interface DealCardModalProps {
   isOpen: boolean;
@@ -36,36 +35,6 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
   onCreateAsset
 }) => {
   if (!deal) return null;
-
-  const getStatusColor = (status: Deal['status']) => {
-    switch (status) {
-      case 'open':
-        return 'bg-blue-500/10 text-blue-500';
-      case 'won':
-        return 'bg-green-500/10 text-green-500';
-      case 'lost':
-        return 'bg-red-500/10 text-red-500';
-      case 'completed':
-        return 'bg-purple-500/10 text-purple-500';
-      default:
-        return 'bg-gray-500/10 text-gray-500';
-    }
-  };
-
-  const getStatusText = (status: Deal['status']) => {
-    switch (status) {
-      case 'open':
-        return 'Em aberto';
-      case 'won':
-        return 'Ganho';
-      case 'lost':
-        return 'Perdido';
-      case 'completed':
-        return 'Concluído';
-      default:
-        return status;
-    }
-  };
 
   // Exemplo de contadores (em um cenário real, viriam da API)
   const counters = {
@@ -108,94 +77,8 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
 
         {/* Informações Resumidas */}
         <div className="px-6 py-2">
-          <div className="flex flex-wrap gap-4 mb-4">
-            <Card className="bg-muted/50 flex-1 min-w-[200px]">
-              <CardContent className="p-3 flex items-center gap-3">
-                <div className="bg-primary/10 p-2 rounded-full">
-                  <User className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Cliente</p>
-                  <p className="font-medium">
-                    {deal.customerName || "Não definido"}
-                    {deal.customerOrganization && (
-                      <span className="ml-1 text-sm text-muted-foreground">
-                        ({deal.customerOrganization})
-                      </span>
-                    )}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-muted/50 flex-1 min-w-[200px]">
-              <CardContent className="p-3 flex items-center gap-3">
-                <div className="bg-primary/10 p-2 rounded-full">
-                  <DollarSign className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Valor</p>
-                  <p className="font-medium">
-                    {deal.amount
-                      ? new Intl.NumberFormat('pt-BR', {
-                          style: 'currency',
-                          currency: 'BRL'
-                        }).format(deal.amount)
-                      : "Não definido"}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-muted/50 flex-1 min-w-[200px]">
-              <CardContent className="p-3 flex items-center gap-3">
-                <div className="bg-primary/10 p-2 rounded-full">
-                  <Calendar className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Criado</p>
-                  <p className="font-medium">
-                    {deal.startDate
-                      ? formatDistanceToNow(deal.startDate, { addSuffix: true, locale: ptBR })
-                      : "Não definido"}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-muted/50 flex-1 min-w-[200px]">
-              <CardContent className="p-3 flex items-center gap-3">
-                <div className="bg-primary/10 p-2 rounded-full">
-                  <Hash className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Status</p>
-                  <Badge variant="outline" className={`${getStatusColor(deal.status)}`}>
-                    {getStatusText(deal.status)}
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Contadores */}
-          <div className="flex flex-wrap gap-2 mb-4">
-            <div className="flex items-center gap-1 text-sm">
-              <MessageCircle className="h-4 w-4 text-muted-foreground" />
-              <span className="text-muted-foreground">Mensagens:</span>
-              <span className="font-medium">{counters.chat}</span>
-            </div>
-            <div className="flex items-center gap-1 text-sm">
-              <FileText className="h-4 w-4 text-muted-foreground" />
-              <span className="text-muted-foreground">Ativos:</span>
-              <span className="font-medium">{counters.assets}</span>
-            </div>
-            <div className="flex items-center gap-1 text-sm">
-              <CheckSquare className="h-4 w-4 text-muted-foreground" />
-              <span className="text-muted-foreground">Tarefas:</span>
-              <span className="font-medium">{counters.tasks}</span>
-            </div>
-          </div>
+          <DealSummaryCards deal={deal} />
+          <DealCounters counters={counters} />
         </div>
 
         {/* Conteúdo principal em colunas */}
