@@ -59,6 +59,12 @@ export interface Asset {
   endDate?: Date;
   files?: string[];
   parameters?: Record<string, any>;
+  workEnvironment?: {
+    workflowTitle?: string;
+    workflowDescription?: string;
+    departmentTitle?: string;
+    stageTitle?: string;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
