@@ -1,11 +1,12 @@
 
 import React, { useState } from "react";
 import { Agent } from "@/pages/Workflows/models/WorkflowModels";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { getAgents } from "@/pages/Settings/services/settingsService";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import AgentConfigModal from "../AgentConfigModal";
+import { Input } from "@/components/ui/input";
+import { Pencil, Trash2 } from "lucide-react";
+import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { getStages } from "@/pages/Settings/services/workflowDataService";
 
 interface AgentListProps {
   stageId: string;
@@ -28,95 +29,81 @@ const AgentList = ({
   newAgent,
   setNewAgent
 }: AgentListProps) => {
-  const [allAgents] = useState<Agent[]>(getAgents());
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const stageAgents = agents.filter(a => a.stageId === stageId);
+  const allStages = getStages();
   
-  // Filter existing agents by stage
-  const stageAgentIds = agents
-    .filter(a => a.stageId === stageId)
-    .map(a => a.id);
-  
-  // Get the current agent for this stage (should be only one)
-  const currentStageAgent = agents.find(a => a.stageId === stageId);
-  
-  // Filter available agents (not already assigned to this stage)
-  const availableAgents = allAgents.filter(agent => 
-    !stageAgentIds.includes(agent.id)
-  );
-  
-  // Combined list for dropdown (current agent + available agents)
-  const dropdownAgents = [
-    ...(currentStageAgent ? [currentStageAgent] : []),
-    ...availableAgents
-  ];
-
-  const handleAgentChange = (agentId: string) => {
-    // If we already have an agent assigned to this stage, remove it
-    if (currentStageAgent) {
-      handleDeleteAgent(currentStageAgent.id);
-    }
-    
-    // Find the new agent and set it as selected
-    const newAgent = allAgents.find(agent => agent.id === agentId);
-    if (newAgent) {
-      setSelectedAgent(newAgent);
-    }
-  };
-
-  const handleOpenAddModal = () => {
-    // Initialize the new agent with the current stage
-    setNewAgent({
-      ...newAgent,
-      stageId: stageId,
-      workEnvironment: {
-        ...newAgent.workEnvironment,
-        stageTitle: stages.find(s => s.id === stageId)?.title
-      }
-    });
-    setIsModalOpen(true);
-  };
-
-  const handleSaveAgent = (agentData: Partial<Agent>) => {
-    setNewAgent(agentData);
-    handleAddAgent(stageId);
-    setIsModalOpen(false);
-  };
-
   return (
-    <div>
-      <div className="flex space-x-2 items-center">
-        <Select 
-          value={currentStageAgent?.id || ""} 
-          onValueChange={handleAgentChange}
+    <div className="space-y-4">
+      <div className="flex items-center space-x-2">
+        <Input
+          value={newAgent.profile?.name || ""}
+          onChange={(e) => setNewAgent(prev => ({
+            ...prev,
+            profile: {
+              ...prev.profile!,
+              name: e.target.value
+            }
+          }))}
+          placeholder="Nome do novo agente"
           className="flex-1"
+        />
+        <Button 
+          onClick={() => handleAddAgent(stageId)}
+          size="sm"
         >
-          <SelectTrigger>
-            <SelectValue placeholder="Selecionar agente" />
-          </SelectTrigger>
-          <SelectContent>
-            {dropdownAgents.length > 0 ? (
-              dropdownAgents.map(agent => (
-                <SelectItem key={agent.id} value={agent.id}>
-                  {agent.profile.name} - {agent.profile.role}
-                </SelectItem>
-              ))
-            ) : (
-              <SelectItem value="none" disabled>
-                Nenhum agente disponível
-              </SelectItem>
-            )}
-          </SelectContent>
-        </Select>
-        <Button size="sm" onClick={handleOpenAddModal}>
-          <Plus className="h-4 w-4" />
+          Adicionar
         </Button>
       </div>
-
-      <AgentConfigModal 
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={handleSaveAgent}
-      />
+      
+      {stageAgents.length > 0 ? (
+        <div className="border rounded-md overflow-hidden">
+          <div className="divide-y">
+            {stageAgents.map(agent => (
+              <div
+                key={agent.id}
+                className={`flex items-center justify-between p-3 cursor-pointer hover:bg-muted ${
+                  selectedAgent?.id === agent.id ? "bg-primary/5" : ""
+                }`}
+                onClick={() => setSelectedAgent(agent)}
+              >
+                <div className="flex items-center space-x-3">
+                  <div className={`h-2 w-2 rounded-full ${
+                    agent.status === 'active' ? 'bg-green-500' :
+                    agent.status === 'paused' ? 'bg-yellow-500' : 'bg-red-500'
+                  }`} />
+                  <span>{agent.profile.name}</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    className="h-8 w-8"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteAgent(agent.id);
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="text-center p-4 border rounded-md text-muted-foreground">
+          Nenhum agente adicionado a este estágio
+        </div>
+      )}
     </div>
   );
 };
