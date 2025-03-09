@@ -6,6 +6,8 @@ import { Plus } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DropResult } from "react-beautiful-dnd";
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 interface KanbanBoardProps {
   stages: Stage[];
@@ -14,6 +16,7 @@ interface KanbanBoardProps {
   deals: Deal[];
   onDragEnd: (result: DropResult) => void;
   onDealClick: (deal: Deal) => void;
+  getChatPreview?: (dealId: string) => any[];
 }
 
 const KanbanBoard = ({ 
@@ -22,13 +25,27 @@ const KanbanBoard = ({
   deals, 
   onDragEnd, 
   onDealClick,
-  onAction 
+  onAction,
+  getChatPreview 
 }: KanbanBoardProps) => {
   // Ordenar estágios pela ordem
   const sortedStages = [...stages].sort((a, b) => a.order - b.order);
   
   const getDealsByStage = (stageId: string) => {
     return deals.filter(deal => deal.stageId === stageId);
+  };
+
+  const formatCurrency = (amount?: number) => {
+    if (!amount) return "Não definido";
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(amount);
+  };
+
+  const formatDate = (date?: Date) => {
+    if (!date) return "Não definido";
+    return formatDistanceToNow(date, { addSuffix: true, locale: ptBR });
   };
 
   return (
@@ -48,27 +65,81 @@ const KanbanBoard = ({
                 
                 <div className="space-y-3 flex-1 min-h-[200px] rounded-md p-2">
                   {stageDeals.length > 0 ? (
-                    stageDeals.map((deal) => (
-                      <Card 
-                        key={deal.id} 
-                        className="cursor-pointer hover:shadow-md transition-shadow"
-                        onClick={() => onDealClick(deal)}
-                      >
-                        <CardContent className="p-3">
-                          <div className="flex items-center justify-between">
-                            <h4 className="font-medium text-sm">{deal.title}</h4>
-                            <Badge variant="outline" className="text-xs">
-                              {deal.status}
-                            </Badge>
-                          </div>
-                          {deal.description && (
-                            <p className="text-xs text-muted-foreground mt-1.5 line-clamp-2">
-                              {deal.description}
-                            </p>
-                          )}
-                        </CardContent>
-                      </Card>
-                    ))
+                    stageDeals.map((deal) => {
+                      const chatPreview = getChatPreview ? getChatPreview(deal.id) : [];
+                      return (
+                        <Card 
+                          key={deal.id} 
+                          className="cursor-pointer hover:shadow-md transition-shadow"
+                          onClick={() => onDealClick(deal)}
+                        >
+                          <CardContent className="p-3">
+                            <div className="flex items-center justify-between">
+                              <h4 className="font-medium text-sm">{deal.title}</h4>
+                              <Badge variant="outline" className="text-xs">
+                                {deal.type || "Não definido"}
+                              </Badge>
+                            </div>
+                            
+                            {/* Customer info */}
+                            {deal.customerName && (
+                              <div className="mt-2 text-xs">
+                                <span className="text-muted-foreground">Cliente: </span>
+                                <span>{deal.customerName}</span>
+                                {deal.customerOrganization && (
+                                  <span className="text-muted-foreground ml-1">
+                                    ({deal.customerOrganization})
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                            
+                            {/* Deal amount */}
+                            <div className="mt-1 text-xs">
+                              <span className="text-muted-foreground">Valor: </span>
+                              <span>{formatCurrency(deal.amount)}</span>
+                            </div>
+                            
+                            {/* Dates */}
+                            <div className="mt-1 text-xs">
+                              <span className="text-muted-foreground">Criado: </span>
+                              <span>{formatDate(deal.startDate)}</span>
+                            </div>
+
+                            {/* Status or reason for loss */}
+                            <div className="mt-1 text-xs">
+                              <span className="text-muted-foreground">Status: </span>
+                              <Badge variant={
+                                deal.status === 'won' ? "success" : 
+                                deal.status === 'lost' ? "destructive" : 
+                                "outline"
+                              } className="text-xs">
+                                {deal.status === 'won' ? 'Ganho' : 
+                                 deal.status === 'lost' ? 'Perdido' : 'Aberto'}
+                              </Badge>
+                              {deal.status === 'lost' && deal.reasonForLoss && (
+                                <span className="ml-1 text-xs text-muted-foreground">
+                                  ({deal.reasonForLoss})
+                                </span>
+                              )}
+                            </div>
+                            
+                            {/* Chat preview */}
+                            {chatPreview.length > 0 && (
+                              <div className="mt-2 border-t pt-2">
+                                <div className="text-xs font-medium mb-1">Últimas mensagens:</div>
+                                {chatPreview.map((msg, idx) => (
+                                  <div key={idx} className="text-xs text-muted-foreground truncate">
+                                    <span className="font-medium">{msg.sender === 'user' ? 'Você' : 'Agente'}: </span>
+                                    {msg.text}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      );
+                    })
                   ) : (
                     <div className="flex items-center justify-center h-full">
                       <p className="text-sm text-muted-foreground">Sem deals</p>

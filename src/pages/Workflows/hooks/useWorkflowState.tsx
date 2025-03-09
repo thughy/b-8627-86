@@ -33,7 +33,9 @@ export const useWorkflowState = () => {
     handleCreateEmail,
     handleEditDeal, 
     handleDeleteDeal: deleteAction, 
-    handleCancelDeal: cancelAction, 
+    handleCancelDeal: cancelAction,
+    handleWinDeal: winAction,
+    handleLoseDeal: loseAction, 
     handleCreateDeal,
     handleCloseDealModal,
     getChatPreview
@@ -68,6 +70,26 @@ export const useWorkflowState = () => {
     ));
   };
 
+  // Handle the actual win by updating the deal status
+  const handleWinDeal = (dealId: string) => {
+    const result = winAction(dealId);
+    setDeals(deals.map(deal => 
+      deal.id === result.dealId 
+        ? { ...deal, status: result.status as Deal['status'] } 
+        : deal
+    ));
+  };
+
+  // Handle the actual loss by updating the deal status
+  const handleLoseDeal = (dealId: string, reason?: string) => {
+    const result = loseAction(dealId, reason);
+    setDeals(deals.map(deal => 
+      deal.id === result.dealId 
+        ? { ...deal, status: result.status as Deal['status'], reasonForLoss: result.reasonForLoss } 
+        : deal
+    ));
+  };
+
   return {
     workflows,
     pipelines,
@@ -95,6 +117,8 @@ export const useWorkflowState = () => {
     handleEditDeal,
     handleDeleteDeal,
     handleCancelDeal,
+    handleWinDeal,
+    handleLoseDeal,
     handleDragEnd,
     handleCreateDeal,
     handleCloseDealModal,

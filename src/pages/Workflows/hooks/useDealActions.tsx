@@ -88,6 +88,28 @@ export const useDealActions = () => {
     return { dealId, status: 'lost', reasonForLoss: 'Cancelado pelo usuário' };
   };
 
+  const handleWinDeal = (dealId: string) => {
+    console.log('Marcando deal como ganho:', dealId);
+    
+    toast({
+      title: "Negócio ganho",
+      description: "O negócio foi marcado como ganho com sucesso.",
+    });
+    
+    return { dealId, status: 'won' };
+  };
+
+  const handleLoseDeal = (dealId: string, reason: string = 'Outro') => {
+    console.log('Marcando deal como perdido:', dealId, 'Motivo:', reason);
+    
+    toast({
+      title: "Negócio perdido",
+      description: "O negócio foi marcado como perdido com sucesso.",
+    });
+    
+    return { dealId, status: 'lost', reasonForLoss: reason };
+  };
+
   const handleCreateDeal = () => {
     toast({
       title: "Criar novo negócio",
@@ -123,6 +145,8 @@ export const useDealActions = () => {
     handleEditDeal,
     handleDeleteDeal,
     handleCancelDeal,
+    handleWinDeal,
+    handleLoseDeal,
     handleCreateDeal,
     handleCloseDealModal,
     getChatPreview

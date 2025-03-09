@@ -3,20 +3,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from "@/components/ui/input";
 import { Send } from 'lucide-react';
-
-// Updated Message type to match what's used in useChatMessages
-export interface Message {
-  id: string;
-  text: string;
-  content: string; 
-  sender: 'user' | 'agent' | 'system';
-  senderName?: string;
-  timestamp: Date;
-}
+import { ChatMessage } from '@/pages/Workflows/hooks/useChatMessages';
 
 interface ChatSectionProps {
   dealId: string;
-  messages: Message[];
+  messages: ChatMessage[];
   sendMessage?: (content: string) => void;
 }
 

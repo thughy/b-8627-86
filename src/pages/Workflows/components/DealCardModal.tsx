@@ -8,8 +8,14 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Edit, Trash, X } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
 import DealParametersTab from './deal-detail/DealParametersTab';
 import DealWorkspaceTab from './deal-detail/DealWorkspaceTab';
 import DealStatusBadge from './deal-detail/DealStatusBadge';
@@ -23,6 +29,8 @@ interface DealCardModalProps {
   onEditDeal?: (deal: Deal) => void;
   onDeleteDeal?: (dealId: string) => void;
   onCancelDeal?: (dealId: string) => void;
+  onWinDeal?: (dealId: string) => void;
+  onLoseDeal?: (dealId: string, reason?: string) => void;
   onCreateAsset?: (dealId: string, asset?: Partial<Asset>) => void;
   onCreateTask?: (dealId: string) => void;
   onCreateNote?: (dealId: string) => void;
@@ -37,6 +45,8 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
   onEditDeal,
   onDeleteDeal,
   onCancelDeal,
+  onWinDeal,
+  onLoseDeal,
   onCreateAsset,
   onCreateTask,
   onCreateNote,
@@ -62,24 +72,39 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl font-bold">{deal.title}</DialogTitle>
             <div className="flex items-center gap-2">
-              {onEditDeal && (
-                <Button variant="ghost" size="sm" onClick={() => onEditDeal(deal)}>
-                  <Edit className="h-4 w-4 mr-1" />
-                  Editar
-                </Button>
-              )}
-              {onCancelDeal && deal.status === 'open' && (
-                <Button variant="ghost" size="sm" onClick={() => onCancelDeal(deal.id)}>
-                  <X className="h-4 w-4 mr-1" />
-                  Cancelar
-                </Button>
-              )}
-              {onDeleteDeal && (
-                <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-700" onClick={() => onDeleteDeal(deal.id)}>
-                  <Trash className="h-4 w-4 mr-1" />
-                  Excluir
-                </Button>
-              )}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm">
+                    <MoreHorizontal className="h-4 w-4" />
+                    Ações
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {deal.status === 'open' && onWinDeal && (
+                    <DropdownMenuItem onClick={() => onWinDeal(deal.id)}>
+                      Marcar como Ganho
+                    </DropdownMenuItem>
+                  )}
+                  {deal.status === 'open' && onLoseDeal && (
+                    <DropdownMenuItem onClick={() => onLoseDeal(deal.id)}>
+                      Marcar como Perdido
+                    </DropdownMenuItem>
+                  )}
+                  {deal.status === 'open' && onCancelDeal && (
+                    <DropdownMenuItem onClick={() => onCancelDeal(deal.id)}>
+                      Cancelar
+                    </DropdownMenuItem>
+                  )}
+                  {onDeleteDeal && (
+                    <DropdownMenuItem 
+                      className="text-red-500 focus:text-red-500" 
+                      onClick={() => onDeleteDeal(deal.id)}
+                    >
+                      Excluir
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </DialogHeader>
