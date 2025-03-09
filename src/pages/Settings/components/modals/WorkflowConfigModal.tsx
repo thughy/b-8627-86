@@ -107,7 +107,7 @@ const WorkflowConfigModal = ({
   const handleTabChange = (value: string) => {
     // This ensures we only set valid tab values
     if (value === 'workflow' || value === 'structure' || value === 'versions') {
-      setActiveTab(value);
+      setActiveTab(value as WorkflowTab);
     }
   };
 

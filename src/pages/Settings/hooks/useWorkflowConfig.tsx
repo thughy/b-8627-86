@@ -1,6 +1,4 @@
 
-import { useState, useEffect } from "react";
-import { useToast } from "@/hooks/use-toast";
 import { 
   Workflow, 
   Department, 
@@ -9,34 +7,25 @@ import {
   Agent, 
   Asset 
 } from "@/pages/Workflows/models/WorkflowModels";
-import { getDemoData } from "../components/modals/workflow/MockDataGenerator";
 import { useDepartmentLogic } from "./workflow/useDepartmentLogic";
 import { usePipelineLogic } from "./workflow/usePipelineLogic";
 import { useStageLogic } from "./workflow/useStageLogic";
 import { useAgentLogic } from "./workflow/useAgentLogic";
 import { useAssetLogic } from "./workflow/useAssetLogic";
-import { useWorkflowFormLogic } from "./workflow/useWorkflowFormLogic";
 import { useWorkflowTabs } from "./workflow/useWorkflowTabs";
 import { useWorkflowSelection } from "./workflow/useWorkflowSelection";
 import { useWorkflowStructure } from "./workflow/useWorkflowStructure";
+import { useWorkflowFormState } from "./workflow/useWorkflowFormState";
+import { useWorkflowDataInit } from "./workflow/useWorkflowDataInit";
 
 export const useWorkflowConfig = (
   isOpen: boolean,
   workflow?: Workflow
 ) => {
-  const { toast } = useToast();
-  
   // Use smaller hooks
   const { activeTab, setActiveTab } = useWorkflowTabs();
-  const { formData, setFormData, handleChange, handleStatusChange } = useWorkflowFormLogic(workflow);
+  const { formData, setFormData, handleChange, handleStatusChange } = useWorkflowFormState(workflow);
   
-  // State for data structures
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [pipelines, setPipelines] = useState<Pipeline[]>([]);
-  const [stages, setStages] = useState<Stage[]>([]);
-  const [agents, setAgents] = useState<Agent[]>([]);
-  const [assets, setAssets] = useState<Asset[]>([]);
-
   // Use the selection hook
   const { 
     selectedDepartment, setSelectedDepartment,
@@ -52,6 +41,27 @@ export const useWorkflowConfig = (
     expandedPipelines, setExpandedPipelines, 
     expandedStages, setExpandedStages
   } = useWorkflowStructure();
+
+  // Use the data initialization hook
+  const {
+    departments, setDepartments,
+    pipelines, setPipelines,
+    stages, setStages,
+    agents, setAgents,
+    assets, setAssets
+  } = useWorkflowDataInit(
+    isOpen,
+    workflow,
+    setActiveTab,
+    setSelectedDepartment,
+    setSelectedPipeline,
+    setSelectedStage,
+    setSelectedAgent,
+    setSelectedAsset,
+    setExpandedDepartments,
+    setExpandedPipelines,
+    setExpandedStages
+  );
 
   // Use our custom hooks for CRUD operations
   const departmentLogic = useDepartmentLogic(
@@ -88,64 +98,6 @@ export const useWorkflowConfig = (
     assets, setAssets,
     selectedAsset, setSelectedAsset
   );
-
-  // Effect to initialize data when the modal opens
-  useEffect(() => {
-    if (isOpen) {
-      setFormData(
-        workflow || {
-          title: "",
-          description: "",
-          status: "draft"
-        }
-      );
-      
-      if (workflow) {
-        const demoData = getDemoData(workflow.id);
-        setDepartments(demoData.departments);
-        setPipelines(demoData.pipelines);
-        setStages(demoData.stages);
-        setAgents(demoData.agents);
-        setAssets(demoData.assets);
-
-        const deptExpanded: Record<string, boolean> = {};
-        demoData.departments.forEach(dept => {
-          deptExpanded[dept.id] = false;
-        });
-        setExpandedDepartments(deptExpanded);
-
-        const pipeExpanded: Record<string, boolean> = {};
-        demoData.pipelines.forEach(pipe => {
-          pipeExpanded[pipe.id] = false;
-        });
-        setExpandedPipelines(pipeExpanded);
-
-        const stageExpanded: Record<string, boolean> = {};
-        demoData.stages.forEach(stage => {
-          stageExpanded[stage.id] = false;
-        });
-        setExpandedStages(stageExpanded);
-      } else {
-        setDepartments([]);
-        setPipelines([]);
-        setStages([]);
-        setAgents([]);
-        setAssets([]);
-        setExpandedDepartments({});
-        setExpandedPipelines({});
-        setExpandedStages({});
-      }
-      
-      setActiveTab("workflow");
-      setSelectedDepartment(null);
-      setSelectedPipeline(null);
-      setSelectedStage(null);
-      setSelectedAgent(null);
-      setSelectedAsset(null);
-    }
-  }, [isOpen, workflow, setFormData, setActiveTab, setSelectedDepartment, setSelectedPipeline, 
-      setSelectedStage, setSelectedAgent, setSelectedAsset, setExpandedDepartments, 
-      setExpandedPipelines, setExpandedStages]);
 
   return {
     // Tab state
