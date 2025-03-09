@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Deal } from '@/pages/Workflows/models/WorkflowModels';
 import { Card, CardContent } from '@/components/ui/card';
@@ -15,7 +14,6 @@ interface DealParametersTabProps {
 }
 
 const DealParametersTab: React.FC<DealParametersTabProps> = ({ deal, onEditDeal }) => {
-  // Em um cenário real, usaríamos um form state manager como react-hook-form
   const [formState, setFormState] = React.useState<Partial<Deal>>({
     ...deal
   });
@@ -36,7 +34,6 @@ const DealParametersTab: React.FC<DealParametersTabProps> = ({ deal, onEditDeal 
     }
   };
 
-  // Opções para os campos de seleção
   const statusOptions = [
     { value: 'open', label: 'Em aberto' },
     { value: 'won', label: 'Ganho' },
@@ -84,6 +81,7 @@ const DealParametersTab: React.FC<DealParametersTabProps> = ({ deal, onEditDeal 
             <FormField id="type" label="Tipo">
               <SelectField
                 id="type"
+                label="Tipo do negócio"
                 value={formState.type || ''}
                 onChange={(value) => handleChange('type', value)}
                 options={typeOptions}
@@ -110,6 +108,7 @@ const DealParametersTab: React.FC<DealParametersTabProps> = ({ deal, onEditDeal 
             <FormField id="status" label="Status">
               <SelectField
                 id="status"
+                label="Status do negócio"
                 value={formState.status || ''}
                 onChange={(value) => handleChange('status', value as Deal['status'])}
                 options={statusOptions}
@@ -121,6 +120,7 @@ const DealParametersTab: React.FC<DealParametersTabProps> = ({ deal, onEditDeal 
               <FormField id="reasonForLoss" label="Motivo da Perda">
                 <SelectField
                   id="reasonForLoss"
+                  label="Motivo da perda"
                   value={formState.reasonForLoss || ''}
                   onChange={(value) => handleChange('reasonForLoss', value)}
                   options={reasonForLossOptions}
@@ -132,6 +132,7 @@ const DealParametersTab: React.FC<DealParametersTabProps> = ({ deal, onEditDeal 
             <FormField id="interests" label="Interesses">
               <SelectField
                 id="interests"
+                label="Nível de interesse"
                 value={formState.interests || ''}
                 onChange={(value) => handleChange('interests', value)}
                 options={interestsOptions}

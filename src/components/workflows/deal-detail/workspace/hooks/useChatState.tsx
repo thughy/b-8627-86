@@ -6,6 +6,7 @@ export interface ChatMessage {
   sender: 'user' | 'system' | 'agent';
   senderName: string;
   content: string;
+  text: string; // Adicionando propriedade text que será igual ao content
   timestamp: Date;
 }
 
@@ -21,6 +22,7 @@ export const useChatState = (initialMessages: ChatMessage[] = []) => {
       sender,
       senderName,
       content,
+      text: content, // Adicionando text igual ao content
       timestamp: new Date()
     };
 

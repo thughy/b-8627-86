@@ -1,8 +1,7 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send, Paperclip, Robot, User } from 'lucide-react';
+import { Send, Paperclip, Bot, User } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -21,7 +20,6 @@ const ChatSection: React.FC<ChatSectionProps> = ({ dealId, messages }) => {
 
   const handleSendMessage = () => {
     if (inputText.trim()) {
-      // Em um cenário real, enviaria para a API
       console.log('Enviando mensagem:', inputText);
       setInputText('');
       
@@ -45,9 +43,9 @@ const ChatSection: React.FC<ChatSectionProps> = ({ dealId, messages }) => {
       case 'user':
         return <User className="h-6 w-6 text-primary" />;
       case 'agent':
-        return <Robot className="h-6 w-6 text-indigo-500" />;
+        return <Bot className="h-6 w-6 text-indigo-500" />;
       default:
-        return <Robot className="h-6 w-6 text-gray-500" />;
+        return <Bot className="h-6 w-6 text-gray-500" />;
     }
   };
 
@@ -94,7 +92,7 @@ const ChatSection: React.FC<ChatSectionProps> = ({ dealId, messages }) => {
         ) : (
           <div className="h-full flex items-center justify-center">
             <div className="text-center p-6">
-              <Robot className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
+              <Bot className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
               <h3 className="text-lg font-medium">Nenhuma mensagem ainda</h3>
               <p className="text-muted-foreground mt-1">
                 Inicie uma conversa usando o campo abaixo.
