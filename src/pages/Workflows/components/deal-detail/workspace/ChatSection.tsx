@@ -1,8 +1,9 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send, Paperclip, Bot, User } from 'lucide-react';
+import { Send, Paperclip, Bot, User, Image } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface Message {
   id: string;
@@ -18,17 +19,23 @@ interface ChatSectionProps {
 
 const ChatSection: React.FC<ChatSectionProps> = ({ dealId, messages }) => {
   const [inputText, setInputText] = useState('');
+  const { toast } = useToast();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const handleSendMessage = () => {
     if (inputText.trim()) {
       console.log('Enviando mensagem:', inputText);
       setInputText('');
       
-      // Adicione um toast de confirmação
-      // toast({
-      //   title: "Mensagem enviada",
-      //   description: "Sua mensagem foi enviada com sucesso.",
-      // });
+      toast({
+        title: "Mensagem enviada",
+        description: "Sua mensagem foi enviada com sucesso.",
+      });
     }
   };
 
@@ -51,45 +58,54 @@ const ChatSection: React.FC<ChatSectionProps> = ({ dealId, messages }) => {
   };
 
   return (
-    <div className="flex flex-col h-full pb-4">
-      <div className="flex-1 mb-4 space-y-4">
+    <div className="flex flex-col h-full">
+      <div className="flex-1 overflow-y-auto mb-4 space-y-4 pr-2">
         {messages.length > 0 ? (
-          messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex items-start gap-3 ${
-                message.sender === 'user' ? 'justify-end' : ''
-              }`}
-            >
-              {message.sender !== 'user' && (
-                <div className="flex-shrink-0 rounded-full bg-primary/10 p-2">
-                  {getSenderIcon(message.sender)}
-                </div>
-              )}
-              
+          <>
+            {messages.map((message) => (
               <div
-                className={`p-3 rounded-lg max-w-[80%] ${
-                  message.sender === 'user'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted'
+                key={message.id}
+                className={`flex items-start gap-3 ${
+                  message.sender === 'user' ? 'justify-end' : ''
                 }`}
               >
-                <p>{message.text}</p>
-                <div className="text-xs mt-1 opacity-70">
-                  {new Date(message.timestamp).toLocaleTimeString('pt-BR', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
+                {message.sender !== 'user' && (
+                  <div className="flex-shrink-0 rounded-full bg-primary/10 p-2">
+                    {getSenderIcon(message.sender)}
+                  </div>
+                )}
+                
+                <div
+                  className={`p-3 rounded-lg max-w-[80%] ${
+                    message.sender === 'user'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted'
+                  }`}
+                >
+                  <p>{message.text}</p>
+                  <div className="text-xs mt-1 opacity-70">
+                    {message.timestamp instanceof Date 
+                      ? message.timestamp.toLocaleTimeString('pt-BR', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })
+                      : new Date(message.timestamp).toLocaleTimeString('pt-BR', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })
+                    }
+                  </div>
                 </div>
-              </div>
 
-              {message.sender === 'user' && (
-                <div className="flex-shrink-0 rounded-full bg-primary/10 p-2">
-                  {getSenderIcon(message.sender)}
-                </div>
-              )}
-            </div>
-          ))
+                {message.sender === 'user' && (
+                  <div className="flex-shrink-0 rounded-full bg-primary/10 p-2">
+                    {getSenderIcon(message.sender)}
+                  </div>
+                )}
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </>
         ) : (
           <div className="h-full flex items-center justify-center">
             <div className="text-center p-6">
@@ -111,6 +127,15 @@ const ChatSection: React.FC<ChatSectionProps> = ({ dealId, messages }) => {
           className="flex-shrink-0"
         >
           <Paperclip className="h-4 w-4" />
+        </Button>
+        
+        <Button
+          type="button"
+          size="icon"
+          variant="outline"
+          className="flex-shrink-0"
+        >
+          <Image className="h-4 w-4" />
         </Button>
         
         <Input

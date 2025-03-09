@@ -2,7 +2,8 @@
 import React from 'react';
 import { Deal, Asset } from '@/pages/Workflows/models/WorkflowModels';
 import { Button } from '@/components/ui/button';
-import { FileText, CheckSquare, Plus } from 'lucide-react';
+import { FileText, CheckSquare, Plus, Mail, Image, File, Pencil } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface FocusTabContentProps {
   deal: Deal;
@@ -24,53 +25,115 @@ const FocusTabContent: React.FC<FocusTabContentProps> = ({ deal, assets, onCreat
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
-      <div>
-        <h3 className="text-lg font-medium mb-3 flex items-center gap-2">
-          <FileText className="h-5 w-5 text-primary" />
-          Ativos
-        </h3>
-        {assets.length > 0 ? (
-          <div className="space-y-2">
-            {assets.map(asset => (
-              <div key={asset.id} className="p-3 border rounded-md hover:bg-muted/50 cursor-pointer">
-                <div className="font-medium">{asset.title}</div>
-                <div className="text-sm text-muted-foreground">{asset.description}</div>
-                <div className="flex justify-between mt-1">
-                  <span className="text-xs bg-primary/10 text-primary rounded-full px-2 py-0.5">
-                    {asset.type}
-                  </span>
-                  <span className="text-xs bg-blue-500/10 text-blue-500 rounded-full px-2 py-0.5">
-                    {asset.status}
-                  </span>
+    <div className="h-full">
+      <Tabs defaultValue="assets" className="h-full">
+        <TabsList className="mb-4">
+          <TabsTrigger value="assets" className="flex items-center gap-1">
+            <Image className="h-4 w-4" />
+            Assets
+          </TabsTrigger>
+          <TabsTrigger value="tasks" className="flex items-center gap-1">
+            <CheckSquare className="h-4 w-4" />
+            Tarefas
+          </TabsTrigger>
+          <TabsTrigger value="notes" className="flex items-center gap-1">
+            <FileText className="h-4 w-4" />
+            Notas
+          </TabsTrigger>
+          <TabsTrigger value="emails" className="flex items-center gap-1">
+            <Mail className="h-4 w-4" />
+            Emails
+          </TabsTrigger>
+          <TabsTrigger value="documents" className="flex items-center gap-1">
+            <File className="h-4 w-4" />
+            Documentos
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="assets" className="h-[calc(100%-48px)]">
+          {assets.length > 0 ? (
+            <div className="space-y-3 overflow-auto max-h-full">
+              {assets.map(asset => (
+                <div key={asset.id} className="p-3 border rounded-md hover:bg-muted/50 cursor-pointer">
+                  <div className="flex justify-between">
+                    <div className="font-medium">{asset.title}</div>
+                    <Button size="icon" variant="ghost">
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="text-sm text-muted-foreground">{asset.description}</div>
+                  <div className="flex justify-between mt-2">
+                    <span className="text-xs bg-primary/10 text-primary rounded-full px-2 py-0.5">
+                      {asset.type}
+                    </span>
+                    <span className="text-xs bg-blue-500/10 text-blue-500 rounded-full px-2 py-0.5">
+                      {asset.status}
+                    </span>
+                  </div>
                 </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center p-4 border rounded-md bg-muted/30 h-full flex items-center justify-center">
+              <div>
+                <p className="text-muted-foreground mb-3">Nenhum asset encontrado</p>
+                <Button size="sm" variant="outline" onClick={handleCreateAsset}>
+                  <Plus className="h-4 w-4 mr-1" />
+                  Adicionar Asset
+                </Button>
               </div>
-            ))}
+            </div>
+          )}
+        </TabsContent>
+        
+        <TabsContent value="tasks" className="h-[calc(100%-48px)]">
+          <div className="text-center p-4 border rounded-md bg-muted/30 h-full flex items-center justify-center">
+            <div>
+              <p className="text-muted-foreground mb-3">Nenhuma tarefa encontrada</p>
+              <Button size="sm" variant="outline">
+                <Plus className="h-4 w-4 mr-1" />
+                Adicionar Tarefa
+              </Button>
+            </div>
           </div>
-        ) : (
-          <div className="text-center p-4 border rounded-md bg-muted/30">
-            <p className="text-muted-foreground">Nenhum ativo encontrado</p>
-            <Button size="sm" variant="outline" className="mt-2" onClick={handleCreateAsset}>
-              <Plus className="h-4 w-4 mr-1" />
-              Adicionar Ativo
-            </Button>
+        </TabsContent>
+
+        <TabsContent value="notes" className="h-[calc(100%-48px)]">
+          <div className="text-center p-4 border rounded-md bg-muted/30 h-full flex items-center justify-center">
+            <div>
+              <p className="text-muted-foreground mb-3">Nenhuma nota encontrada</p>
+              <Button size="sm" variant="outline">
+                <Plus className="h-4 w-4 mr-1" />
+                Adicionar Nota
+              </Button>
+            </div>
           </div>
-        )}
-      </div>
-      
-      <div>
-        <h3 className="text-lg font-medium mb-3 flex items-center gap-2">
-          <CheckSquare className="h-5 w-5 text-primary" />
-          Tarefas
-        </h3>
-        <div className="text-center p-4 border rounded-md bg-muted/30">
-          <p className="text-muted-foreground">Nenhuma tarefa encontrada</p>
-          <Button size="sm" variant="outline" className="mt-2">
-            <Plus className="h-4 w-4 mr-1" />
-            Adicionar Tarefa
-          </Button>
-        </div>
-      </div>
+        </TabsContent>
+
+        <TabsContent value="emails" className="h-[calc(100%-48px)]">
+          <div className="text-center p-4 border rounded-md bg-muted/30 h-full flex items-center justify-center">
+            <div>
+              <p className="text-muted-foreground mb-3">Nenhum email encontrado</p>
+              <Button size="sm" variant="outline">
+                <Plus className="h-4 w-4 mr-1" />
+                Adicionar Email
+              </Button>
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="documents" className="h-[calc(100%-48px)]">
+          <div className="text-center p-4 border rounded-md bg-muted/30 h-full flex items-center justify-center">
+            <div>
+              <p className="text-muted-foreground mb-3">Nenhum documento encontrado</p>
+              <Button size="sm" variant="outline">
+                <Plus className="h-4 w-4 mr-1" />
+                Adicionar Documento
+              </Button>
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

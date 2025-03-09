@@ -67,6 +67,16 @@ export const useDealActions = () => {
     setIsDealModalOpen(false);
   };
 
+  // Obter prévia do chat (últimas 3 mensagens)
+  const getChatPreview = (dealId: string) => {
+    // Em um cenário real, isso seria carregado da API
+    return [
+      { id: 'msg-3', text: 'Podemos fechar o contrato na próxima semana.', sender: 'user', timestamp: new Date(Date.now() - 1000 * 60 * 60) },
+      { id: 'msg-2', text: 'As condições parecem favoráveis.', sender: 'agent', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2) },
+      { id: 'msg-1', text: 'Vamos revisar os termos do contrato.', sender: 'user', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 3) },
+    ];
+  };
+
   return {
     selectedDeal,
     setSelectedDeal,
@@ -78,6 +88,7 @@ export const useDealActions = () => {
     handleDeleteDeal,
     handleCancelDeal,
     handleCreateDeal,
-    handleCloseDealModal
+    handleCloseDealModal,
+    getChatPreview
   };
 };

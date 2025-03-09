@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Deal, Asset } from '@/pages/Workflows/models/WorkflowModels';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { MessageCircle, FileText, History } from 'lucide-react';
+import { MessageCircle, FileText, History, CheckSquare, Mail, Image, File } from 'lucide-react';
 import { useChatMessages } from '@/pages/Workflows/hooks/useChatMessages';
 import ChatSection from './workspace/ChatSection';
 import FocusTabContent from './workspace/FocusTabContent';
@@ -16,7 +16,7 @@ interface DealWorkspaceTabProps {
 
 const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({ deal, onCreateAsset }) => {
   const [activeTab, setActiveTab] = useState('chat');
-  const { messages } = useChatMessages(deal.id);
+  const { messages, sendMessage } = useChatMessages(deal.id);
 
   const handleCreateAsset = () => {
     if (onCreateAsset) {
@@ -58,28 +58,30 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({ deal, onCreateAsset
     <div className="h-full flex flex-col p-4">
       <div className="flex justify-between items-center mb-4">
         <Tabs defaultValue="chat" className="w-full" onValueChange={setActiveTab} value={activeTab}>
-          <TabsList>
-            <TabsTrigger value="chat" className="flex items-center gap-1">
-              <MessageCircle className="h-4 w-4" />
-              Chat
-            </TabsTrigger>
-            <TabsTrigger value="focus" className="flex items-center gap-1">
-              <FileText className="h-4 w-4" />
-              Focus
-            </TabsTrigger>
-            <TabsTrigger value="history" className="flex items-center gap-1">
-              <History className="h-4 w-4" />
-              Histórico
-            </TabsTrigger>
-          </TabsList>
-        
-          <div className="ml-auto">
-            <WorkspaceActionButtons onCreateAsset={handleCreateAsset} />
+          <div className="flex justify-between items-center">
+            <TabsList>
+              <TabsTrigger value="chat" className="flex items-center gap-1">
+                <MessageCircle className="h-4 w-4" />
+                Chat
+              </TabsTrigger>
+              <TabsTrigger value="focus" className="flex items-center gap-1">
+                <FileText className="h-4 w-4" />
+                Focus
+              </TabsTrigger>
+              <TabsTrigger value="history" className="flex items-center gap-1">
+                <History className="h-4 w-4" />
+                Histórico
+              </TabsTrigger>
+            </TabsList>
+          
+            <div className="ml-auto">
+              <WorkspaceActionButtons onCreateAsset={handleCreateAsset} />
+            </div>
           </div>
         </Tabs>
       </div>
 
-      <div className="flex-1">
+      <div className="flex-1 overflow-auto">
         <Tabs defaultValue="chat" value={activeTab} className="h-full">
           <TabsContent value="chat" className="h-full mt-0">
             <ChatSection dealId={deal.id} messages={messages} />

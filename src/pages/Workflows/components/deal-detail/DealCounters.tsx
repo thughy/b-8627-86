@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { MessageCircle, CheckSquare, FileText } from 'lucide-react';
+import { MessageCircle, CheckSquare, FileText, Mail, Image, File, CalendarClock } from 'lucide-react';
 
 interface CountersProps {
   counters: {
@@ -15,15 +15,15 @@ interface CountersProps {
 
 const DealCounters: React.FC<CountersProps> = ({ counters }) => {
   return (
-    <div className="flex flex-wrap gap-2 mb-4">
+    <div className="flex flex-wrap gap-3 mb-4">
       <div className="flex items-center gap-1 text-sm">
         <MessageCircle className="h-4 w-4 text-muted-foreground" />
-        <span className="text-muted-foreground">Mensagens:</span>
+        <span className="text-muted-foreground">Chat:</span>
         <span className="font-medium">{counters.chat}</span>
       </div>
       <div className="flex items-center gap-1 text-sm">
-        <FileText className="h-4 w-4 text-muted-foreground" />
-        <span className="text-muted-foreground">Ativos:</span>
+        <Image className="h-4 w-4 text-muted-foreground" />
+        <span className="text-muted-foreground">Assets:</span>
         <span className="font-medium">{counters.assets}</span>
       </div>
       <div className="flex items-center gap-1 text-sm">
@@ -31,6 +31,27 @@ const DealCounters: React.FC<CountersProps> = ({ counters }) => {
         <span className="text-muted-foreground">Tarefas:</span>
         <span className="font-medium">{counters.tasks}</span>
       </div>
+      {counters.notes !== undefined && (
+        <div className="flex items-center gap-1 text-sm">
+          <FileText className="h-4 w-4 text-muted-foreground" />
+          <span className="text-muted-foreground">Notas:</span>
+          <span className="font-medium">{counters.notes}</span>
+        </div>
+      )}
+      {counters.emails !== undefined && (
+        <div className="flex items-center gap-1 text-sm">
+          <Mail className="h-4 w-4 text-muted-foreground" />
+          <span className="text-muted-foreground">Emails:</span>
+          <span className="font-medium">{counters.emails}</span>
+        </div>
+      )}
+      {counters.documents !== undefined && (
+        <div className="flex items-center gap-1 text-sm">
+          <File className="h-4 w-4 text-muted-foreground" />
+          <span className="text-muted-foreground">Documentos:</span>
+          <span className="font-medium">{counters.documents}</span>
+        </div>
+      )}
     </div>
   );
 };
