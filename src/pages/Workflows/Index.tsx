@@ -4,6 +4,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import WorkflowHeader from './components/WorkflowHeader';
 import WorkflowFilters from './components/WorkflowFilters';
 import DealListView from './components/DealListView';
+import DealCardModal from './components/DealCardModal';
 import KanbanBoard from '@/components/workflows/KanbanBoard';
 import { useWorkflowState } from './hooks/useWorkflowState';
 
@@ -16,6 +17,7 @@ export default function WorkflowsPage() {
     searchTerm,
     setSearchTerm,
     selectedDeal,
+    isDealModalOpen,
     viewMode,
     setViewMode,
     selectedWorkflow,
@@ -24,8 +26,12 @@ export default function WorkflowsPage() {
     setSelectedPipeline,
     handleDealClick,
     handleCreateAsset,
+    handleEditDeal,
+    handleDeleteDeal,
+    handleCancelDeal,
     handleDragEnd,
-    handleCreateDeal
+    handleCreateDeal,
+    handleCloseDealModal
   } = useWorkflowState();
 
   return (
@@ -67,6 +73,16 @@ export default function WorkflowsPage() {
             onDealClick={handleDealClick} 
           />
         )}
+
+        <DealCardModal 
+          isOpen={isDealModalOpen}
+          onClose={handleCloseDealModal}
+          deal={selectedDeal}
+          onEditDeal={handleEditDeal}
+          onDeleteDeal={handleDeleteDeal}
+          onCancelDeal={handleCancelDeal}
+          onCreateAsset={handleCreateAsset}
+        />
       </div>
     </DashboardLayout>
   );

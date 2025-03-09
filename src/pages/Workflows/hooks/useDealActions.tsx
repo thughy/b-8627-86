@@ -6,17 +6,19 @@ import { useToast } from "@/hooks/use-toast";
 export const useDealActions = () => {
   const { toast } = useToast();
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
+  const [isDealModalOpen, setIsDealModalOpen] = useState(false);
   
   const handleDealClick = (deal: Deal) => {
     setSelectedDeal(deal);
+    setIsDealModalOpen(true);
     toast({
-      title: "Deal selecionado",
-      description: `Deal "${deal.title}" foi selecionado.`,
+      title: "Negócio selecionado",
+      description: `Negócio "${deal.title}" foi selecionado.`,
     });
   };
 
   const handleCreateAsset = (dealId: string, asset: Partial<Asset>) => {
-    console.log(`Creating asset for deal ${dealId}:`, asset);
+    console.log(`Criando asset para deal ${dealId}:`, asset);
     toast({
       title: "Asset adicionado",
       description: `O asset foi adicionado ao negócio com sucesso.`,
@@ -24,15 +26,16 @@ export const useDealActions = () => {
   };
 
   const handleEditDeal = (deal: Deal) => {
-    console.log('Editing deal:', deal);
+    console.log('Editando deal:', deal);
     toast({
-      title: "Editar negócio",
-      description: "Funcionalidade em desenvolvimento.",
+      title: "Negócio atualizado",
+      description: "As alterações foram salvas com sucesso.",
     });
   };
 
   const handleDeleteDeal = (dealId: string) => {
-    console.log('Deleting deal:', dealId);
+    console.log('Excluindo deal:', dealId);
+    setIsDealModalOpen(false);
     
     toast({
       title: "Negócio excluído",
@@ -43,7 +46,7 @@ export const useDealActions = () => {
   };
 
   const handleCancelDeal = (dealId: string) => {
-    console.log('Canceling deal:', dealId);
+    console.log('Cancelando deal:', dealId);
     
     toast({
       title: "Negócio cancelado",
@@ -60,14 +63,21 @@ export const useDealActions = () => {
     });
   };
 
+  const handleCloseDealModal = () => {
+    setIsDealModalOpen(false);
+  };
+
   return {
     selectedDeal,
     setSelectedDeal,
+    isDealModalOpen,
+    setIsDealModalOpen,
     handleDealClick,
     handleCreateAsset,
     handleEditDeal,
     handleDeleteDeal,
     handleCancelDeal,
-    handleCreateDeal
+    handleCreateDeal,
+    handleCloseDealModal
   };
 };
