@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -24,6 +25,10 @@ export default {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        popover: {
+          DEFAULT: "#222222",
+          foreground: "#FFFFFF",
+        },
         card: {
           DEFAULT: "#1a1a1a",
           hover: "#242424",
