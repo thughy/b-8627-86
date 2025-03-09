@@ -43,6 +43,10 @@ const StageList = ({
   setSelectedAgent,
   selectedAsset,
   setSelectedAsset,
+  newAgent,
+  setNewAgent,
+  newAsset,
+  setNewAsset,
   expandedStages,
   toggleStageExpand,
   handleAddAgent,
@@ -52,7 +56,6 @@ const StageList = ({
   handleDeleteAsset
 }: StageListProps) => {
   const pipelineStages = stages
-    .filter(s => s.pipelineId === pipelineId)
     .sort((a, b) => a.order - b.order);
   
   return (
