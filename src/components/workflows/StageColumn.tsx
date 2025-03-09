@@ -1,17 +1,25 @@
 
 import React from "react";
-import { Stage, Deal } from "@/pages/Workflows/models/WorkflowModels";
+import { Stage, Deal, Agent } from "@/pages/Workflows/models/WorkflowModels";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, User, ChevronDown } from "lucide-react";
 import DealList from "./DealList";
 import { getDealsByStage } from "./utils/dealUtils";
 import { Droppable } from "react-beautiful-dnd";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface StageColumnProps {
   stage: Stage;
   deals: Deal[];
+  agents?: Agent[];
   onDealClick: (deal: Deal) => void;
   onAction?: (action: string, data?: any) => void;
+  onAgentSelect?: (stageId: string, agentId: string) => void;
   pipelineId?: string;
   getChatPreview?: (dealId: string) => any[];
 }
@@ -19,12 +27,15 @@ interface StageColumnProps {
 const StageColumn: React.FC<StageColumnProps> = ({
   stage,
   deals,
+  agents = [],
   onDealClick,
   onAction,
+  onAgentSelect,
   pipelineId,
   getChatPreview
 }) => {
   const stageDeals = getDealsByStage(deals, stage.id);
+  const stageAgents = agents.filter(agent => agent.stageId === stage.id);
   
   return (
     <div className="flex-1 min-w-[300px]">
@@ -34,6 +45,44 @@ const StageColumn: React.FC<StageColumnProps> = ({
           <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
             {stageDeals.length}
           </span>
+        </div>
+        
+        {/* Agent Selector Dropdown */}
+        <div className="mb-3">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="w-full justify-between">
+                <div className="flex items-center">
+                  <User className="h-3.5 w-3.5 mr-2" />
+                  <span className="text-xs">Selecionar Agente</span>
+                </div>
+                <ChevronDown className="h-3.5 w-3.5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56 bg-[#222222]">
+              {stageAgents.length > 0 ? (
+                stageAgents.map((agent) => (
+                  <DropdownMenuItem 
+                    key={agent.id}
+                    onClick={() => onAgentSelect && onAgentSelect(stage.id, agent.id)}
+                    className="cursor-pointer"
+                  >
+                    <div className="flex items-center">
+                      <div className={`h-2 w-2 rounded-full mr-2 ${
+                        agent.status === 'active' ? 'bg-green-500' :
+                        agent.status === 'paused' ? 'bg-yellow-500' : 'bg-red-500'
+                      }`} />
+                      <span>{agent.profile.agentName}</span>
+                    </div>
+                  </DropdownMenuItem>
+                ))
+              ) : (
+                <DropdownMenuItem disabled>
+                  Nenhum agente disponível
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         
         <Droppable droppableId={stage.id}>

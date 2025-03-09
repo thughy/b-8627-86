@@ -1,10 +1,15 @@
 
 import React from 'react';
 import { Input } from '@/components/ui/input';
-import { Search, Filter, Columns, List } from 'lucide-react';
+import { Search, Filter, Columns, List, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Workflow, Pipeline } from '@/pages/Workflows/models/WorkflowModels';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface WorkflowFiltersProps {
   searchTerm: string;
@@ -31,6 +36,10 @@ const WorkflowFilters: React.FC<WorkflowFiltersProps> = ({
   workflows,
   pipelines
 }) => {
+  // Find selected workflow and pipeline names for display
+  const selectedWorkflowName = workflows.find(w => w.id === selectedWorkflow)?.title || "Selecionar Workflow";
+  const selectedPipelineName = pipelines.find(p => p.id === selectedPipeline)?.title || "Selecionar Pipeline";
+
   return (
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
       <div className="flex flex-col md:flex-row gap-3 w-full">
@@ -44,37 +53,47 @@ const WorkflowFilters: React.FC<WorkflowFiltersProps> = ({
           />
         </div>
 
-        <Select
-          value={selectedWorkflow}
-          onValueChange={onWorkflowChange}
-        >
-          <SelectTrigger className="w-full md:w-56">
-            <SelectValue placeholder="Selecionar Workflow" />
-          </SelectTrigger>
-          <SelectContent>
+        {/* Department/Workflow Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="w-full md:w-56 justify-between">
+              <span>{selectedWorkflowName}</span>
+              <ChevronDown className="h-4 w-4 ml-2" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-56 bg-[#222222]">
             {workflows.map(workflow => (
-              <SelectItem key={workflow.id} value={workflow.id}>
+              <DropdownMenuItem 
+                key={workflow.id} 
+                onClick={() => onWorkflowChange(workflow.id)}
+                className="cursor-pointer"
+              >
                 {workflow.title}
-              </SelectItem>
+              </DropdownMenuItem>
             ))}
-          </SelectContent>
-        </Select>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
-        <Select
-          value={selectedPipeline}
-          onValueChange={onPipelineChange}
-        >
-          <SelectTrigger className="w-full md:w-56">
-            <SelectValue placeholder="Selecionar Pipeline" />
-          </SelectTrigger>
-          <SelectContent>
+        {/* Pipeline Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="w-full md:w-56 justify-between">
+              <span>{selectedPipelineName}</span>
+              <ChevronDown className="h-4 w-4 ml-2" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-56 bg-[#222222]">
             {pipelines.map(pipeline => (
-              <SelectItem key={pipeline.id} value={pipeline.id}>
+              <DropdownMenuItem 
+                key={pipeline.id} 
+                onClick={() => onPipelineChange(pipeline.id)}
+                className="cursor-pointer"
+              >
                 {pipeline.title}
-              </SelectItem>
+              </DropdownMenuItem>
             ))}
-          </SelectContent>
-        </Select>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       
       <div className="flex items-center space-x-2">

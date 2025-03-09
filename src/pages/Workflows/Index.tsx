@@ -7,6 +7,14 @@ import DealListView from './components/DealListView';
 import DealCardModal from './components/DealCardModal';
 import KanbanBoard from '@/components/workflows/KanbanBoard';
 import { useWorkflowState } from './hooks/useWorkflowState';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown, Folder } from "lucide-react";
+import { Button } from '@/components/ui/button';
 
 export default function WorkflowsPage() {
   const {
@@ -33,10 +41,22 @@ export default function WorkflowsPage() {
     handleEditDeal,
     handleDeleteDeal,
     handleCancelDeal,
+    handleWinDeal,
+    handleLoseDeal,
     handleDragEnd,
     handleCreateDeal,
-    handleCloseDealModal
+    handleCloseDealModal,
+    getChatPreview
   } = useWorkflowState();
+
+  // Determine current agents based on workflow service data
+  const agents = []; // This would be populated from your API/service
+  
+  // Handle agent selection for a stage
+  const handleAgentSelect = (stageId: string, agentId: string) => {
+    console.log(`Agente ${agentId} selecionado para o estágio ${stageId}`);
+    // Implement your agent selection logic here
+  };
 
   return (
     <DashboardLayout>
@@ -61,8 +81,10 @@ export default function WorkflowsPage() {
             stages={stages} 
             pipelineId={selectedPipeline}
             deals={filteredDeals} 
+            agents={agents}
             onDragEnd={handleDragEnd} 
             onDealClick={handleDealClick}
+            onAgentSelect={handleAgentSelect}
             onAction={(action, data) => {
               if (action === "createDeal") {
                 handleCreateDeal();
@@ -70,6 +92,7 @@ export default function WorkflowsPage() {
                 handleDealClick(data);
               }
             }}
+            getChatPreview={getChatPreview}
           />
         ) : (
           <DealListView 
