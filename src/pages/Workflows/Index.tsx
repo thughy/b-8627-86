@@ -10,25 +10,32 @@ import WorkflowFilters from "@/components/workflows/WorkflowFilters";
 import DepartmentDropdown from "@/components/workflows/DepartmentDropdown";
 import PipelineCard from "@/components/workflows/PipelineCard";
 import ListView from "@/components/workflows/ListView";
-import WorkflowConfigModal from "@/pages/Settings/components/modals/WorkflowConfigModal";
+import DealDetailModal from "@/components/workflows/DealDetailModal";
+import AssetCreationModal from "@/components/workflows/AssetCreationModal";
 
 // Import services and models
 import { 
   getDepartments, 
   getPipelinesByDepartment,
-  getWorkflows
+  getWorkflows,
+  createDeal,
+  createAsset
 } from "./services/workflowService";
-import { Department, Pipeline, Workflow, Deal } from "./models/WorkflowModels";
+import { Department, Pipeline, Workflow, Deal, Asset } from "./models/WorkflowModels";
 
 const WorkflowsPage = () => {
   const { toast } = useToast();
   const [viewMode, setViewMode] = useState<"kanban" | "list">("kanban");
   const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
-  const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
   const [currentWorkflow, setCurrentWorkflow] = useState<Workflow | undefined>(undefined);
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
-  const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Deal and Asset management modals
+  const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isAssetModalOpen, setIsAssetModalOpen] = useState(false);
+  const [currentDealId, setCurrentDealId] = useState<string>("");
   
   // Obter workflows no carregamento inicial
   useEffect(() => {
@@ -94,17 +101,44 @@ const WorkflowsPage = () => {
       case "viewDeal":
         // Quando o usuário clica para ver um deal específico
         setSelectedDeal(data);
-        toast({
-          title: `Visualizando deal: ${data.title}`,
-          description: "Carregando detalhes do deal."
-        });
+        setIsDetailModalOpen(true);
         break;
       
       case "createDeal":
         // Quando o usuário clica para criar um novo deal em um estágio
+        const newDeal = createDeal({
+          title: `Novo Deal`,
+          description: `Deal criado em ${new Date().toLocaleDateString()}`,
+          stageId: data.stageId,
+          status: "open",
+          createdAt: new Date()
+        });
+        
         toast({
-          title: "Adicionar novo deal",
-          description: `No estágio ID: ${data.stageId}`,
+          title: "Deal criado com sucesso",
+          description: `O deal foi adicionado ao estágio selecionado.`,
+        });
+        break;
+      
+      case "createAsset":
+        // Quando o usuário clica para criar um novo asset para um deal
+        setCurrentDealId(data.dealId);
+        setIsAssetModalOpen(true);
+        break;
+        
+      case "viewAsset":
+        // Quando o usuário clica para ver um asset
+        toast({
+          title: `Visualizando asset: ${data.title}`,
+          description: "Esta funcionalidade está sendo implementada."
+        });
+        break;
+        
+      case "addCustomer":
+        // Quando o usuário quer adicionar um cliente ao deal
+        toast({
+          title: "Adicionar cliente",
+          description: "Esta funcionalidade está sendo implementada."
         });
         break;
       
@@ -116,20 +150,26 @@ const WorkflowsPage = () => {
     }
   };
 
+  // Lidar com a criação de um novo asset
+  const handleSaveAsset = (assetData: Partial<Asset>) => {
+    const newAsset = createAsset(assetData);
+    
+    // Atualizar a interface ou realizar outras ações necessárias
+    console.log("Asset criado:", newAsset);
+  };
+
   // Definir departamento selecionado
   const handleSelectDepartment = (department: Department | null) => {
     setSelectedDepartment(department);
   };
 
-  // Fechar modal de configuração
-  const handleCloseConfigModal = () => {
-    setIsConfigModalOpen(false);
-  };
-
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <WorkflowHeader title="Gestão de Workflows" description="Opere seus workflows e acompanhe seus deals" />
+        <WorkflowHeader 
+          title="Gestão de Workflows" 
+          description="Opere seus workflows e acompanhe seus deals" 
+        />
         
         <WorkflowFilters 
           viewMode={viewMode} 
@@ -165,6 +205,9 @@ const WorkflowsPage = () => {
                       key={pipeline.id} 
                       pipeline={pipeline} 
                       onAction={handleAction}
+                      isActive={currentWorkflow?.departments?.some(d => 
+                        departments.find(dept => dept.id === d.id)?.pipelines?.some(p => p.id === pipeline.id)
+                      )}
                     />
                   ))}
                   
@@ -183,15 +226,21 @@ const WorkflowsPage = () => {
         </Tabs>
       </div>
 
-      {/* Modal de configuração de workflow - usado apenas para visualização */}
-      {isConfigModalOpen && (
-        <WorkflowConfigModal
-          isOpen={isConfigModalOpen}
-          onClose={handleCloseConfigModal}
-          workflow={currentWorkflow}
-          onSave={() => {}}
-        />
-      )}
+      {/* Modal de detalhes do Deal */}
+      <DealDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        deal={selectedDeal}
+        onAction={handleAction}
+      />
+      
+      {/* Modal de criação de Asset */}
+      <AssetCreationModal
+        isOpen={isAssetModalOpen}
+        onClose={() => setIsAssetModalOpen(false)}
+        onSave={handleSaveAsset}
+        dealId={currentDealId}
+      />
     </DashboardLayout>
   );
 };
