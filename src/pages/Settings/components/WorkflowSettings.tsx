@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { 
   Card, 
@@ -63,7 +62,6 @@ const WorkflowSettings = () => {
 
   const handleSaveWorkflow = (workflowData: Partial<Workflow>) => {
     if (selectedWorkflow) {
-      // Update existing workflow
       setWorkflows(prev => 
         prev.map(w => 
           w.id === selectedWorkflow.id 
@@ -72,7 +70,6 @@ const WorkflowSettings = () => {
         )
       );
     } else {
-      // Add new workflow
       const newWorkflow: Workflow = {
         id: `workflow-${Date.now()}`,
         title: workflowData.title || "Novo Workflow",

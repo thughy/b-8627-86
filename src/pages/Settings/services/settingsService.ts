@@ -1,5 +1,46 @@
+import { Template, Integration, Collaborator, Agent, Asset, Workflow } from "@/pages/Workflows/models/WorkflowModels";
 
-import { Template, Integration, Collaborator, Agent, Asset } from "@/pages/Workflows/models/WorkflowModels";
+// Função para obter workflows
+export const getWorkflows = (): Workflow[] => {
+  return [
+    {
+      id: "workflow-1",
+      title: "Processo de Vendas B2B",
+      description: "Workflow para gerenciamento de vendas business-to-business",
+      status: "active",
+      departmentId: "dept-1",
+      createdAt: new Date('2023-10-15'),
+      updatedAt: new Date('2023-12-22')
+    },
+    {
+      id: "workflow-2",
+      title: "Atendimento ao Cliente",
+      description: "Workflow para gerenciamento de atendimentos e suporte",
+      status: "active",
+      departmentId: "dept-2",
+      createdAt: new Date('2023-11-05'),
+      updatedAt: new Date('2024-01-10')
+    },
+    {
+      id: "workflow-3",
+      title: "Marketing de Conteúdo",
+      description: "Workflow para criação e distribuição de conteúdo",
+      status: "draft",
+      departmentId: "dept-3",
+      createdAt: new Date('2024-01-20'),
+      updatedAt: new Date('2024-01-20')
+    },
+    {
+      id: "workflow-4",
+      title: "Recrutamento e Seleção",
+      description: "Workflow para processos de RH",
+      status: "inactive",
+      departmentId: "dept-4",
+      createdAt: new Date('2023-09-12'),
+      updatedAt: new Date('2023-12-05')
+    }
+  ];
+};
 
 // Função para obter templates da biblioteca
 export const getTemplates = (): Template[] => {
