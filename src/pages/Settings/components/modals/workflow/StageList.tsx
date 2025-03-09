@@ -1,11 +1,7 @@
 
 import React from "react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Trash, ChevronRight, ChevronDown } from "lucide-react";
-import AgentList from "./AgentList";
-import AssetList from "./AssetList";
+import StageItem from "./StageItem";
+import { useStageItemLogic } from "../../../hooks/workflow/useStageItemLogic";
 import { Stage, Agent, Asset } from "@/pages/Workflows/models/WorkflowModels";
 
 interface StageListProps {
@@ -56,76 +52,47 @@ const StageList = ({
   handleDeleteAsset
 }: StageListProps) => {
   const pipelineStages = stages
+    .filter(stage => stage.pipelineId === pipelineId)
     .sort((a, b) => a.order - b.order);
   
   return (
     <>
-      {pipelineStages.map(stage => (
-        <Collapsible 
-          key={stage.id}
-          open={expandedStages[stage.id]}
-          onOpenChange={() => toggleStageExpand(stage.id)}
-          className="border rounded-md"
-        >
-          <CollapsibleTrigger asChild>
-            <div 
-              className={`p-2 flex justify-between items-center cursor-pointer hover:bg-accent/50 transition-colors ${selectedStage?.id === stage.id ? 'border-l-4 border-primary' : ''}`}
-              onClick={() => setSelectedStage(stage)}
-            >
-              <div className="flex items-center gap-2">
-                <Badge variant="outline">{stage.order}</Badge>
-                <div className="font-medium">{stage.title}</div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteStage(stage.id);
-                  }}
-                >
-                  <Trash className="h-4 w-4" />
-                </Button>
-                {expandedStages[stage.id] ? 
-                  <ChevronDown className="h-5 w-5" /> : 
-                  <ChevronRight className="h-5 w-5" />
-                }
-              </div>
-            </div>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <div className="p-3 pl-6 border-t bg-background/20">
-              <div className="flex flex-col space-y-4">
-                <div className="flex items-center space-x-2">
-                  <div className="grid grid-cols-2 gap-4 w-full">
-                    <div>
-                      <div className="mb-1 text-sm font-medium">Agente</div>
-                      <AgentList
-                        stageId={stage.id}
-                        agents={agents}
-                        selectedAgent={selectedAgent}
-                        setSelectedAgent={setSelectedAgent}
-                        handleDeleteAgent={handleDeleteAgent}
-                      />
-                    </div>
-                    <div>
-                      <div className="mb-1 text-sm font-medium">Asset</div>
-                      <AssetList
-                        stageId={stage.id}
-                        assets={assets}
-                        selectedAsset={selectedAsset}
-                        setSelectedAsset={setSelectedAsset}
-                        handleDeleteAsset={handleDeleteAsset}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
-      ))}
+      {pipelineStages.map(stage => {
+        const stageLogic = useStageItemLogic(
+          stage,
+          selectedStage,
+          setSelectedStage,
+          expandedStages,
+          toggleStageExpand,
+          handleDeleteStage
+        );
+        
+        return (
+          <StageItem
+            key={stage.id}
+            stage={stage}
+            isSelected={stageLogic.isSelected}
+            isExpanded={stageLogic.isExpanded}
+            agents={agents}
+            assets={assets}
+            selectedAgent={selectedAgent}
+            setSelectedAgent={setSelectedAgent}
+            selectedAsset={selectedAsset}
+            setSelectedAsset={setSelectedAsset}
+            newAgent={newAgent}
+            setNewAgent={setNewAgent}
+            newAsset={newAsset}
+            setNewAsset={setNewAsset}
+            onSelect={stageLogic.onSelect}
+            onToggleExpand={stageLogic.onToggleExpand}
+            onDelete={stageLogic.onDelete}
+            handleAddAgent={handleAddAgent}
+            handleAddAsset={handleAddAsset}
+            handleDeleteAgent={handleDeleteAgent}
+            handleDeleteAsset={handleDeleteAsset}
+          />
+        );
+      })}
     </>
   );
 };
