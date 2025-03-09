@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Search, Filter, Download, Upload, FileText, ChevronDown } from "lucide-react";
+import { Plus, Search, Filter, Download, Upload, FileText, MoreHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { 
   DropdownMenu,
@@ -120,18 +120,19 @@ const TemplateLibrary = () => {
         </div>
 
         <div className="border rounded-md">
-          <div className="grid grid-cols-7 gap-4 p-4 font-medium border-b">
+          <div className="grid grid-cols-8 gap-4 p-4 font-medium border-b">
             <div className="col-span-2">Nome</div>
             <div className="col-span-1">Tipo</div>
             <div className="col-span-1">Versão</div>
+            <div className="col-span-2">Especificações</div>
             <div className="col-span-1 hidden md:block">Atualizado</div>
-            <div className="col-span-2 text-right">Ações</div>
+            <div className="col-span-1 text-right">Ações</div>
           </div>
 
           <div className="divide-y">
             {filteredTemplates.length > 0 ? (
               filteredTemplates.map((template) => (
-                <div key={template.id} className="grid grid-cols-7 gap-4 p-4 items-center">
+                <div key={template.id} className="grid grid-cols-8 gap-4 p-4 items-center">
                   <div className="col-span-2">
                     <div className="font-medium">{template.name}</div>
                     <div className="text-sm text-muted-foreground truncate">
@@ -145,23 +146,17 @@ const TemplateLibrary = () => {
                   <div className="col-span-1 text-muted-foreground">
                     v{template.version}
                   </div>
+                  <div className="col-span-2 text-muted-foreground">
+                    {template.description ? template.description.substring(0, 50) + (template.description.length > 50 ? '...' : '') : 'Sem especificações'}
+                  </div>
                   <div className="col-span-1 hidden md:block text-muted-foreground">
                     {formatDate(template.updatedAt)}
                   </div>
-                  <div className="col-span-2 flex justify-end gap-2">
-                    <Button 
-                      variant="ghost" 
-                      size="icon"
-                      onClick={() => handleGenerateTemplateReport(template)}
-                      title="Gerar relatório"
-                    >
-                      <FileText className="h-4 w-4" />
-                    </Button>
+                  <div className="col-span-1 flex justify-end">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          Ações
-                          <ChevronDown className="ml-2 h-4 w-4" />
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
@@ -176,6 +171,9 @@ const TemplateLibrary = () => {
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleExportTemplate(template)}>
                           Exportar
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleGenerateTemplateReport(template)}>
+                          Gerar relatório
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
