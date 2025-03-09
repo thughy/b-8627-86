@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Asset } from "@/pages/Workflows/models/WorkflowModels";
 import ParameterItem, { Parameter, ParameterType } from "./components/ParameterItem";
@@ -61,9 +60,22 @@ const AssetParamsTab = ({ formData, onChange }: AssetParamsTabProps) => {
     updateParamsInAsset(updatedParams);
   };
 
-  const handleParamChange = (index: number, value: any) => {
+  const handleParamChange = (index: number, key: string, value: any) => {
     const updatedParams = [...parameters];
-    updatedParams[index].value = value;
+    
+    if (key === "type") {
+      updatedParams[index] = {
+        ...updatedParams[index],
+        type: value as ParameterType,
+        value: getDefaultValueForType(value as ParameterType)
+      };
+    } else {
+      updatedParams[index] = {
+        ...updatedParams[index],
+        [key]: value
+      };
+    }
+    
     setParameters(updatedParams);
     updateParamsInAsset(updatedParams);
   };
