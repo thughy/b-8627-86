@@ -1,89 +1,109 @@
 
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Input } from "@/components/ui/input";
 import { Send } from 'lucide-react';
-import { Deal } from '@/pages/Workflows/models/WorkflowModels';
-import ChatHeader from './ChatHeader';
 
-export interface ChatMessage {
+interface Message {
   id: string;
-  content: string;
-  sender: 'user' | 'agent';
+  text: string;
+  content: string; 
+  sender: 'user' | 'agent' | 'system';
+  senderName?: string;
   timestamp: Date;
 }
 
 interface ChatSectionProps {
   dealId: string;
-  messages: ChatMessage[];
-  sendMessage: (content: string) => void;
-  deal?: Deal; // Adicionamos o deal como prop opcional
+  messages: Message[];
+  sendMessage?: (content: string) => void;
 }
 
-const ChatSection: React.FC<ChatSectionProps> = ({ 
-  dealId, 
-  messages, 
-  sendMessage,
-  deal
-}) => {
-  const [messageText, setMessageText] = React.useState('');
+const ChatSection: React.FC<ChatSectionProps> = ({ dealId, messages, sendMessage }) => {
+  const [messageText, setMessageText] = useState('');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (messageText.trim()) {
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
+
+  const handleSendMessage = () => {
+    if (messageText.trim() === '') return;
+    
+    if (sendMessage) {
       sendMessage(messageText);
-      setMessageText('');
+    } else {
+      console.log("Message sent:", messageText);
+    }
+    
+    setMessageText('');
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
     }
   };
 
   return (
     <div className="flex flex-col h-full">
-      {/* Chat Header com informações do negócio */}
-      {deal && <ChatHeader deal={deal} />}
-      
-      {/* Área de mensagens */}
-      <div className="flex-1 overflow-y-auto mb-4 space-y-4 p-4 border rounded-md">
+      <div className="flex-1 mb-4 overflow-y-auto">
         {messages.length === 0 ? (
-          <div className="text-center text-muted-foreground p-4">
-            Ainda não há mensagens neste chat. Envie uma mensagem para iniciar a conversa.
+          <div className="text-center py-8 text-muted-foreground">
+            Nenhuma mensagem disponível para esta conversa.
+            <br />
+            Comece enviando uma mensagem abaixo.
           </div>
         ) : (
-          messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`flex ${
-                msg.sender === 'user' ? 'justify-end' : 'justify-start'
-              }`}
-            >
-              <div
-                className={`rounded-lg px-4 py-2 max-w-[80%] ${
-                  msg.sender === 'user'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted'
-                }`}
+          <div className="space-y-4">
+            {messages.map((message) => (
+              <div 
+                key={message.id}
+                className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
-                <p>{msg.content}</p>
-                <p className="text-xs opacity-70 mt-1">
-                  {msg.timestamp.toLocaleTimeString()}
-                </p>
+                <div 
+                  className={`px-4 py-2 rounded-lg max-w-[80%] ${
+                    message.sender === 'user' 
+                      ? 'bg-primary text-primary-foreground' 
+                      : message.sender === 'system'
+                      ? 'bg-secondary text-secondary-foreground'
+                      : 'bg-muted'
+                  }`}
+                >
+                  <div className="text-sm">{message.text}</div>
+                  <div className="text-xs mt-1 opacity-70">
+                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </div>
+                </div>
               </div>
-            </div>
-          ))
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
         )}
       </div>
 
-      {/* Input de mensagem */}
-      <form onSubmit={handleSubmit} className="flex gap-2">
-        <Input
-          value={messageText}
-          onChange={(e) => setMessageText(e.target.value)}
-          placeholder="Digite sua mensagem..."
-          className="flex-1"
-        />
-        <Button type="submit" size="icon">
-          <Send className="h-4 w-4" />
-        </Button>
-      </form>
+      <div className="mt-auto">
+        <div className="flex items-center gap-2">
+          <Input
+            value={messageText}
+            onChange={(e) => setMessageText(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Digite sua mensagem..."
+            className="flex-1"
+          />
+          <Button 
+            size="icon" 
+            onClick={handleSendMessage} 
+            disabled={messageText.trim() === ''}
+          >
+            <Send className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };

@@ -75,7 +75,6 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
             dealId={deal.id} 
             messages={messages}
             sendMessage={sendMessage}
-            deal={deal}
           />
         </TabsContent>
         
