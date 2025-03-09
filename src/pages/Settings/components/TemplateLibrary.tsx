@@ -99,14 +99,36 @@ const TemplateLibrary = () => {
     }
   };
 
+  // Recursive function to flatten nested objects for display
+  const flattenObject = (obj: Record<string, any>, prefix = '') => {
+    return Object.keys(obj).reduce((acc: Record<string, any>, key) => {
+      const prefixedKey = prefix ? `${prefix}.${key}` : key;
+      
+      if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
+        // Recursively flatten nested objects
+        Object.assign(acc, flattenObject(obj[key], prefixedKey));
+      } else {
+        // Handle arrays and primitive values
+        acc[prefixedKey] = obj[key];
+      }
+      
+      return acc;
+    }, {});
+  };
+
   const renderSpecificationItems = (data: Record<string, any>) => {
-    return Object.entries(data).map(([key, value]) => (
+    // Flatten nested objects for display
+    const flattenedData = flattenObject(data);
+    
+    return Object.entries(flattenedData).map(([key, value]) => (
       <div key={key} className="py-2 border-b last:border-0">
         <div className="font-medium">{key}</div>
         <div className="text-sm text-muted-foreground">
-          {typeof value === 'object' 
-            ? JSON.stringify(value, null, 2) 
-            : String(value)}
+          {Array.isArray(value) 
+            ? value.join(', ')
+            : typeof value === 'object' && value !== null
+              ? JSON.stringify(value, null, 2)
+              : String(value)}
         </div>
       </div>
     ));
@@ -151,7 +173,7 @@ const TemplateLibrary = () => {
             <div className="col-span-2">Nome</div>
             <div className="col-span-1">Tipo</div>
             <div className="col-span-1">Versão</div>
-            <div className="col-span-2">Especificações</div>
+            <div className="col-span-2 text-center">Especificações</div>
             <div className="col-span-1 hidden md:block">Atualizado</div>
             <div className="col-span-1 text-right">Ações</div>
           </div>
@@ -173,16 +195,13 @@ const TemplateLibrary = () => {
                   <div className="col-span-1 text-muted-foreground">
                     v{template.version}
                   </div>
-                  <div className="col-span-2 text-muted-foreground flex items-center">
-                    <div className="truncate mr-2">
-                      {Object.values(template.data).slice(0, 1).join(", ")}
-                      {Object.values(template.data).length > 1 && "..."}
-                    </div>
+                  <div className="col-span-2 flex justify-center">
                     <Button 
                       variant="ghost" 
                       size="icon" 
                       onClick={() => handleShowSpecifications(template)}
-                      className="h-6 w-6 p-0"
+                      className="h-8 w-8"
+                      title="Ver especificações"
                     >
                       <FileText className="h-4 w-4" />
                     </Button>
