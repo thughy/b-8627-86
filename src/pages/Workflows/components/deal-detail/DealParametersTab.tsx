@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Deal } from '@/pages/Workflows/models/WorkflowModels';
 import { Card, CardContent } from '@/components/ui/card';
@@ -69,7 +70,7 @@ const DealParametersTab: React.FC<DealParametersTabProps> = ({ deal, onEditDeal 
         <CardContent className="p-6">
           <h3 className="text-lg font-medium mb-4">Informações do Negócio</h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-4">
             <FormField id="title" label="Título" required>
               <Input 
                 id="title"
