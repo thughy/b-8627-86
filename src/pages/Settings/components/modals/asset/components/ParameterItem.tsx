@@ -1,13 +1,13 @@
 
-import React from "react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Trash, Edit, Type, Calendar, Hash, ToggleLeft, ListFilter } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Edit, Save, Trash, X, Type, Calendar, Hash, ToggleLeft, ListFilter, File } from "lucide-react";
 
-export type ParameterType = 'text' | 'number' | 'date' | 'switch' | 'dropdown' | 'file';
+export type ParameterType = "text" | "number" | "date" | "switch" | "dropdown" | "file";
 
 export interface Parameter {
   name: string;
@@ -16,118 +16,150 @@ export interface Parameter {
 }
 
 interface ParameterItemProps {
-  param: Parameter;
-  index: number;
-  onParamChange: (index: number, key: string, value: any) => void;
-  onRemoveParameter: (index: number) => void;
+  parameter: Parameter;
+  onDelete: () => void;
+  onUpdate: (updatedParameter: Parameter) => void;
 }
 
-const ParameterItem = ({ param, index, onParamChange, onRemoveParameter }: ParameterItemProps) => {
-  const [isEditing, setIsEditing] = React.useState(false);
-  
+const ParameterItem = ({ parameter, onDelete, onUpdate }: ParameterItemProps) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState(parameter.name);
+  const [editType, setEditType] = useState<ParameterType>(parameter.type);
+
+  const handleSave = () => {
+    if (!editName.trim()) return;
+    
+    onUpdate({ 
+      ...parameter, 
+      name: editName,
+      type: editType
+    });
+    
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setEditName(parameter.name);
+    setEditType(parameter.type);
+    setIsEditing(false);
+  };
+
   const getTypeIcon = (type: ParameterType) => {
-    switch(type) {
-      case 'text':
-        return <Type className="h-4 w-4 mr-2" />;
-      case 'number':
-        return <Hash className="h-4 w-4 mr-2" />;
-      case 'date':
-        return <Calendar className="h-4 w-4 mr-2" />;
-      case 'switch':
-        return <ToggleLeft className="h-4 w-4 mr-2" />;
-      case 'dropdown':
-        return <ListFilter className="h-4 w-4 mr-2" />;
-      case 'file':
-        return <Type className="h-4 w-4 mr-2" />;
+    switch (type) {
+      case "text":
+        return <Type className="h-4 w-4" />;
+      case "number":
+        return <Hash className="h-4 w-4" />;
+      case "date":
+        return <Calendar className="h-4 w-4" />;
+      case "switch":
+        return <ToggleLeft className="h-4 w-4" />;
+      case "dropdown":
+        return <ListFilter className="h-4 w-4" />;
+      case "file":
+        return <File className="h-4 w-4" />;
       default:
-        return <Type className="h-4 w-4 mr-2" />;
+        return <Type className="h-4 w-4" />;
     }
   };
-  
+
   const getTypeLabel = (type: ParameterType) => {
-    switch(type) {
-      case 'text':
-        return 'Texto';
-      case 'number':
-        return 'Número';
-      case 'date':
-        return 'Data';
-      case 'switch':
-        return 'Switch';
-      case 'dropdown':
-        return 'Lista';
-      case 'file':
-        return 'Arquivo';
-      default:
-        return 'Texto';
+    switch (type) {
+      case "text": return "Texto";
+      case "number": return "Número";
+      case "date": return "Data";
+      case "switch": return "Switch";
+      case "dropdown": return "Lista";
+      case "file": return "Arquivo";
+      default: return "Texto";
     }
   };
-  
+
   return (
-    <div className="flex items-center gap-2 p-3 border rounded-md">
-      <div className="flex-1">
-        {isEditing ? (
-          <div className="space-y-2">
-            <div>
-              <Label htmlFor={`param-name-${index}`} className="text-xs">Nome do Parâmetro</Label>
-              <Input
-                id={`param-name-${index}`}
-                value={param.name}
-                onChange={(e) => onParamChange(index, "name", e.target.value)}
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <Label htmlFor={`param-type-${index}`} className="text-xs">Tipo</Label>
-              <Select 
-                value={param.type} 
-                onValueChange={(value) => onParamChange(index, "type", value as ParameterType)}
-              >
-                <SelectTrigger id={`param-type-${index}`} className="mt-1">
-                  <SelectValue placeholder="Tipo do parâmetro" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="text">Texto</SelectItem>
-                  <SelectItem value="number">Número</SelectItem>
-                  <SelectItem value="date">Data</SelectItem>
-                  <SelectItem value="switch">Switch</SelectItem>
-                  <SelectItem value="dropdown">Lista</SelectItem>
-                  <SelectItem value="file">Arquivo</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <Button size="sm" onClick={() => setIsEditing(false)} className="mt-2">
-              Concluir
+    <div className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-900 rounded-md mb-2">
+      {isEditing ? (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 w-full">
+          <div>
+            <Label htmlFor="paramName" className="text-xs">Nome</Label>
+            <Input
+              id="paramName"
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+              className="mt-1"
+            />
+          </div>
+          <div>
+            <Label htmlFor="paramType" className="text-xs">Tipo</Label>
+            <Select 
+              value={editType} 
+              onValueChange={(value) => setEditType(value as ParameterType)}
+            >
+              <SelectTrigger id="paramType" className="mt-1">
+                <SelectValue placeholder="Tipo do parâmetro" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="text" className="flex items-center gap-2">
+                  <Type className="h-4 w-4" />
+                  <span>Texto</span>
+                </SelectItem>
+                <SelectItem value="number" className="flex items-center gap-2">
+                  <Hash className="h-4 w-4" />
+                  <span>Número</span>
+                </SelectItem>
+                <SelectItem value="date" className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  <span>Data</span>
+                </SelectItem>
+                <SelectItem value="switch" className="flex items-center gap-2">
+                  <ToggleLeft className="h-4 w-4" />
+                  <span>Switch</span>
+                </SelectItem>
+                <SelectItem value="dropdown" className="flex items-center gap-2">
+                  <ListFilter className="h-4 w-4" />
+                  <span>Lista</span>
+                </SelectItem>
+                <SelectItem value="file" className="flex items-center gap-2">
+                  <File className="h-4 w-4" />
+                  <span>Arquivo</span>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-end gap-2">
+            <Button onClick={handleSave} size="sm" className="mt-1">
+              <Save className="h-4 w-4 mr-1" />
+              Salvar
+            </Button>
+            <Button onClick={handleCancel} variant="ghost" size="sm" className="mt-1">
+              <X className="h-4 w-4 mr-1" />
+              Cancelar
             </Button>
           </div>
-        ) : (
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              {getTypeIcon(param.type)}
-              <div>
-                <div className="font-medium">{param.name}</div>
-                <div className="text-xs text-muted-foreground">
-                  Tipo: {getTypeLabel(param.type)}
-                </div>
+        </div>
+      ) : (
+        <>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 text-primary">
+              {getTypeIcon(parameter.type)}
+            </div>
+            <div>
+              <div className="font-medium">{parameter.name}</div>
+              <div className="text-xs text-muted-foreground">
+                Tipo: {getTypeLabel(parameter.type)}
               </div>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsEditing(true)}
-            >
+          </div>
+
+          <div className="flex gap-1">
+            <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
               <Edit className="h-4 w-4" />
             </Button>
+            <Button variant="ghost" size="sm" onClick={onDelete}>
+              <Trash className="h-4 w-4 text-red-500" />
+            </Button>
           </div>
-        )}
-      </div>
-      <Button 
-        variant="ghost" 
-        size="icon"
-        onClick={() => onRemoveParameter(index)}
-      >
-        <Trash className="h-4 w-4" />
-      </Button>
+        </>
+      )}
     </div>
   );
 };

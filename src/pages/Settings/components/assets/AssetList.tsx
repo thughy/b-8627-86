@@ -2,9 +2,15 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Trash, Eye } from "lucide-react";
+import { MoreHorizontal, Eye } from "lucide-react";
 import { Asset } from "@/pages/Workflows/models/WorkflowModels";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 
 interface AssetListProps {
   assets: Asset[];
@@ -37,23 +43,25 @@ const AssetList = ({
 
   return (
     <div className="border rounded-md">
-      <div className="grid grid-cols-7 gap-4 p-4 font-medium border-b">
+      <div className="grid grid-cols-6 gap-4 p-4 font-medium border-b">
         <div className="col-span-2">Nome</div>
         <div className="col-span-1">Tipo</div>
         <div className="col-span-1">Valor</div>
         <div className="col-span-1 hidden md:block">Data</div>
-        <div className="col-span-1">Status</div>
-        <div className="col-span-1 text-right">Ações</div>
+        <div className="col-span-1">Ações</div>
       </div>
 
       <div className="divide-y">
         {assets.length > 0 ? (
           assets.map((asset) => (
-            <div key={asset.id} className="grid grid-cols-7 gap-4 p-4 items-center">
+            <div key={asset.id} className="grid grid-cols-6 gap-4 p-4 items-center">
               <div className="col-span-2">
                 <div className="font-medium">{asset.title}</div>
                 <div className="text-sm text-muted-foreground truncate">
                   {asset.description}
+                </div>
+                <div className="mt-1">
+                  {getStatusBadge(asset.status)}
                 </div>
               </div>
               <div className="col-span-1 text-muted-foreground">
@@ -65,31 +73,34 @@ const AssetList = ({
               <div className="col-span-1 hidden md:block text-muted-foreground">
                 {formatDate(asset.createdAt)}
               </div>
-              <div className="col-span-1">
-                {getStatusBadge(asset.status)}
-              </div>
               <div className="col-span-1 flex justify-end gap-2">
                 <Button 
                   variant="ghost" 
                   size="icon"
                   onClick={() => onViewAsset(asset)}
+                  title="Visualizar"
                 >
                   <Eye className="h-4 w-4" />
                 </Button>
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  onClick={() => onEditAsset(asset)}
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  onClick={() => onDeleteAsset(asset)}
-                >
-                  <Trash className="h-4 w-4" />
-                </Button>
+                
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => onEditAsset(asset)}>
+                      Editar
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => onDeleteAsset(asset)}
+                      className="text-red-500 focus:text-red-500"
+                    >
+                      Remover
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           ))
