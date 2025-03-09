@@ -2,8 +2,9 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Menu, Bell, Search } from "lucide-react";
+import { Menu, Bell } from "lucide-react";
 import UserMenu from "./UserMenu";
+import SearchBar from "./SearchBar";
 
 interface TopBarProps {
   toggleSidebar: () => void;
@@ -22,14 +23,7 @@ const TopBar = ({ toggleSidebar }: TopBarProps) => {
           <Menu className="h-5 w-5" />
         </Button>
 
-        <div className="relative hidden sm:block max-w-md">
-          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Buscar..."
-            className="pl-8 pr-4 py-2 bg-muted w-full rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-          />
-        </div>
+        <SearchBar />
       </div>
 
       <div className="flex items-center gap-3">
