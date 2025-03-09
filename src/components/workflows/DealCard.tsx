@@ -25,7 +25,7 @@ const DealCard: React.FC<DealCardProps> = ({
         <div className="flex items-center justify-between mb-2">
           <h4 className="font-medium text-sm truncate pr-2">{deal.title}</h4>
           <div className="flex items-center gap-1">
-            <span className="text-xs text-muted-foreground">Tipo:</span>
+            
             <Badge variant="outline" className={cn("text-xs font-semibold flex items-center px-2 py-0.5", typeBadge.color)}>
               {deal.type === 'new' ? <Tag className="h-3 w-3 mr-1" /> : <Award className="h-3 w-3 mr-1" />}
               {deal.type || "N/D"}
