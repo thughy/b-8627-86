@@ -13,10 +13,9 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Agent } from "@/pages/Workflows/models/WorkflowModels";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Bot, Book, Database, Settings2, Shield } from "lucide-react";
 
 interface AgentConfigModalProps {
   isOpen: boolean;
@@ -38,28 +37,86 @@ const AgentConfigModal = ({
       profile: {
         name: "",
         role: "",
-        goal: "",
+        goal: ""
       },
       workEnvironment: {},
       businessRules: {},
       expertise: {},
-      status: "active",
+      ragDocuments: [],
+      tools: [],
+      llmModel: "GPT-4",
+      status: "active"
     }
   );
 
-  const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+  const handleProfileChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
       profile: {
         ...prev.profile!,
-        [name]: value
+        [field]: value
       }
     }));
   };
 
+  const handleWorkEnvironmentChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      workEnvironment: {
+        ...prev.workEnvironment!,
+        [field]: value
+      }
+    }));
+  };
+
+  const handleBusinessRulesChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      businessRules: {
+        ...prev.businessRules!,
+        [field]: value
+      }
+    }));
+  };
+
+  const handleExpertiseChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      expertise: {
+        ...prev.expertise!,
+        [field]: value
+      }
+    }));
+  };
+
+  const handleToolsChange = (value: string) => {
+    const tools = value.split(',').map(t => t.trim()).filter(t => t);
+    setFormData(prev => ({
+      ...prev,
+      tools
+    }));
+  };
+
+  const handleRagDocumentsChange = (value: string) => {
+    const documents = value.split(',').map(d => d.trim()).filter(d => d);
+    setFormData(prev => ({
+      ...prev,
+      ragDocuments: documents
+    }));
+  };
+
+  const handleLLMModelChange = (value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      llmModel: value
+    }));
+  };
+
   const handleStatusChange = (status: 'active' | 'paused' | 'blocked') => {
-    setFormData(prev => ({ ...prev, status }));
+    setFormData(prev => ({
+      ...prev,
+      status
+    }));
   };
 
   const handleSubmit = () => {
@@ -82,66 +139,33 @@ const AgentConfigModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{agent ? "Editar Agente" : "Novo Agente"}</DialogTitle>
           <DialogDescription>
             {agent 
-              ? "Edite as configurações do agente existente." 
-              : "Configure um novo agente de IA para seu negócio."}
+              ? "Edite as informações do agente existente." 
+              : "Configure um novo agente de IA para seu workflow."}
           </DialogDescription>
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-5">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="profile" className="flex items-center gap-2">
-              <Bot className="h-4 w-4" />
-              <span className="hidden sm:inline">Perfil</span>
-            </TabsTrigger>
-            <TabsTrigger value="workEnvironment" className="flex items-center gap-2">
-              <Settings2 className="h-4 w-4" />
-              <span className="hidden sm:inline">Ambiente</span>
-            </TabsTrigger>
-            <TabsTrigger value="businessRules" className="flex items-center gap-2">
-              <Shield className="h-4 w-4" />
-              <span className="hidden sm:inline">Regras</span>
-            </TabsTrigger>
-            <TabsTrigger value="expertise" className="flex items-center gap-2">
-              <Book className="h-4 w-4" />
-              <span className="hidden sm:inline">Expertise</span>
-            </TabsTrigger>
-            <TabsTrigger value="rag" className="flex items-center gap-2">
-              <Database className="h-4 w-4" />
-              <span className="hidden sm:inline">RAG</span>
-            </TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="profile">Perfil</TabsTrigger>
+            <TabsTrigger value="environment">Ambiente</TabsTrigger>
+            <TabsTrigger value="capabilities">Capacidades</TabsTrigger>
+            <TabsTrigger value="configuration">Configuração</TabsTrigger>
           </TabsList>
 
           <TabsContent value="profile" className="space-y-4 mt-4">
-            <div className="flex gap-4 items-center mb-6">
-              <Avatar className="h-16 w-16">
-                <AvatarFallback className="bg-primary/10 text-primary text-xl">
-                  {formData.profile?.name?.charAt(0) || "A"}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <h3 className="text-lg font-medium">
-                  {formData.profile?.name || "Novo Agente"}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {formData.profile?.role || "Configure o perfil do agente"}
-                </p>
-              </div>
-            </div>
-
             <div className="space-y-4">
               <div className="grid gap-2">
                 <Label htmlFor="name">Nome do Agente</Label>
                 <Input 
                   id="name"
-                  name="name"
-                  placeholder="Ex: Assistente de Vendas"
                   value={formData.profile?.name || ""}
-                  onChange={handleProfileChange}
+                  onChange={(e) => handleProfileChange("name", e.target.value)}
+                  placeholder="Ex: Assistente de Vendas"
                 />
               </div>
               
@@ -149,10 +173,9 @@ const AgentConfigModal = ({
                 <Label htmlFor="role">Função</Label>
                 <Input 
                   id="role"
-                  name="role"
-                  placeholder="Ex: Vendedor, Atendente, Suporte"
                   value={formData.profile?.role || ""}
-                  onChange={handleProfileChange}
+                  onChange={(e) => handleProfileChange("role", e.target.value)}
+                  placeholder="Ex: Vendedor, Atendente, Consultor"
                 />
               </div>
 
@@ -160,17 +183,152 @@ const AgentConfigModal = ({
                 <Label htmlFor="goal">Objetivo</Label>
                 <Textarea 
                   id="goal"
-                  name="goal"
-                  placeholder="Descreva o principal objetivo deste agente"
-                  rows={3}
                   value={formData.profile?.goal || ""}
-                  onChange={handleProfileChange}
+                  onChange={(e) => handleProfileChange("goal", e.target.value)}
+                  placeholder="Descreva o objetivo principal deste agente"
+                  rows={4}
+                />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="environment" className="space-y-4 mt-4">
+            <div className="space-y-4">
+              <div className="grid gap-2">
+                <Label htmlFor="workflowTitle">Workflow</Label>
+                <Input 
+                  id="workflowTitle"
+                  value={formData.workEnvironment?.workflowTitle || ""}
+                  onChange={(e) => handleWorkEnvironmentChange("workflowTitle", e.target.value)}
+                  placeholder="Nome do workflow onde o agente atua"
+                />
+              </div>
+              
+              <div className="grid gap-2">
+                <Label htmlFor="departmentTitle">Departamento</Label>
+                <Input 
+                  id="departmentTitle"
+                  value={formData.workEnvironment?.departmentTitle || ""}
+                  onChange={(e) => handleWorkEnvironmentChange("departmentTitle", e.target.value)}
+                  placeholder="Nome do departamento"
                 />
               </div>
 
               <div className="grid gap-2">
+                <Label htmlFor="stageTitle">Estágio</Label>
+                <Input 
+                  id="stageTitle"
+                  value={formData.workEnvironment?.stageTitle || ""}
+                  onChange={(e) => handleWorkEnvironmentChange("stageTitle", e.target.value)}
+                  placeholder="Estágio do pipeline onde o agente atua"
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="workflowDescription">Descrição do Ambiente de Trabalho</Label>
+                <Textarea 
+                  id="workflowDescription"
+                  value={formData.workEnvironment?.workflowDescription || ""}
+                  onChange={(e) => handleWorkEnvironmentChange("workflowDescription", e.target.value)}
+                  placeholder="Descreva o ambiente de trabalho do agente"
+                  rows={3}
+                />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="capabilities" className="space-y-4 mt-4">
+            <div className="space-y-4">
+              <div className="grid gap-2">
+                <Label htmlFor="rules">Regras de Negócio</Label>
+                <Textarea 
+                  id="rules"
+                  value={formData.businessRules?.rules?.join('\n') || ""}
+                  onChange={(e) => handleBusinessRulesChange("rules", e.target.value.split('\n'))}
+                  placeholder="Uma regra por linha"
+                  rows={3}
+                />
+              </div>
+              
+              <div className="grid gap-2">
+                <Label htmlFor="conversationStyle">Estilo de Conversação</Label>
+                <Input 
+                  id="conversationStyle"
+                  value={formData.businessRules?.conversationStyle || ""}
+                  onChange={(e) => handleBusinessRulesChange("conversationStyle", e.target.value)}
+                  placeholder="Ex: Formal, Amigável, Profissional"
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="knowledge">Conhecimentos</Label>
+                <Textarea 
+                  id="knowledge"
+                  value={formData.expertise?.knowledge?.join('\n') || ""}
+                  onChange={(e) => handleExpertiseChange("knowledge", e.target.value.split('\n'))}
+                  placeholder="Um conhecimento por linha"
+                  rows={3}
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="skills">Habilidades</Label>
+                <Textarea 
+                  id="skills"
+                  value={formData.expertise?.skills?.join('\n') || ""}
+                  onChange={(e) => handleExpertiseChange("skills", e.target.value.split('\n'))}
+                  placeholder="Uma habilidade por linha"
+                  rows={3}
+                />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="configuration" className="space-y-4 mt-4">
+            <div className="space-y-4">
+              <div className="grid gap-2">
+                <Label htmlFor="tools">Ferramentas (separadas por vírgula)</Label>
+                <Input 
+                  id="tools"
+                  value={formData.tools?.join(', ') || ""}
+                  onChange={(e) => handleToolsChange(e.target.value)}
+                  placeholder="Ex: Chat, Email, Agenda"
+                />
+              </div>
+              
+              <div className="grid gap-2">
+                <Label htmlFor="ragDocuments">Documentos RAG (separados por vírgula)</Label>
+                <Input 
+                  id="ragDocuments"
+                  value={formData.ragDocuments?.join(', ') || ""}
+                  onChange={(e) => handleRagDocumentsChange(e.target.value)}
+                  placeholder="Ex: manual.pdf, faq.pdf"
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="llmModel">Modelo LLM</Label>
+                <Select 
+                  value={formData.llmModel} 
+                  onValueChange={handleLLMModelChange}
+                >
+                  <SelectTrigger id="llmModel">
+                    <SelectValue placeholder="Selecione o modelo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="GPT-4">GPT-4</SelectItem>
+                    <SelectItem value="GPT-3.5">GPT-3.5</SelectItem>
+                    <SelectItem value="Claude">Claude</SelectItem>
+                    <SelectItem value="Claude-2">Claude-2</SelectItem>
+                    <SelectItem value="Llama-3">Llama-3</SelectItem>
+                    <SelectItem value="Gemini">Gemini</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid gap-2">
                 <Label>Status</Label>
-                <div className="flex space-x-4">
+                <div className="flex space-x-2">
                   <Button 
                     type="button" 
                     variant={formData.status === 'active' ? "default" : "outline"}
@@ -197,30 +355,6 @@ const AgentConfigModal = ({
                   </Button>
                 </div>
               </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="workEnvironment" className="space-y-4 mt-4">
-            <div className="flex items-center justify-center h-40 border rounded-md text-muted-foreground">
-              Configuração de Ambiente de Trabalho em desenvolvimento
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="businessRules" className="space-y-4 mt-4">
-            <div className="flex items-center justify-center h-40 border rounded-md text-muted-foreground">
-              Configuração de Regras de Negócio em desenvolvimento
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="expertise" className="space-y-4 mt-4">
-            <div className="flex items-center justify-center h-40 border rounded-md text-muted-foreground">
-              Configuração de Expertise em desenvolvimento
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="rag" className="space-y-4 mt-4">
-            <div className="flex items-center justify-center h-40 border rounded-md text-muted-foreground">
-              Configuração de Documentos RAG em desenvolvimento
             </div>
           </TabsContent>
         </Tabs>

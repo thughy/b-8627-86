@@ -10,79 +10,98 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Search, Filter, MessageSquare, CreditCard, Brain, Phone, Mail, Code, Edit, Power } from "lucide-react";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Plus, Search, Filter, Edit, Trash, MessageSquare, CreditCard, Zap, Phone, Mail, Settings } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
 import { formatDate } from "@/lib/utils";
 import { getIntegrations } from "../services/settingsService";
 import { Integration } from "@/pages/Workflows/models/WorkflowModels";
+import IntegrationConfigModal from "./modals/IntegrationConfigModal";
 
 const IntegrationsSettings = () => {
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [integrations, setIntegrations] = useState<Integration[]>(getIntegrations());
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedIntegration, setSelectedIntegration] = useState<Integration | undefined>(undefined);
 
-  const getFilteredIntegrations = () => {
-    return integrations.filter((integration) => {
-      // Filter by search term
-      const matchesSearch = 
-        integration.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        integration.provider.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      // Filter by tab
-      const matchesTab = 
-        activeTab === "all" || 
-        activeTab === integration.type;
-      
-      return matchesSearch && matchesTab;
-    });
-  };
-
-  const filteredIntegrations = getFilteredIntegrations();
+  const filteredIntegrations = integrations.filter((integration) => 
+    integration.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    integration.provider.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    integration.type.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleAddIntegration = () => {
-    toast({
-      title: "Adicionar Integração",
-      description: "Funcionalidade em desenvolvimento",
-    });
+    setSelectedIntegration(undefined);
+    setIsModalOpen(true);
   };
 
   const handleEditIntegration = (integration: Integration) => {
+    setSelectedIntegration(integration);
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteIntegration = (integration: Integration) => {
     toast({
-      title: "Editar Integração",
-      description: `Editar integração: ${integration.name}`,
+      title: "Remover integração",
+      description: `Tem certeza que deseja remover a integração: ${integration.name}?`,
+      variant: "destructive",
+      action: (
+        <Button 
+          variant="outline" 
+          onClick={() => {
+            setIntegrations(prev => prev.filter(i => i.id !== integration.id));
+            toast({
+              title: "Integração removida",
+              description: `A integração ${integration.name} foi removida com sucesso.`,
+            });
+          }}
+        >
+          Confirmar
+        </Button>
+      ),
     });
   };
 
-  const handleToggleStatus = (integration: Integration) => {
-    const newStatus = !integration.isActive;
-    toast({
-      title: `Integração ${newStatus ? 'ativada' : 'desativada'}`,
-      description: `${integration.name} foi ${newStatus ? 'ativada' : 'desativada'}`,
-    });
+  const handleSaveIntegration = (integrationData: Partial<Integration>) => {
+    if (selectedIntegration) {
+      // Update existing integration
+      setIntegrations(prev => 
+        prev.map(i => 
+          i.id === selectedIntegration.id 
+            ? { ...i, ...integrationData, updatedAt: new Date() } 
+            : i
+        )
+      );
+    } else {
+      // Add new integration
+      const newIntegration: Integration = {
+        id: `integration-${Date.now()}`,
+        name: integrationData.name || "Nova Integração",
+        type: integrationData.type || "message",
+        provider: integrationData.provider || "Provedor",
+        credentials: integrationData.credentials || {},
+        isActive: integrationData.isActive !== undefined ? integrationData.isActive : true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      setIntegrations(prev => [...prev, newIntegration]);
+    }
   };
 
-  const getIntegrationIcon = (type: Integration['type']) => {
+  const getTypeIcon = (type: Integration['type']) => {
     switch (type) {
       case 'message':
-        return <MessageSquare className="h-5 w-5 text-blue-500" />;
+        return <MessageSquare className="h-4 w-4 text-blue-500" />;
       case 'payment':
-        return <CreditCard className="h-5 w-5 text-green-500" />;
+        return <CreditCard className="h-4 w-4 text-green-500" />;
       case 'llm':
-        return <Brain className="h-5 w-5 text-purple-500" />;
+        return <Zap className="h-4 w-4 text-purple-500" />;
       case 'call':
-        return <Phone className="h-5 w-5 text-yellow-500" />;
+        return <Phone className="h-4 w-4 text-orange-500" />;
       case 'email':
-        return <Mail className="h-5 w-5 text-red-500" />;
+        return <Mail className="h-4 w-4 text-red-500" />;
       case 'custom':
-        return <Code className="h-5 w-5 text-orange-500" />;
+        return <Settings className="h-4 w-4 text-gray-500" />;
       default:
         return null;
     }
@@ -90,13 +109,20 @@ const IntegrationsSettings = () => {
 
   const getTypeName = (type: Integration['type']) => {
     switch (type) {
-      case 'message': return 'Mensagem';
-      case 'payment': return 'Pagamento';
-      case 'llm': return 'LLM';
-      case 'call': return 'Telefonia';
-      case 'email': return 'Email';
-      case 'custom': return 'Personalizado';
-      default: return type;
+      case 'message':
+        return "Mensagens";
+      case 'payment':
+        return "Pagamentos";
+      case 'llm':
+        return "IA";
+      case 'call':
+        return "Telefonia";
+      case 'email':
+        return "Email";
+      case 'custom':
+        return "Personalizado";
+      default:
+        return type;
     }
   };
 
@@ -105,9 +131,9 @@ const IntegrationsSettings = () => {
       <CardHeader className="pb-3">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <CardTitle>Integrações</CardTitle>
+            <CardTitle>Gerenciamento de Integrações</CardTitle>
             <CardDescription>
-              Configure integrações com serviços externos
+              Configure e gerencie as integrações com serviços externos
             </CardDescription>
           </div>
           <Button onClick={handleAddIntegration} className="flex-shrink-0">
@@ -117,77 +143,85 @@ const IntegrationsSettings = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <div className="flex justify-between items-center">
-            <TabsList>
-              <TabsTrigger value="all">Todas</TabsTrigger>
-              <TabsTrigger value="message">Mensagens</TabsTrigger>
-              <TabsTrigger value="payment">Pagamentos</TabsTrigger>
-              <TabsTrigger value="llm">IA</TabsTrigger>
-              <TabsTrigger value="call">Telefonia</TabsTrigger>
-              <TabsTrigger value="email">Email</TabsTrigger>
-              <TabsTrigger value="custom">Outras</TabsTrigger>
-            </TabsList>
-            
-            <div className="flex gap-2">
-              <div className="relative w-64">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Buscar integrações..."
-                  className="pl-8"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-              <Button variant="outline" size="icon">
-                <Filter className="h-4 w-4" />
-              </Button>
-            </div>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div className="relative w-full sm:w-96">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar integrações..."
+              className="pl-8"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <Button variant="outline" size="icon" className="flex-shrink-0">
+            <Filter className="h-4 w-4" />
+          </Button>
+        </div>
+
+        <div className="border rounded-md">
+          <div className="grid grid-cols-6 gap-4 p-4 font-medium border-b">
+            <div className="col-span-2">Nome / Provedor</div>
+            <div className="col-span-1">Tipo</div>
+            <div className="col-span-1">Status</div>
+            <div className="col-span-1 hidden md:block">Atualizado</div>
+            <div className="col-span-1 text-right">Ações</div>
           </div>
 
-          <TabsContent value={activeTab} className="mt-0 border-0 p-0">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {filteredIntegrations.length > 0 ? (
-                filteredIntegrations.map((integration) => (
-                  <Card key={integration.id} className="overflow-hidden">
-                    <div className="flex items-center p-4">
-                      <div className="mr-4">
-                        {getIntegrationIcon(integration.type)}
-                      </div>
-                      <div className="flex-1">
-                        <div className="font-medium">{integration.name}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {integration.provider} • {getTypeName(integration.type)}
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Switch
-                          checked={integration.isActive}
-                          onCheckedChange={() => handleToggleStatus(integration)}
-                        />
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleEditIntegration(integration)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      </div>
+          <div className="divide-y">
+            {filteredIntegrations.length > 0 ? (
+              filteredIntegrations.map((integration) => (
+                <div key={integration.id} className="grid grid-cols-6 gap-4 p-4 items-center">
+                  <div className="col-span-2">
+                    <div className="font-medium">{integration.name}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {integration.provider}
                     </div>
-                    <div className="bg-muted/30 p-3 border-t text-xs">
-                      Última atualização: {formatDate(integration.updatedAt)}
-                    </div>
-                  </Card>
-                ))
-              ) : (
-                <div className="col-span-full p-4 text-center text-muted-foreground">
-                  Nenhuma integração encontrada
+                  </div>
+                  <div className="col-span-1 flex items-center gap-1">
+                    {getTypeIcon(integration.type)}
+                    <span className="text-sm">{getTypeName(integration.type)}</span>
+                  </div>
+                  <div className="col-span-1">
+                    <Badge className={integration.isActive ? "bg-green-500" : "bg-gray-500"}>
+                      {integration.isActive ? "Ativo" : "Inativo"}
+                    </Badge>
+                  </div>
+                  <div className="col-span-1 hidden md:block text-muted-foreground">
+                    {formatDate(integration.updatedAt)}
+                  </div>
+                  <div className="col-span-1 flex justify-end gap-2">
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => handleEditIntegration(integration)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => handleDeleteIntegration(integration)}
+                    >
+                      <Trash className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-              )}
-            </div>
-          </TabsContent>
-        </Tabs>
+              ))
+            ) : (
+              <div className="p-4 text-center text-muted-foreground">
+                Nenhuma integração encontrada
+              </div>
+            )}
+          </div>
+        </div>
       </CardContent>
+
+      <IntegrationConfigModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        integration={selectedIntegration}
+        onSave={handleSaveIntegration}
+      />
     </Card>
   );
 };

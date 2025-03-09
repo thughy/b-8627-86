@@ -10,13 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Search, Filter, Edit, Trash, MoreVertical } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Plus, Search, Filter, Edit, Trash, ListFilter } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 import { getAgents } from "../services/settingsService";
@@ -32,7 +26,9 @@ const AgentSettings = () => {
 
   const filteredAgents = agents.filter((agent) => 
     agent.profile.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    agent.profile.role.toLowerCase().includes(searchTerm.toLowerCase())
+    agent.profile.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    agent.workEnvironment.workflowTitle?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    agent.workEnvironment.departmentTitle?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleAddAgent = () => {
@@ -47,7 +43,7 @@ const AgentSettings = () => {
 
   const handleDeleteAgent = (agent: Agent) => {
     toast({
-      title: "Remover Agente",
+      title: "Remover agente",
       description: `Tem certeza que deseja remover o agente: ${agent.profile.name}?`,
       variant: "destructive",
       action: (
@@ -78,42 +74,27 @@ const AgentSettings = () => {
         )
       );
     } else {
-      // Create a new unique ID
-      const newId = `agent-${Date.now()}`;
-      
       // Add new agent
       const newAgent: Agent = {
-        id: newId,
-        stageId: "stage-new",
-        profile: {
-          name: agentData.profile?.name || "Novo Agente",
-          role: agentData.profile?.role || "",
-          goal: agentData.profile?.goal || "",
+        id: `agent-${Date.now()}`,
+        stageId: agentData.stageId || "stage-default",
+        profile: agentData.profile || {
+          name: "Novo Agente",
+          role: "Função não definida",
+          goal: "Objetivo não definido"
         },
         workEnvironment: agentData.workEnvironment || {},
         businessRules: agentData.businessRules || {},
         expertise: agentData.expertise || {},
+        ragDocuments: agentData.ragDocuments || [],
+        tools: agentData.tools || [],
+        llmModel: agentData.llmModel || "GPT-4",
         status: agentData.status || "active",
         createdAt: new Date(),
-        updatedAt: new Date(),
+        updatedAt: new Date()
       };
       setAgents(prev => [...prev, newAgent]);
     }
-  };
-
-  const handleChangeStatus = (agent: Agent, status: Agent['status']) => {
-    setAgents(prev => 
-      prev.map(a => 
-        a.id === agent.id 
-          ? { ...a, status, updatedAt: new Date() } 
-          : a
-      )
-    );
-    
-    toast({
-      title: "Status alterado",
-      description: `O status do agente ${agent.profile.name} foi alterado para ${status}.`,
-    });
   };
 
   const getStatusBadge = (status: Agent['status']) => {
@@ -156,16 +137,21 @@ const AgentSettings = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <Button variant="outline" size="icon" className="flex-shrink-0">
-            <Filter className="h-4 w-4" />
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="icon">
+              <Filter className="h-4 w-4" />
+            </Button>
+            <Button variant="outline">
+              <ListFilter className="h-4 w-4 mr-2" />
+              <span>Filtrar por Workflow</span>
+            </Button>
+          </div>
         </div>
 
         <div className="border rounded-md">
-          <div className="grid grid-cols-7 gap-4 p-4 font-medium border-b">
-            <div className="col-span-2">Nome</div>
-            <div className="col-span-1">Função</div>
-            <div className="col-span-2 hidden md:block">Alocado em</div>
+          <div className="grid grid-cols-6 gap-4 p-4 font-medium border-b">
+            <div className="col-span-2">Nome / Função</div>
+            <div className="col-span-2 hidden md:block">Ambiente</div>
             <div className="col-span-1">Status</div>
             <div className="col-span-1 text-right">Ações</div>
           </div>
@@ -173,53 +159,40 @@ const AgentSettings = () => {
           <div className="divide-y">
             {filteredAgents.length > 0 ? (
               filteredAgents.map((agent) => (
-                <div key={agent.id} className="grid grid-cols-7 gap-4 p-4 items-center">
+                <div key={agent.id} className="grid grid-cols-6 gap-4 p-4 items-center">
                   <div className="col-span-2">
                     <div className="font-medium">{agent.profile.name}</div>
-                    <div className="text-sm text-muted-foreground">
-                      LLM: {agent.llmModel || "Não definido"}
+                    <div className="text-sm text-muted-foreground">{agent.profile.role}</div>
+                  </div>
+                  <div className="col-span-2 hidden md:block">
+                    <div className="text-sm">
+                      <span className="font-medium">Workflow:</span> {agent.workEnvironment.workflowTitle || "N/A"}
                     </div>
-                  </div>
-                  <div className="col-span-1 text-muted-foreground">
-                    {agent.profile.role}
-                  </div>
-                  <div className="col-span-2 hidden md:block text-muted-foreground">
-                    {agent.workEnvironment.workflowTitle || "Não alocado"} 
-                    {agent.workEnvironment.stageTitle && ` > ${agent.workEnvironment.stageTitle}`}
+                    <div className="text-sm text-muted-foreground">
+                      <span className="font-medium">Departamento:</span> {agent.workEnvironment.departmentTitle || "N/A"}
+                      {agent.workEnvironment.stageTitle && (
+                        <span> / <span className="font-medium">Estágio:</span> {agent.workEnvironment.stageTitle}</span>
+                      )}
+                    </div>
                   </div>
                   <div className="col-span-1">
                     {getStatusBadge(agent.status)}
                   </div>
-                  <div className="col-span-1 flex justify-end">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleEditAgent(agent)}>
-                          <Edit className="h-4 w-4 mr-2" />
-                          Editar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleChangeStatus(agent, 'active')}>
-                          Ativar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleChangeStatus(agent, 'paused')}>
-                          Pausar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleChangeStatus(agent, 'blocked')}>
-                          Bloquear
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          onClick={() => handleDeleteAgent(agent)}
-                          className="text-red-500 focus:text-red-500"
-                        >
-                          <Trash className="h-4 w-4 mr-2" />
-                          Excluir
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                  <div className="col-span-1 flex justify-end gap-2">
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => handleEditAgent(agent)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => handleDeleteAgent(agent)}
+                    >
+                      <Trash className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
               ))
