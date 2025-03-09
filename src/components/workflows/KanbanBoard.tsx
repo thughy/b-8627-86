@@ -2,12 +2,13 @@
 import React from "react";
 import { Stage, Deal } from "@/pages/Workflows/models/WorkflowModels";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, User, DollarSign, Calendar, Tag, MessageSquare, Award, Building } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DropResult } from "react-beautiful-dnd";
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { cn } from "@/lib/utils";
 
 interface KanbanBoardProps {
   stages: Stage[];
@@ -51,23 +52,73 @@ const KanbanBoard = ({
   // Function to get status badge variant based on deal status
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
-      case 'won': return "success";
+      case 'won': return "default";
       case 'lost': return "destructive";
       default: return "outline";
     }
   };
 
+  // Function to get status badge text
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'won': return 'Ganho';
+      case 'lost': return 'Perdido';
+      default: return 'Em andamento';
+    }
+  };
+
+  // Function to get deal type badge styles
+  const getDealTypeBadge = (type: string) => {
+    const types: Record<string, { color: string, icon: React.ReactNode }> = {
+      'new': { 
+        color: "bg-blue-500/15 text-blue-500 border-blue-500/20", 
+        icon: <Tag className="h-3 w-3 mr-1" />
+      },
+      'renewal': { 
+        color: "bg-purple-500/15 text-purple-500 border-purple-500/20", 
+        icon: <Award className="h-3 w-3 mr-1" />
+      },
+      'upsell': { 
+        color: "bg-green-500/15 text-green-500 border-green-500/20", 
+        icon: <Award className="h-3 w-3 mr-1" />
+      },
+      'cross-sell': { 
+        color: "bg-amber-500/15 text-amber-500 border-amber-500/20", 
+        icon: <Award className="h-3 w-3 mr-1" />
+      },
+      'default': { 
+        color: "bg-slate-500/15 text-slate-500 border-slate-500/20", 
+        icon: <Tag className="h-3 w-3 mr-1" />
+      }
+    };
+    
+    return types[type as keyof typeof types] || types.default;
+  };
+
   // Function to get a gradient background based on deal type
   const getDealTypeGradient = (type: string) => {
     const gradients = {
-      'new': 'bg-gradient-to-r from-blue-500/10 to-cyan-400/10',
-      'renewal': 'bg-gradient-to-r from-purple-500/10 to-pink-400/10',
-      'upsell': 'bg-gradient-to-r from-green-500/10 to-emerald-400/10',
-      'cross-sell': 'bg-gradient-to-r from-amber-500/10 to-yellow-400/10',
-      'default': 'bg-gradient-to-r from-slate-500/10 to-gray-400/10'
+      'new': 'bg-gradient-to-r from-blue-500/10 to-cyan-400/10 border-blue-500/20',
+      'renewal': 'bg-gradient-to-r from-purple-500/10 to-pink-400/10 border-purple-500/20',
+      'upsell': 'bg-gradient-to-r from-green-500/10 to-emerald-400/10 border-green-500/20',
+      'cross-sell': 'bg-gradient-to-r from-amber-500/10 to-yellow-400/10 border-amber-500/20',
+      'default': 'bg-gradient-to-r from-slate-500/10 to-gray-400/10 border-slate-500/20'
     };
     
     return gradients[type as keyof typeof gradients] || gradients.default;
+  };
+
+  // Function to get the top bar color based on deal type
+  const getTopBarColor = (type: string) => {
+    const colors = {
+      'new': 'bg-gradient-to-r from-blue-500 to-cyan-400',
+      'renewal': 'bg-gradient-to-r from-purple-500 to-pink-400',
+      'upsell': 'bg-gradient-to-r from-green-500 to-emerald-400',
+      'cross-sell': 'bg-gradient-to-r from-amber-500 to-yellow-400',
+      'default': 'bg-gradient-to-r from-slate-500 to-gray-400'
+    };
+    
+    return colors[type as keyof typeof colors] || colors.default;
   };
 
   return (
@@ -90,75 +141,96 @@ const KanbanBoard = ({
                     stageDeals.map((deal) => {
                       const chatPreview = getChatPreview ? getChatPreview(deal.id) : [];
                       const dealTypeGradient = getDealTypeGradient(deal.type || 'default');
+                      const topBarColor = getTopBarColor(deal.type || 'default');
+                      const typeBadge = getDealTypeBadge(deal.type || 'default');
                       
                       return (
                         <Card 
                           key={deal.id} 
-                          className={`cursor-pointer hover:shadow-md transition-all duration-200 hover:-translate-y-1 overflow-hidden border border-border/40 ${dealTypeGradient}`}
+                          className={cn(
+                            "cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md overflow-hidden",
+                            "hover:-translate-y-1 border",
+                            dealTypeGradient
+                          )}
                           onClick={() => onDealClick(deal)}
                         >
-                          <div className="h-1 w-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
+                          <div className={`h-1.5 w-full ${topBarColor}`}></div>
                           <CardContent className="p-3">
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between mb-2">
                               <h4 className="font-medium text-sm">{deal.title}</h4>
-                              <Badge variant="outline" className="text-xs font-semibold">
+                              <Badge 
+                                variant="outline" 
+                                className={cn("text-xs font-semibold flex items-center px-2 py-1", typeBadge.color)}
+                              >
+                                {typeBadge.icon}
                                 {deal.type || "Não definido"}
                               </Badge>
                             </div>
                             
-                            {/* Customer info */}
-                            {deal.customerName && (
-                              <div className="mt-2 text-xs flex items-center">
-                                <div className="w-1 h-1 rounded-full bg-primary mr-2"></div>
-                                <span className="text-muted-foreground">Cliente: </span>
-                                <span className="ml-1 font-medium">{deal.customerName}</span>
-                                {deal.customerOrganization && (
-                                  <span className="text-muted-foreground ml-1">
-                                    ({deal.customerOrganization})
+                            <div className="space-y-2 mt-2">
+                              {/* Customer info */}
+                              {deal.customerName && (
+                                <div className="flex items-center text-xs space-x-1.5">
+                                  <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10">
+                                    <User className="h-3 w-3 text-primary" />
+                                  </div>
+                                  <div className="flex-1 truncate">
+                                    <span className="font-medium">{deal.customerName}</span>
+                                    {deal.customerOrganization && (
+                                      <span className="ml-1">
+                                        <Building className="h-3 w-3 inline mr-0.5" />
+                                        {deal.customerOrganization}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {/* Deal amount */}
+                              <div className="flex items-center text-xs space-x-1.5">
+                                <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10">
+                                  <DollarSign className="h-3 w-3 text-primary" />
+                                </div>
+                                <span className="font-medium">{formatCurrency(deal.amount)}</span>
+                              </div>
+                              
+                              {/* Dates */}
+                              <div className="flex items-center text-xs space-x-1.5">
+                                <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10">
+                                  <Calendar className="h-3 w-3 text-primary" />
+                                </div>
+                                <span>{formatDate(deal.startDate)}</span>
+                              </div>
+
+                              {/* Status */}
+                              <div className="flex items-center justify-between text-xs">
+                                <Badge variant={getStatusBadgeVariant(deal.status)}>
+                                  {getStatusText(deal.status)}
+                                </Badge>
+                                
+                                {deal.status === 'lost' && deal.reasonForLoss && (
+                                  <span className="text-xs text-muted-foreground">
+                                    {deal.reasonForLoss}
                                   </span>
                                 )}
                               </div>
-                            )}
-                            
-                            {/* Deal amount */}
-                            <div className="mt-1 text-xs flex items-center">
-                              <div className="w-1 h-1 rounded-full bg-primary mr-2"></div>
-                              <span className="text-muted-foreground">Valor: </span>
-                              <span className="ml-1 font-medium">{formatCurrency(deal.amount)}</span>
-                            </div>
-                            
-                            {/* Dates */}
-                            <div className="mt-1 text-xs flex items-center">
-                              <div className="w-1 h-1 rounded-full bg-primary mr-2"></div>
-                              <span className="text-muted-foreground">Criado: </span>
-                              <span className="ml-1">{formatDate(deal.startDate)}</span>
-                            </div>
-
-                            {/* Status or reason for loss */}
-                            <div className="mt-1 text-xs flex items-center">
-                              <div className="w-1 h-1 rounded-full bg-primary mr-2"></div>
-                              <span className="text-muted-foreground">Status: </span>
-                              <Badge variant={getStatusBadgeVariant(deal.status)} className="ml-1 text-xs">
-                                {deal.status === 'won' ? 'Ganho' : 
-                                 deal.status === 'lost' ? 'Perdido' : 'Aberto'}
-                              </Badge>
-                              {deal.status === 'lost' && deal.reasonForLoss && (
-                                <span className="ml-1 text-xs text-muted-foreground">
-                                  ({deal.reasonForLoss})
-                                </span>
-                              )}
                             </div>
                             
                             {/* Chat preview */}
                             {chatPreview && chatPreview.length > 0 && (
-                              <div className="mt-2 border-t pt-2">
-                                <div className="text-xs font-medium mb-1">Últimas mensagens:</div>
-                                {chatPreview.map((msg, idx) => (
-                                  <div key={idx} className="text-xs text-muted-foreground truncate flex items-start gap-1">
-                                    <span className="font-medium min-w-[40px]">{msg.sender === 'user' ? 'Você:' : 'Agente:'}</span>
-                                    <span className="truncate">{msg.text}</span>
-                                  </div>
-                                ))}
+                              <div className="mt-3 pt-2 border-t border-border/40">
+                                <div className="flex items-center text-xs space-x-1.5 mb-1">
+                                  <MessageSquare className="h-3 w-3 text-muted-foreground" />
+                                  <span className="font-medium">Últimas mensagens</span>
+                                </div>
+                                <div className="space-y-1">
+                                  {chatPreview.map((msg, idx) => (
+                                    <div key={idx} className="text-xs text-muted-foreground flex items-start">
+                                      <span className="font-medium min-w-[40px]">{msg.sender === 'user' ? 'Você:' : 'Agente:'}</span>
+                                      <span className="truncate">{msg.text}</span>
+                                    </div>
+                                  ))}
+                                </div>
                               </div>
                             )}
                           </CardContent>
