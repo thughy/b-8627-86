@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { memo } from "react";
 import { DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { X, Save, Trash2, Send } from "lucide-react";
@@ -11,7 +11,7 @@ interface CollaboratorModalFooterProps {
   isEditMode: boolean;
 }
 
-const CollaboratorModalFooter: React.FC<CollaboratorModalFooterProps> = ({
+const CollaboratorModalFooter: React.FC<CollaboratorModalFooterProps> = memo(({
   onClose,
   onSave,
   onDelete,
@@ -20,7 +20,7 @@ const CollaboratorModalFooter: React.FC<CollaboratorModalFooterProps> = ({
   return (
     <DialogFooter className="flex justify-between">
       <div className="flex gap-2">
-        <Button variant="outline" onClick={onClose}>
+        <Button variant="outline" onClick={onClose} type="button">
           <X className="h-4 w-4 mr-2" />
           Cancelar
         </Button>
@@ -28,13 +28,14 @@ const CollaboratorModalFooter: React.FC<CollaboratorModalFooterProps> = ({
           <Button 
             variant="destructive" 
             onClick={onDelete}
+            type="button"
           >
             <Trash2 className="h-4 w-4 mr-2" />
             Excluir
           </Button>
         )}
       </div>
-      <Button onClick={onSave}>
+      <Button onClick={onSave} type="button">
         {isEditMode ? (
           <>
             <Save className="h-4 w-4 mr-2" />
@@ -49,6 +50,8 @@ const CollaboratorModalFooter: React.FC<CollaboratorModalFooterProps> = ({
       </Button>
     </DialogFooter>
   );
-};
+});
+
+CollaboratorModalFooter.displayName = "CollaboratorModalFooter";
 
 export default CollaboratorModalFooter;
