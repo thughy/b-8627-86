@@ -2,7 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal, Eye } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { Asset } from "@/pages/Workflows/models/WorkflowModels";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import {
@@ -73,16 +73,7 @@ const AssetList = ({
               <div className="col-span-1 hidden md:block text-muted-foreground">
                 {formatDate(asset.createdAt)}
               </div>
-              <div className="col-span-1 flex justify-end gap-2">
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  onClick={() => onViewAsset(asset)}
-                  title="Visualizar"
-                >
-                  <Eye className="h-4 w-4" />
-                </Button>
-                
+              <div className="col-span-1 flex justify-end">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon">
@@ -90,6 +81,9 @@ const AssetList = ({
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => onViewAsset(asset)}>
+                      Visualizar
+                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => onEditAsset(asset)}>
                       Editar
                     </DropdownMenuItem>
