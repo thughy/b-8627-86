@@ -57,8 +57,8 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-6xl max-h-[90vh] p-0 overflow-hidden flex flex-col">
-        <DialogHeader className="p-6 pb-2">
+      <DialogContent className="max-w-6xl max-h-[90vh] p-0 flex flex-col">
+        <DialogHeader className="p-6 pb-2 flex-shrink-0">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl font-bold">{deal.title}</DialogTitle>
             <div className="flex items-center gap-2">
@@ -84,32 +84,31 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
           </div>
         </DialogHeader>
 
-        {/* Informações Resumidas */}
-        <div className="px-6 py-2">
-          <DealSummaryCards deal={deal} />
-          <DealCounters counters={counters} />
-        </div>
+        {/* Main scrollable content */}
+        <ScrollArea className="flex-1 w-full">
+          <div className="p-6">
+            {/* Informações Resumidas */}
+            <div className="mb-4">
+              <DealSummaryCards deal={deal} />
+              <DealCounters counters={counters} />
+            </div>
 
-        {/* Conteúdo principal em colunas */}
-        <div className="flex-1 overflow-hidden p-6 pt-0">
-          <div className="grid grid-cols-12 gap-6 h-full">
-            {/* Coluna de Parâmetros */}
-            <div className="col-span-4 h-full flex flex-col overflow-hidden">
-              <h3 className="text-lg font-medium mb-3">Parâmetros</h3>
-              <div className="flex-1 border rounded-md overflow-hidden">
-                <ScrollArea className="h-full w-full">
+            {/* Conteúdo principal em colunas */}
+            <div className="grid grid-cols-12 gap-6">
+              {/* Coluna de Parâmetros */}
+              <div className="col-span-4 flex flex-col">
+                <h3 className="text-lg font-medium mb-3">Parâmetros</h3>
+                <div className="border rounded-md">
                   <div className="p-4">
                     <DealParametersTab deal={deal} onEditDeal={onEditDeal} />
                   </div>
-                </ScrollArea>
+                </div>
               </div>
-            </div>
-            
-            {/* Coluna de Workspace - Sem borda à esquerda */}
-            <div className="col-span-8 h-full flex flex-col overflow-hidden">
-              <h3 className="text-lg font-medium mb-3 pl-4">Workspace</h3>
-              <div className="pl-4 flex-1 overflow-hidden border rounded-md">
-                <ScrollArea className="h-full w-full">
+              
+              {/* Coluna de Workspace */}
+              <div className="col-span-8 flex flex-col">
+                <h3 className="text-lg font-medium mb-3 pl-4">Workspace</h3>
+                <div className="pl-4 border rounded-md">
                   <DealWorkspaceTab 
                     deal={deal} 
                     onCreateAsset={onCreateAsset}
@@ -118,11 +117,11 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
                     onCreateDocument={onCreateDocument}
                     onCreateEmail={onCreateEmail}
                   />
-                </ScrollArea>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );

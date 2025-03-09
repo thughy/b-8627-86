@@ -8,6 +8,7 @@ import ChatSection from './workspace/ChatSection';
 import FocusTabContent from './workspace/FocusTabContent';
 import HistoryTabContent from './workspace/HistoryTabContent';
 import WorkspaceActionButtons from './workspace/WorkspaceActionButtons';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface DealWorkspaceTabProps {
   deal: Deal;
@@ -54,7 +55,7 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
   ];
 
   return (
-    <div className="h-full flex flex-col p-4">
+    <div className="p-4">
       <div className="flex justify-between items-center mb-4">
         <Tabs defaultValue="chat" className="w-full" onValueChange={setActiveTab} value={activeTab}>
           <div className="flex justify-between items-center">
@@ -87,22 +88,28 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
         </Tabs>
       </div>
 
-      <div className="flex-1 overflow-auto">
-        <Tabs defaultValue="chat" value={activeTab} className="h-full">
-          <TabsContent value="chat" className="h-full mt-0">
-            <ChatSection dealId={deal.id} messages={messages} />
+      <div className="mt-4">
+        <Tabs defaultValue="chat" value={activeTab} className="w-full">
+          <TabsContent value="chat" className="mt-0">
+            <ScrollArea className="h-[400px]">
+              <ChatSection dealId={deal.id} messages={messages} />
+            </ScrollArea>
           </TabsContent>
           
-          <TabsContent value="focus" className="h-full mt-0">
-            <FocusTabContent 
-              deal={deal}
-              assets={assets}
-              onCreateAsset={onCreateAsset}
-            />
+          <TabsContent value="focus" className="mt-0">
+            <ScrollArea className="h-[400px]">
+              <FocusTabContent 
+                deal={deal}
+                assets={assets}
+                onCreateAsset={onCreateAsset}
+              />
+            </ScrollArea>
           </TabsContent>
           
-          <TabsContent value="history" className="h-full mt-0">
-            <HistoryTabContent />
+          <TabsContent value="history" className="mt-0">
+            <ScrollArea className="h-[400px]">
+              <HistoryTabContent />
+            </ScrollArea>
           </TabsContent>
         </Tabs>
       </div>
