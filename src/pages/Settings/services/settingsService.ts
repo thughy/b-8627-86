@@ -1,5 +1,5 @@
 
-import { Template, Workflow, Department, Pipeline, Stage, Agent, Asset } from "@/pages/Workflows/models/WorkflowModels";
+import { Template, Workflow, Department, Pipeline, Stage, Agent, Asset, Collaborator, Integration } from "@/pages/Workflows/models/WorkflowModels";
 import { getSoftwareSalesTemplate } from './templateData';
 
 // Mock data for templates
@@ -71,8 +71,236 @@ const mockTemplates: Template[] = [
   }
 ];
 
+// Mock data for collaborators
+const mockCollaborators: Collaborator[] = [
+  {
+    id: "collab-101",
+    name: "Ana Silva",
+    role: "Gerente de Vendas",
+    email: "ana.silva@autb.com.br",
+    phone: "(11) 98765-4321",
+    hierarchyLevel: "Gerência",
+    type: "master",
+    status: "active",
+    createdAt: new Date(2023, 5, 15),
+    updatedAt: new Date(2023, 5, 15)
+  },
+  {
+    id: "collab-102",
+    name: "Carlos Oliveira",
+    role: "Agente de Suporte",
+    email: "carlos.oliveira@autb.com.br",
+    phone: "(11) 91234-5678",
+    hierarchyLevel: "Operacional",
+    type: "collaborator",
+    status: "active",
+    createdAt: new Date(2023, 6, 20),
+    updatedAt: new Date(2023, 10, 5)
+  },
+  {
+    id: "collab-103",
+    name: "Juliana Mendes",
+    role: "Desenvolvedora",
+    email: "juliana.mendes@autb.com.br",
+    phone: "(11) 99876-5432",
+    hierarchyLevel: "Técnico",
+    type: "developer",
+    status: "active",
+    createdAt: new Date(2023, 8, 10),
+    updatedAt: new Date(2024, 1, 15)
+  },
+  {
+    id: "collab-104",
+    name: "Roberto Alves",
+    role: "Analista de Marketing",
+    email: "roberto.alves@autb.com.br",
+    phone: "(11) 98765-1234",
+    hierarchyLevel: "Analista",
+    type: "collaborator",
+    status: "inactive",
+    createdAt: new Date(2023, 9, 5),
+    updatedAt: new Date(2024, 2, 20)
+  }
+];
+
+// Mock data for workflows
+const mockWorkflows: Workflow[] = [
+  {
+    id: "workflow-101",
+    title: "Vendas B2B",
+    description: "Workflow para gestão do processo de vendas para empresas",
+    status: "active",
+    departmentId: "dept-101",
+    createdAt: new Date(2023, 5, 15),
+    updatedAt: new Date(2023, 5, 15)
+  },
+  {
+    id: "workflow-102",
+    title: "Suporte Técnico",
+    description: "Workflow para gestão de tickets de suporte técnico",
+    status: "active",
+    departmentId: "dept-102",
+    createdAt: new Date(2023, 6, 20),
+    updatedAt: new Date(2023, 10, 5)
+  }
+];
+
+// Mock data for agents
+const mockAgents: Agent[] = [
+  {
+    id: "agent-101",
+    status: "active",
+    type: "sales",
+    profile: {
+      name: "Vendedor B2B",
+      role: "Agente de Vendas",
+      goal: "Conversar com leads e qualificá-los"
+    },
+    expertise: {
+      knowledge: ["Vendas", "Produtos", "Mercado"],
+      skills: ["Negociação", "Prospecção", "Relacionamento"],
+      examples: ["Como posso ajudar a aumentar suas vendas?"],
+      tasks: ["Qualificar leads", "Agendar demonstrações"]
+    },
+    businessRules: {
+      rules: ["Sempre oferecer o produto premium primeiro"],
+      restrictions: ["Não negociar abaixo do preço mínimo"],
+      conversationStyle: "professional"
+    },
+    tools: ["chat", "email", "calendar"],
+    ragDocuments: ["Catálogo.pdf", "Preços.pdf"],
+    createdAt: new Date(2023, 8, 10),
+    updatedAt: new Date(2024, 1, 15)
+  },
+  {
+    id: "agent-102",
+    status: "active",
+    type: "support",
+    profile: {
+      name: "Suporte Técnico",
+      role: "Agente de Suporte",
+      goal: "Resolver problemas técnicos dos clientes"
+    },
+    expertise: {
+      knowledge: ["Sistemas", "Infraestrutura", "Segurança"],
+      skills: ["Diagnóstico", "Resolução de Problemas", "Comunicação"],
+      examples: ["Como posso ajudar com seu problema técnico?"],
+      tasks: ["Diagnosticar problemas", "Orientar soluções"]
+    },
+    businessRules: {
+      rules: ["Verificar status da assinatura antes de oferecer suporte avançado"],
+      restrictions: ["Não conceder acesso remoto sem autorização"],
+      conversationStyle: "friendly"
+    },
+    tools: ["chat", "email", "telephony"],
+    ragDocuments: ["Manual.pdf", "Troubleshooting.pdf"],
+    createdAt: new Date(2023, 9, 5),
+    updatedAt: new Date(2024, 2, 20)
+  }
+];
+
+// Mock data for assets
+const mockAssets: Asset[] = [
+  {
+    id: "asset-101",
+    title: "Proposta Comercial",
+    type: "Contrato",
+    description: "Modelo de proposta comercial para clientes B2B",
+    workflowId: "workflow-101",
+    pipelineId: "pipeline-101",
+    stageId: "stage-101",
+    departmentId: "dept-101",
+    status: "open",
+    amount: 5000,
+    parameters: {
+      validade: "30 dias",
+      termos: "Pagamento em 30 dias após assinatura",
+      desconto: false
+    },
+    startDate: new Date(2023, 8, 10),
+    endDate: null,
+    createdAt: new Date(2023, 8, 10),
+    updatedAt: new Date(2024, 1, 15)
+  },
+  {
+    id: "asset-102",
+    title: "Contrato de Serviço",
+    type: "Contrato",
+    description: "Modelo de contrato para prestação de serviços",
+    workflowId: "workflow-101",
+    pipelineId: "pipeline-101",
+    stageId: "stage-104",
+    departmentId: "dept-101",
+    status: "processing",
+    amount: 12000,
+    parameters: {
+      duração: "12 meses",
+      renovação: "Automática",
+      suporte: true
+    },
+    startDate: new Date(2023, 9, 15),
+    endDate: new Date(2024, 9, 15),
+    createdAt: new Date(2023, 9, 15),
+    updatedAt: new Date(2024, 2, 20)
+  }
+];
+
+// Mock data for integrations
+const mockIntegrations: Integration[] = [
+  {
+    id: "int-101",
+    name: "Integração com CRM",
+    description: "Integração com sistema de CRM externo",
+    type: "api",
+    provider: "Salesforce",
+    status: "active",
+    config: {
+      apiKey: "XXX-YYY-ZZZ",
+      endpoint: "https://api.salesforce.com/v2",
+      syncInterval: "15min"
+    },
+    createdAt: new Date(2023, 8, 10),
+    updatedAt: new Date(2024, 1, 15)
+  },
+  {
+    id: "int-102",
+    name: "Gateway de Pagamento",
+    description: "Integração com gateway de pagamento",
+    type: "webhook",
+    provider: "Stripe",
+    status: "active",
+    config: {
+      webhookUrl: "https://api.system.com/webhooks/payments",
+      secretKey: "sk_test_123456",
+      events: ["payment.success", "payment.failed"]
+    },
+    createdAt: new Date(2023, 9, 15),
+    updatedAt: new Date(2024, 2, 20)
+  }
+];
+
 export const getTemplates = (): Template[] => {
   return mockTemplates;
+};
+
+export const getCollaborators = (): Collaborator[] => {
+  return mockCollaborators;
+};
+
+export const getWorkflows = (): Workflow[] => {
+  return mockWorkflows;
+};
+
+export const getAgents = (): Agent[] => {
+  return mockAgents;
+};
+
+export const getAssets = (): Asset[] => {
+  return mockAssets;
+};
+
+export const getIntegrations = (): Integration[] => {
+  return mockIntegrations;
 };
 
 export interface InstallTemplateResult {

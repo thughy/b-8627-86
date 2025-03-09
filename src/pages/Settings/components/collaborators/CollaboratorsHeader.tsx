@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { memo } from "react";
 import { CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -19,7 +19,7 @@ const CollaboratorsHeader: React.FC<CollaboratorsHeaderProps> = ({
           Configure e gerencie os colaboradores do sistema
         </CardDescription>
       </div>
-      <Button onClick={onInviteCollaborator} className="flex-shrink-0">
+      <Button onClick={onInviteCollaborator} className="flex-shrink-0" type="button">
         <Plus className="h-4 w-4 mr-2" />
         Convidar Colaborador
       </Button>
@@ -27,4 +27,4 @@ const CollaboratorsHeader: React.FC<CollaboratorsHeaderProps> = ({
   );
 };
 
-export default CollaboratorsHeader;
+export default memo(CollaboratorsHeader);
