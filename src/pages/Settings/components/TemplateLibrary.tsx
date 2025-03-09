@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Search, Filter, Upload, FileText, MoreHorizontal } from "lucide-react";
+import { Plus, Search, Filter, Upload, FileText, MoreHorizontal, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { 
   DropdownMenu,
@@ -24,9 +24,10 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { formatDate } from "@/lib/utils";
-import { getTemplates } from "../services/settingsService";
+import { getTemplates, installTemplate } from "../services/settingsService";
 import { Template } from "@/pages/Workflows/models/WorkflowModels";
 
 const TemplateLibrary = () => {
@@ -35,6 +36,9 @@ const TemplateLibrary = () => {
   const [templates, setTemplates] = useState<Template[]>(getTemplates());
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [showSpecifications, setShowSpecifications] = useState(false);
+  const [showConfirmInstall, setShowConfirmInstall] = useState(false);
+  const [installingTemplate, setInstallingTemplate] = useState<Template | null>(null);
+  const [isInstalling, setIsInstalling] = useState(false);
 
   const filteredTemplates = templates.filter((template) => 
     template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -62,7 +66,58 @@ const TemplateLibrary = () => {
     });
   };
 
+  const confirmTemplateInstallation = (template: Template) => {
+    setInstallingTemplate(template);
+    setShowConfirmInstall(true);
+  };
+
+  const handleTemplateInstallation = async () => {
+    if (!installingTemplate) return;
+    
+    setIsInstalling(true);
+    
+    try {
+      // Simulate installation process
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Call the installation service
+      const result = await installTemplate(installingTemplate.id);
+      
+      if (result.success) {
+        toast({
+          title: "Template Instalado",
+          description: `O template "${installingTemplate.name}" foi instalado com sucesso.`,
+        });
+        
+        // Update template status if needed or refresh list
+        const updatedTemplates = templates.map(t => 
+          t.id === installingTemplate.id 
+            ? { ...t, installed: true } 
+            : t
+        );
+        setTemplates(updatedTemplates);
+      } else {
+        throw new Error(result.error || "Falha na instalação");
+      }
+    } catch (error) {
+      toast({
+        title: "Erro na Instalação",
+        description: error instanceof Error ? error.message : "Erro desconhecido na instalação do template",
+        variant: "destructive",
+      });
+    } finally {
+      setIsInstalling(false);
+      setShowConfirmInstall(false);
+      setInstallingTemplate(null);
+    }
+  };
+
   const handleTemplateAction = (template: Template, action: 'install' | 'uninstall' | 'update') => {
+    if (action === 'install') {
+      confirmTemplateInstallation(template);
+      return;
+    }
+    
     const actionMessages = {
       install: `Instalando template: ${template.name}`,
       uninstall: `Desinstalando template: ${template.name}`,
@@ -244,6 +299,59 @@ const TemplateLibrary = () => {
             )}
           </div>
         </div>
+
+        {/* Installation confirmation dialog */}
+        <Dialog open={showConfirmInstall} onOpenChange={setShowConfirmInstall}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Confirmar Instalação</DialogTitle>
+              <DialogDescription>
+                {installingTemplate && (
+                  <>
+                    Você está prestes a instalar o template <strong>{installingTemplate.name}</strong>.
+                    Este processo criará novos workflows, pipelines, estágios e outros componentes em seu sistema.
+                  </>
+                )}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <p className="text-sm text-muted-foreground">
+                Tem certeza que deseja prosseguir com a instalação?
+              </p>
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowConfirmInstall(false)}
+                disabled={isInstalling}
+              >
+                Cancelar
+              </Button>
+              <Button 
+                type="button" 
+                onClick={handleTemplateInstallation}
+                disabled={isInstalling}
+                className="flex items-center gap-2"
+              >
+                {isInstalling ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Instalando...
+                  </>
+                ) : (
+                  <>
+                    <Check className="h-4 w-4" />
+                    Confirmar Instalação
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {selectedTemplate && (
           <Dialog open={showSpecifications} onOpenChange={setShowSpecifications}>
