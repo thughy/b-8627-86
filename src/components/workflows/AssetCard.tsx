@@ -13,13 +13,15 @@ interface AssetCardProps {
   onViewAsset?: (asset: Asset) => void;
   onEditAsset?: (asset: Asset) => void;
   onDeleteAsset?: (assetId: string) => void;
+  onCancelAsset?: (assetId: string) => void;
 }
 
 const AssetCard: React.FC<AssetCardProps> = ({
   asset,
   onViewAsset,
   onEditAsset,
-  onDeleteAsset
+  onDeleteAsset,
+  onCancelAsset
 }) => {
   const statusColors = {
     open: 'bg-blue-500',
@@ -40,12 +42,18 @@ const AssetCard: React.FC<AssetCardProps> = ({
   };
 
   return (
-    <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={handleViewClick}>
+    <Card className="cursor-pointer hover:shadow-md transition-shadow border-l-4" 
+      style={{ borderLeftColor: 
+        asset.status === 'open' ? '#3b82f6' : 
+        asset.status === 'processing' ? '#f59e0b' : 
+        asset.status === 'completed' ? '#10b981' : 
+        asset.status === 'cancelled' ? '#ef4444' : '#6b7280' }}
+      onClick={handleViewClick}>
       <CardHeader className="p-4 pb-2 flex flex-row items-start justify-between space-y-0">
         <CardTitle className="text-base font-medium">{asset.title}</CardTitle>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" onClick={(e) => e.stopPropagation()}>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -55,6 +63,12 @@ const AssetCard: React.FC<AssetCardProps> = ({
               if (onEditAsset) onEditAsset(asset);
             }}>
               Editar
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={(e) => {
+              e.stopPropagation();
+              if (onCancelAsset) onCancelAsset(asset.id);
+            }}>
+              Cancelar
             </DropdownMenuItem>
             <DropdownMenuItem onClick={(e) => {
               e.stopPropagation();

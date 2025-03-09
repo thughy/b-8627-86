@@ -3,9 +3,11 @@ import React from "react";
 import { Deal } from "@/pages/Workflows/models/WorkflowModels";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clipboard, CreditCard, Calendar, User, Building2 } from "lucide-react";
+import { Clipboard, CreditCard, Calendar, User, Building2, MoreHorizontal } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import ChatPreview from "./ChatPreview";
 import { useChatMessages } from "@/pages/Workflows/hooks/useChatMessages";
 
@@ -54,9 +56,41 @@ const DealCard = ({ deal, onAction }: DealCardProps) => {
             <Clipboard className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
             {deal.title}
           </h4>
-          <Badge variant="outline" className={`text-xs ${getStatusColor(deal.status)}`}>
-            {getStatusText(deal.status)}
-          </Badge>
+          <div className="flex items-center">
+            <Badge variant="outline" className={`text-xs mr-2 ${getStatusColor(deal.status)}`}>
+              {getStatusText(deal.status)}
+            </Badge>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                <Button variant="ghost" size="icon" className="h-6 w-6">
+                  <MoreHorizontal className="h-3.5 w-3.5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={(e) => {
+                  e.stopPropagation();
+                  onAction("editDeal", deal);
+                }}>
+                  Editar
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={(e) => {
+                  e.stopPropagation();
+                  onAction("cancelDeal", deal.id);
+                }}>
+                  Cancelar
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAction("deleteDeal", deal.id);
+                  }}
+                  className="text-red-500 focus:text-red-500"
+                >
+                  Excluir
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
         
         {deal.description && (
