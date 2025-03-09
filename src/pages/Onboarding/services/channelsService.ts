@@ -1,6 +1,6 @@
 
 import React from "react";
-import { MessageSquare, BrandWhatsapp, Mail, Phone } from "lucide-react";
+import { MessageSquare, Mail, Phone } from "lucide-react";
 import { ChannelProps } from "../models/ChannelModel";
 
 export const getChannelsData = (): ChannelProps[] => {
@@ -8,7 +8,7 @@ export const getChannelsData = (): ChannelProps[] => {
     {
       id: "whatsapp",
       name: "WhatsApp",
-      icon: React.createElement(BrandWhatsapp, { className: "h-5 w-5 text-green-500" }),
+      icon: React.createElement(MessageSquare, { className: "h-5 w-5 text-green-500" }),
       configFields: [
         {
           id: "phoneNumber",
