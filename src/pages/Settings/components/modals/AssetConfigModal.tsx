@@ -9,15 +9,9 @@ import {
   DialogTitle 
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Asset } from "@/pages/Workflows/models/WorkflowModels";
-import { InfoIcon, ImageIcon, HistoryIcon, SettingsIcon, ClipboardListIcon } from "lucide-react";
-import AssetProfileTab from "./asset/AssetProfileTab";
-import AssetDetailsTab from "./asset/AssetDetailsTab";
-import AssetMediaTab from "./asset/AssetMediaTab";
-import AssetParamsTab from "./asset/AssetParamsTab";
-import AssetHistoryTab from "./asset/AssetHistoryTab";
+import AssetTabs from "./asset/AssetTabs";
 
 interface AssetConfigModalProps {
   isOpen: boolean;
@@ -77,59 +71,12 @@ const AssetConfigModal = ({
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-5">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="profile" className="flex items-center gap-2">
-              <InfoIcon className="h-4 w-4" />
-              <span>Perfil</span>
-            </TabsTrigger>
-            <TabsTrigger value="details" className="flex items-center gap-2">
-              <ClipboardListIcon className="h-4 w-4" />
-              <span>Detalhes</span>
-            </TabsTrigger>
-            <TabsTrigger value="params" className="flex items-center gap-2">
-              <SettingsIcon className="h-4 w-4" />
-              <span>Parâmetros</span>
-            </TabsTrigger>
-            <TabsTrigger value="media" className="flex items-center gap-2">
-              <ImageIcon className="h-4 w-4" />
-              <span>Mídia</span>
-            </TabsTrigger>
-            <TabsTrigger value="history" className="flex items-center gap-2">
-              <HistoryIcon className="h-4 w-4" />
-              <span>Histórico</span>
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="profile" className="space-y-4 mt-4">
-            <AssetProfileTab 
-              formData={formData} 
-              onChange={handleChange}
-            />
-          </TabsContent>
-
-          <TabsContent value="details" className="space-y-4 mt-4">
-            <AssetDetailsTab 
-              formData={formData} 
-              onChange={handleChange}
-            />
-          </TabsContent>
-
-          <TabsContent value="params" className="space-y-4 mt-4">
-            <AssetParamsTab 
-              formData={formData} 
-              onChange={handleChange}
-            />
-          </TabsContent>
-          
-          <TabsContent value="media" className="space-y-4 mt-4">
-            <AssetMediaTab />
-          </TabsContent>
-          
-          <TabsContent value="history" className="space-y-4 mt-4">
-            <AssetHistoryTab />
-          </TabsContent>
-        </Tabs>
+        <AssetTabs
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          formData={formData}
+          onChange={handleChange}
+        />
 
         <DialogFooter className="flex space-x-2 justify-end">
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
