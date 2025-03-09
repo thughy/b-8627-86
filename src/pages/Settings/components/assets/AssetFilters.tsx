@@ -11,6 +11,9 @@ export interface AssetFiltersProps {
   statusFilter: string;
   onStatusChange: (value: string) => void;
   onAddAsset: () => void;
+  typeFilter?: string;
+  onTypeChange?: (value: string) => void;
+  availableTypes?: string[];
 }
 
 const AssetFilters = ({
@@ -18,7 +21,10 @@ const AssetFilters = ({
   onSearchChange,
   statusFilter,
   onStatusChange,
-  onAddAsset
+  onAddAsset,
+  typeFilter,
+  onTypeChange,
+  availableTypes = []
 }: AssetFiltersProps) => {
   return (
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
@@ -50,6 +56,23 @@ const AssetFilters = ({
             <SelectItem value="cancelled">Cancelado</SelectItem>
           </SelectContent>
         </Select>
+        
+        {typeFilter !== undefined && onTypeChange && availableTypes.length > 0 && (
+          <Select 
+            value={typeFilter} 
+            onValueChange={onTypeChange}
+          >
+            <SelectTrigger className="w-full md:w-40">
+              <SelectValue placeholder="Tipo" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos os tipos</SelectItem>
+              {availableTypes.map((type) => (
+                <SelectItem key={type} value={type}>{type}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
         
         <Button onClick={onAddAsset}>
           <Plus className="h-4 w-4 mr-2" />

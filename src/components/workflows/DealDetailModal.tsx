@@ -6,7 +6,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency, formatDate } from '@/lib/utils';
-import { PenLine, FileText, Mail, MessageSquare, Calendar, DollarSign, Building, BarChart } from 'lucide-react';
+import { 
+  PenLine, FileText, Mail, MessageSquare, Calendar, 
+  DollarSign, Building, BarChart, CheckSquare, Image 
+} from 'lucide-react';
 import AssetCard from './AssetCard';
 import AssetConfigModal from '@/pages/Settings/components/modals/AssetConfigModal';
 import { useToast } from '@/hooks/use-toast';
@@ -101,6 +104,34 @@ const DealDetailModal: React.FC<DealDetailModalProps> = ({
     setIsAssetModalOpen(false);
   };
 
+  const handleAddNote = () => {
+    toast({
+      title: "Adicionar Nota",
+      description: "Funcionalidade em desenvolvimento."
+    });
+  };
+
+  const handleAddTask = () => {
+    toast({
+      title: "Adicionar Tarefa",
+      description: "Funcionalidade em desenvolvimento."
+    });
+  };
+
+  const handleAddDocument = () => {
+    toast({
+      title: "Adicionar Documento",
+      description: "Funcionalidade em desenvolvimento."
+    });
+  };
+
+  const handleAddEmail = () => {
+    toast({
+      title: "Enviar Email",
+      description: "Funcionalidade em desenvolvimento."
+    });
+  };
+
   if (!deal) {
     return null;
   }
@@ -138,9 +169,18 @@ const DealDetailModal: React.FC<DealDetailModalProps> = ({
 
           <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="mt-4">
             <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="details">Detalhes</TabsTrigger>
-              <TabsTrigger value="workspace">Workspace</TabsTrigger>
-              <TabsTrigger value="chat">Chat</TabsTrigger>
+              <TabsTrigger value="details" className="flex items-center gap-2">
+                <BarChart className="h-4 w-4" />
+                <span>Detalhes</span>
+              </TabsTrigger>
+              <TabsTrigger value="workspace" className="flex items-center gap-2">
+                <Building className="h-4 w-4" />
+                <span>Workspace</span>
+              </TabsTrigger>
+              <TabsTrigger value="chat" className="flex items-center gap-2">
+                <MessageSquare className="h-4 w-4" />
+                <span>Chat</span>
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="details" className="space-y-4 mt-4">
@@ -171,7 +211,14 @@ const DealDetailModal: React.FC<DealDetailModalProps> = ({
                   {deal.status === 'lost' && (
                     <div>
                       <h3 className="text-sm font-medium text-gray-500">Motivo da Perda</h3>
-                      <p>Preço alto</p>
+                      <p>{deal.reasonForLoss || 'Não especificado'}</p>
+                    </div>
+                  )}
+                  
+                  {deal.interests && (
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-500">Interesse</h3>
+                      <p>{deal.interests}</p>
                     </div>
                   )}
                 </div>
@@ -212,11 +259,19 @@ const DealDetailModal: React.FC<DealDetailModalProps> = ({
                     <FileText className="h-4 w-4 mr-2" />
                     Asset
                   </Button>
-                  <Button size="sm" variant="outline">
+                  <Button size="sm" variant="outline" onClick={handleAddTask}>
+                    <CheckSquare className="h-4 w-4 mr-2" />
+                    Tarefa
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={handleAddNote}>
                     <PenLine className="h-4 w-4 mr-2" />
                     Nota
                   </Button>
-                  <Button size="sm" variant="outline">
+                  <Button size="sm" variant="outline" onClick={handleAddDocument}>
+                    <Image className="h-4 w-4 mr-2" />
+                    Documento
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={handleAddEmail}>
                     <Mail className="h-4 w-4 mr-2" />
                     Email
                   </Button>
@@ -227,9 +282,11 @@ const DealDetailModal: React.FC<DealDetailModalProps> = ({
                 <TabsList className="w-full">
                   <TabsTrigger value="all">Todos</TabsTrigger>
                   <TabsTrigger value="notes">Notas</TabsTrigger>
+                  <TabsTrigger value="tasks">Tarefas</TabsTrigger>
                   <TabsTrigger value="assets">Assets</TabsTrigger>
                   <TabsTrigger value="emails">Emails</TabsTrigger>
                   <TabsTrigger value="documents">Documentos</TabsTrigger>
+                  <TabsTrigger value="history">Histórico</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="all" className="mt-4">
@@ -276,6 +333,12 @@ const DealDetailModal: React.FC<DealDetailModalProps> = ({
                   </div>
                 </TabsContent>
 
+                <TabsContent value="tasks" className="mt-4">
+                  <div className="text-center py-8 text-muted-foreground">
+                    Nenhuma tarefa encontrada.
+                  </div>
+                </TabsContent>
+
                 <TabsContent value="emails" className="mt-4">
                   <div className="text-center py-8 text-muted-foreground">
                     Nenhum email encontrado.
@@ -285,6 +348,12 @@ const DealDetailModal: React.FC<DealDetailModalProps> = ({
                 <TabsContent value="documents" className="mt-4">
                   <div className="text-center py-8 text-muted-foreground">
                     Nenhum documento encontrado.
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="history" className="mt-4">
+                  <div className="text-center py-8 text-muted-foreground">
+                    Nenhum registro de histórico.
                   </div>
                 </TabsContent>
               </Tabs>
