@@ -54,6 +54,12 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
     }
   ];
 
+  const handleSendMessage = (message: string) => {
+    if (sendMessage) {
+      sendMessage(message);
+    }
+  };
+
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
@@ -88,16 +94,18 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
         </Tabs>
       </div>
 
-      <div className="mt-4">
-        <Tabs defaultValue="chat" value={activeTab} className="w-full">
-          <TabsContent value="chat" className="mt-0">
-            <ScrollArea className="h-[400px]">
-              <ChatSection dealId={deal.id} messages={messages} />
-            </ScrollArea>
+      <div className="mt-4 h-[400px]">
+        <Tabs defaultValue="chat" value={activeTab} className="w-full h-full">
+          <TabsContent value="chat" className="mt-0 h-full">
+            <ChatSection 
+              dealId={deal.id} 
+              messages={messages} 
+              onSendMessage={handleSendMessage}
+            />
           </TabsContent>
           
-          <TabsContent value="focus" className="mt-0">
-            <ScrollArea className="h-[400px]">
+          <TabsContent value="focus" className="mt-0 h-full">
+            <ScrollArea className="h-full">
               <FocusTabContent 
                 deal={deal}
                 assets={assets}
@@ -106,8 +114,8 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
             </ScrollArea>
           </TabsContent>
           
-          <TabsContent value="history" className="mt-0">
-            <ScrollArea className="h-[400px]">
+          <TabsContent value="history" className="mt-0 h-full">
+            <ScrollArea className="h-full">
               <HistoryTabContent />
             </ScrollArea>
           </TabsContent>

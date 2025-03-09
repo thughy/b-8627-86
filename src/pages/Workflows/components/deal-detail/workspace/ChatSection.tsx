@@ -7,7 +7,7 @@ import { Send } from 'lucide-react';
 interface Message {
   id: string;
   text: string;
-  sender: 'user' | 'agent';
+  sender: 'user' | 'agent' | 'system';
   timestamp: Date;
 }
 
@@ -38,8 +38,8 @@ const ChatSection: React.FC<ChatSectionProps> = ({ dealId, messages, onSendMessa
   };
 
   return (
-    <div className="flex flex-col">
-      <div className="flex-1 mb-4">
+    <div className="flex flex-col h-full">
+      <div className="flex-1 mb-4 overflow-y-auto">
         {messages.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             Nenhuma mensagem disponível para esta conversa.
@@ -57,6 +57,8 @@ const ChatSection: React.FC<ChatSectionProps> = ({ dealId, messages, onSendMessa
                   className={`px-4 py-2 rounded-lg max-w-[80%] ${
                     message.sender === 'user' 
                       ? 'bg-primary text-primary-foreground' 
+                      : message.sender === 'system'
+                      ? 'bg-secondary text-secondary-foreground'
                       : 'bg-muted'
                   }`}
                 >
