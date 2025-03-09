@@ -34,6 +34,27 @@ const SelectField: React.FC<SelectFieldProps> = ({
   placeholder = "Select an option",
   required = false,
 }) => {
+  // If label is empty, don't render the FormField wrapper with label
+  if (!label) {
+    return (
+      <Select value={value} onValueChange={onChange}>
+        <SelectTrigger id={id}>
+          <SelectValue placeholder={placeholder} />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            {options.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+    );
+  }
+
+  // If label is provided, render with FormField wrapper
   return (
     <FormField id={id} label={label} required={required}>
       <Select value={value} onValueChange={onChange}>

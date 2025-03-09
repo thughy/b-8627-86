@@ -92,7 +92,7 @@ const DealParametersTab: React.FC<DealParametersTabProps> = ({ deal, onEditDeal 
             <FormField id="type" label="Tipo">
               <SelectField
                 id="type"
-                label="Tipo do negócio"
+                label=""
                 value={formState.type || ''}
                 onChange={(value) => handleChange('type', value)}
                 options={typeOptions}
@@ -103,7 +103,7 @@ const DealParametersTab: React.FC<DealParametersTabProps> = ({ deal, onEditDeal 
             <FormField id="customerType" label="Tipo de Cliente">
               <SelectField
                 id="customerType"
-                label="Tipo de cliente"
+                label=""
                 value={formState.customerType || ''}
                 onChange={(value) => handleChange('customerType', value)}
                 options={customerTypeOptions}
@@ -130,7 +130,7 @@ const DealParametersTab: React.FC<DealParametersTabProps> = ({ deal, onEditDeal 
             <FormField id="status" label="Status">
               <SelectField
                 id="status"
-                label="Status do negócio"
+                label=""
                 value={formState.status || ''}
                 onChange={(value) => handleChange('status', value as Deal['status'])}
                 options={statusOptions}
@@ -142,7 +142,7 @@ const DealParametersTab: React.FC<DealParametersTabProps> = ({ deal, onEditDeal 
               <FormField id="reasonForLoss" label="Motivo da Perda">
                 <SelectField
                   id="reasonForLoss"
-                  label="Motivo da perda"
+                  label=""
                   value={formState.reasonForLoss || ''}
                   onChange={(value) => handleChange('reasonForLoss', value)}
                   options={reasonForLossOptions}
@@ -154,7 +154,7 @@ const DealParametersTab: React.FC<DealParametersTabProps> = ({ deal, onEditDeal 
             <FormField id="interests" label="Interesses">
               <SelectField
                 id="interests"
-                label="Nível de interesse"
+                label=""
                 value={formState.interests || ''}
                 onChange={(value) => handleChange('interests', value)}
                 options={interestsOptions}

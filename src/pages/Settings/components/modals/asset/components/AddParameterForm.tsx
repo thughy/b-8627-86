@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Type, Calendar, Hash, ToggleLeft, ListFilter } from "lucide-react";
+import { Plus, Type, Calendar, Hash, ToggleLeft, ListFilter, File } from "lucide-react";
 import { ParameterType } from "./ParameterItem";
 
 interface AddParameterFormProps {
@@ -44,7 +44,7 @@ const AddParameterForm = ({ onAddParameter }: AddParameterFormProps) => {
             <SelectTrigger id="paramType" className="mt-1">
               <SelectValue placeholder="Tipo do parâmetro" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-popover">
               <SelectItem value="text" className="flex items-center gap-2">
                 <Type className="h-4 w-4" />
                 <span>Texto</span>
@@ -66,7 +66,7 @@ const AddParameterForm = ({ onAddParameter }: AddParameterFormProps) => {
                 <span>Lista</span>
               </SelectItem>
               <SelectItem value="file" className="flex items-center gap-2">
-                <Type className="h-4 w-4" />
+                <File className="h-4 w-4" />
                 <span>Arquivo</span>
               </SelectItem>
             </SelectContent>
