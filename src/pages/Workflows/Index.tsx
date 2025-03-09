@@ -79,7 +79,7 @@ const WorkflowsPage = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className={`rounded-r-none ${viewMode === "grid" && "bg-muted"}`}
+                className={`rounded-r-none ${viewMode === "kanban" && "bg-muted"}`}
                 onClick={() => setViewMode("kanban")}
               >
                 <LayoutGrid className="h-4 w-4" />
