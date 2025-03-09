@@ -16,7 +16,8 @@ export const useChatMessages = (dealId?: string) => {
         sender: 'system',
         senderName: 'Sistema',
         content: `Negócio #${dealId.slice(0, 8)} criado com sucesso. Você pode interagir com os participantes neste chat.`,
-        timestamp: new Date(),
+        text: `Negócio #${dealId.slice(0, 8)} criado com sucesso. Você pode interagir com os participantes neste chat.`,
+        timestamp: new Date()
       };
       
       chatMessagesStore[dealId] = [initialMessage];
@@ -42,6 +43,7 @@ export const useChatMessages = (dealId?: string) => {
       sender,
       senderName,
       content,
+      text: content,
       timestamp: new Date()
     };
 
