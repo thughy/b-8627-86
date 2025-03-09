@@ -51,8 +51,8 @@ const AssetTabs = ({ activeTab, setActiveTab, formData, onChange }: AssetTabsPro
 
       <TabsContent value="details" className="space-y-4 mt-4">
         <AssetDetailsTab 
-          formData={formData} 
-          onChange={onChange}
+          asset={formData} 
+          onAssetChange={onChange}
         />
       </TabsContent>
 

@@ -1,355 +1,232 @@
 
-import { Template, Asset, Collaborator, Integration, Workflow } from "@/pages/Workflows/models/WorkflowModels";
+import { Workflow, Department, Pipeline, Stage, Agent, Asset, Integration, Collaborator } from "@/pages/Workflows/models/WorkflowModels";
+import { getDepartments, getPipelines, getStages } from "./workflowDataService";
+import { getMockAgents } from "./agentDataService";
 
-// Mock data for templates
-const mockTemplates: Template[] = [
+// Mock data for integrations
+const integrations: Integration[] = [
   {
-    id: "template-1",
-    type: "workflow",
-    name: "Comercial Básico",
-    version: "1.0.0",
-    data: {
-      workflowTitle: "Workflow Comercial",
-      workflowDescription: "Fluxo de trabalho para equipes de vendas",
-      departmentTitle: "Vendas",
-      departmentDescription: "Departamento de vendas e comercial",
-      pipelineTitle: "Pipeline de Vendas",
-      pipelineDescription: "Processo de vendas padrão"
+    id: "integration1",
+    name: "WhatsApp Business API",
+    type: "message",
+    provider: "WhatsApp",
+    status: "active",
+    credentials: {
+      apiKey: "mock-api-key-1",
+      phoneNumber: "+551199999999"
     },
-    updatedAt: new Date(2023, 10, 15)
+    isActive: true,
+    createdAt: new Date("2023-01-15"),
+    updatedAt: new Date("2023-06-10")
   },
   {
-    id: "template-2",
-    type: "department",
-    name: "Departamento de Marketing",
-    version: "1.2.0",
-    data: {
-      departmentTitle: "Marketing",
-      departmentDescription: "Departamento para campanhas de marketing",
-      pipelineTitle: "Pipeline de Campanhas",
-      pipelineDescription: "Processo para gerenciar campanhas de marketing"
+    id: "integration2",
+    name: "Stripe Payments",
+    type: "payment",
+    provider: "Stripe",
+    status: "active",
+    credentials: {
+      apiKey: "mock-stripe-key",
+      webhookSecret: "mock-webhook-secret"
     },
-    updatedAt: new Date(2023, 11, 5)
+    isActive: true,
+    createdAt: new Date("2023-02-20"),
+    updatedAt: new Date("2023-07-05")
   },
   {
-    id: "template-3",
-    type: "pipeline",
-    name: "Pipeline de Suporte",
-    version: "1.1.0",
-    data: {
-      pipelineTitle: "Atendimento ao Cliente",
-      pipelineDescription: "Processo para gerenciar tickets de suporte",
-      stages: [
-        "Novo Ticket", 
-        "Em Análise", 
-        "Em Atendimento", 
-        "Aguardando Cliente", 
-        "Resolvido"
-      ]
+    id: "integration3",
+    name: "OpenAI GPT-4",
+    type: "llm",
+    provider: "OpenAI",
+    status: "active",
+    credentials: {
+      apiKey: "mock-openai-key"
     },
-    updatedAt: new Date(2023, 11, 20)
-  },
-  {
-    id: "template-4",
-    type: "stage",
-    name: "Estágios de Vendas Avançado",
-    version: "2.0.0",
-    data: {
-      stages: [
-        {
-          title: "Prospecção",
-          description: "Identificação de leads potenciais"
-        },
-        {
-          title: "Qualificação",
-          description: "Avaliação de leads para determinar adequação"
-        },
-        {
-          title: "Proposta",
-          description: "Apresentação de proposta de valor"
-        },
-        {
-          title: "Negociação",
-          description: "Discussão de termos e condições"
-        },
-        {
-          title: "Fechamento",
-          description: "Finalização do acordo"
-        }
-      ]
-    },
-    updatedAt: new Date(2024, 0, 10)
-  },
-  {
-    id: "template-5",
-    type: "agent",
-    name: "Agente de Vendas",
-    version: "1.0.0",
-    data: {
-      profile: {
-        agentName: "Vendedor Virtual",
-        agentRole: "Especialista em Vendas",
-        agentGoal: "Maximizar conversões e satisfação do cliente"
-      },
-      businessRules: {
-        rules: "Seguir processo de vendas padrão",
-        restrictions: "Não oferecer descontos acima de 15%",
-        conversationStyle: "Profissional"
-      },
-      expertise: {
-        knowledge: "Produtos, precificação, técnicas de negociação",
-        skills: "Persuasão, comunicação, análise de necessidades",
-        examples: "Como identificar objeções e superá-las"
-      }
-    },
-    updatedAt: new Date(2024, 1, 5)
-  },
-  {
-    id: "template-6",
-    type: "asset",
-    name: "Proposta Comercial",
-    version: "1.0.0",
-    data: {
-      title: "Proposta Comercial Padrão",
-      description: "Template para propostas comerciais",
-      type: "proposal",
-      parameters: {
-        validityDays: 30,
-        paymentTerms: "30/60/90 dias",
-        deliveryTime: "15 dias úteis"
-      }
-    },
-    updatedAt: new Date(2024, 1, 15)
-  }
-];
-
-// Mock data for assets
-const mockAssets: Asset[] = [
-  {
-    id: "asset-1",
-    dealId: "deal-1",
-    title: "Proposta Comercial",
-    description: "Proposta para cliente XYZ",
-    type: "proposal",
-    status: "open",
-    amount: 5000,
-    workEnvironment: {
-      workflowTitle: "Workflow Comercial",
-      departmentTitle: "Vendas",
-      stageTitle: "Proposta"
-    },
-    createdAt: new Date(2023, 10, 15),
-    updatedAt: new Date(2023, 10, 15)
-  },
-  {
-    id: "asset-2",
-    dealId: "deal-2",
-    title: "Contrato de Serviço",
-    description: "Contrato para cliente ABC",
-    type: "contract",
-    status: "completed",
-    amount: 10000,
-    workEnvironment: {
-      workflowTitle: "Workflow Comercial",
-      departmentTitle: "Vendas",
-      stageTitle: "Fechamento"
-    },
-    createdAt: new Date(2023, 11, 5),
-    updatedAt: new Date(2023, 11, 5)
+    isActive: true,
+    createdAt: new Date("2023-03-10"),
+    updatedAt: new Date("2023-08-15")
   }
 ];
 
 // Mock data for collaborators
-const mockCollaborators: Collaborator[] = [
+const collaborators: Collaborator[] = [
   {
-    id: "collab-1",
+    id: "collab1",
     name: "João Silva",
-    email: "joao@exemplo.com",
+    email: "joao.silva@example.com",
     role: "Gerente de Vendas",
-    type: "collaborator",
+    type: "admin",
     status: "active",
-    phone: "(11) 98765-4321",
+    phone: "+5511987654321",
     hierarchyLevel: "Gerência",
-    createdAt: new Date(2023, 9, 10),
-    updatedAt: new Date(2023, 9, 10)
+    createdAt: new Date("2023-01-05"),
+    updatedAt: new Date("2023-06-15")
   },
   {
-    id: "collab-2",
-    name: "Maria Santos",
-    email: "maria@exemplo.com",
-    role: "Analista de Marketing",
-    type: "collaborator",
+    id: "collab2",
+    name: "Maria Souza",
+    email: "maria.souza@example.com",
+    role: "Agente de Vendas",
+    type: "agent",
     status: "active",
-    phone: "(11) 91234-5678",
+    phone: "+5511987654322",
     hierarchyLevel: "Operacional",
-    createdAt: new Date(2023, 10, 5),
-    updatedAt: new Date(2023, 10, 5)
+    createdAt: new Date("2023-02-10"),
+    updatedAt: new Date("2023-07-20")
   },
   {
-    id: "collab-3",
-    name: "Carlos Oliveira",
-    email: "carlos@exemplo.com",
-    role: "Desenvolvedor",
-    type: "developer",
-    status: "pending",
-    createdAt: new Date(2023, 11, 15),
-    updatedAt: new Date(2023, 11, 15)
+    id: "collab3",
+    name: "Pedro Santos",
+    email: "pedro.santos@example.com",
+    role: "Analista de Suporte",
+    type: "support",
+    status: "inactive",
+    phone: "+5511987654323",
+    hierarchyLevel: "Operacional",
+    createdAt: new Date("2023-03-15"),
+    updatedAt: new Date("2023-08-25")
   }
 ];
 
-// Mock data for integrations
-const mockIntegrations: Integration[] = [
+// Mock data for assets
+const assets: Asset[] = [
   {
-    id: "integration-1",
-    name: "WhatsApp Business",
-    type: "messages",
-    provider: "Meta",
-    status: "active",
-    config: {
-      apiKey: "xxxxx",
-      phoneNumber: "+5511999999999"
+    id: "asset1",
+    dealId: "deal1",
+    title: "Proposta Comercial - Cliente A",
+    description: "Proposta detalhada para o Cliente A",
+    type: "proposal",
+    amount: 15000,
+    status: "completed",
+    startDate: new Date("2023-05-10"),
+    endDate: new Date("2023-05-20"),
+    workEnvironment: {
+      workflowTitle: "Workflow de Vendas",
+      departmentTitle: "Comercial",
+      stageTitle: "Negociação"
     },
-    createdAt: new Date(2023, 10, 1)
+    files: ["proposta_cliente_a.pdf"],
+    parameters: {
+      discountApplied: true,
+      discountValue: 10,
+      paymentTerms: "30 dias"
+    },
+    createdAt: new Date("2023-05-01"),
+    updatedAt: new Date("2023-05-25")
   },
   {
-    id: "integration-2",
-    name: "Stripe Payments",
-    type: "payments",
-    provider: "Stripe",
-    status: "active",
-    config: {
-      apiKey: "sk_test_xxxxx",
-      webhookUrl: "https://api.example.com/webhooks/stripe"
+    id: "asset2",
+    dealId: "deal2",
+    title: "Contrato de Serviço - Cliente B",
+    description: "Contrato padrão para Cliente B",
+    type: "contract",
+    amount: 8000,
+    status: "processing",
+    startDate: new Date("2023-06-15"),
+    workEnvironment: {
+      workflowTitle: "Workflow de Suporte",
+      departmentTitle: "Jurídico",
+      stageTitle: "Revisão"
     },
-    createdAt: new Date(2023, 11, 10)
-  },
-  {
-    id: "integration-3",
-    name: "Gmail",
-    type: "email",
-    provider: "Google",
-    status: "inactive",
-    config: {
-      clientId: "xxxxx.apps.googleusercontent.com",
-      clientSecret: "xxxxx"
+    files: ["contrato_cliente_b.docx", "anexos_contrato.pdf"],
+    parameters: {
+      serviceLevel: "Premium",
+      duration: "12 meses"
     },
-    createdAt: new Date(2023, 9, 15)
+    createdAt: new Date("2023-06-10"),
+    updatedAt: new Date("2023-06-20")
   }
 ];
 
 // Mock data for workflows
-const mockWorkflows: Workflow[] = [
+const workflows: Workflow[] = [
   {
-    id: "workflow-1",
-    title: "Workflow Comercial",
+    id: "workflow1",
+    title: "Workflow de Vendas",
     description: "Processo de vendas completo",
     status: "active",
-    departmentId: "dept-1",
-    createdAt: new Date(2023, 10, 1),
-    updatedAt: new Date(2023, 10, 1)
+    departmentId: "dept1",
+    createdAt: new Date("2023-01-01"),
+    updatedAt: new Date("2023-05-15")
   },
   {
-    id: "workflow-2",
+    id: "workflow2",
+    title: "Workflow de Suporte",
+    description: "Atendimento ao cliente",
+    status: "active",
+    departmentId: "dept2",
+    createdAt: new Date("2023-02-01"),
+    updatedAt: new Date("2023-06-10")
+  },
+  {
+    id: "workflow3",
     title: "Workflow de Marketing",
-    description: "Processo de campanhas de marketing",
+    description: "Campanhas e ações de marketing",
     status: "draft",
-    departmentId: "dept-2",
-    createdAt: new Date(2023, 11, 5),
-    updatedAt: new Date(2023, 11, 5)
+    departmentId: "dept3",
+    createdAt: new Date("2023-03-01"),
+    updatedAt: new Date("2023-07-05")
   }
 ];
 
-// Function to get all templates
-export const getTemplates = (): Template[] => {
-  return mockTemplates;
-};
-
-// Function to get templates by type
-export const getTemplatesByType = (type: Template['type']): Template[] => {
-  return mockTemplates.filter(template => template.type === type);
-};
-
-// Function to get a template by ID
-export const getTemplateById = (id: string): Template | undefined => {
-  return mockTemplates.find(template => template.id === id);
-};
-
-// Function to get all assets
-export const getAssets = (): Asset[] => {
-  return mockAssets;
-};
-
-// Function to get all collaborators
-export const getCollaborators = (): Collaborator[] => {
-  return mockCollaborators;
-};
-
-// Function to get all integrations
-export const getIntegrations = (): Integration[] => {
-  return mockIntegrations;
-};
-
-// Function to get all workflows
+// Function to get workflows
 export const getWorkflows = (): Workflow[] => {
-  return mockWorkflows;
+  return workflows;
 };
 
-// Function to install a template
-export const installTemplate = (templateId: string): boolean => {
-  // Mock implementation - would actually copy the template to the user's active configurations
-  console.log(`Template ${templateId} installed`);
-  return true;
+// Function to get assets
+export const getAssets = (): Asset[] => {
+  return assets;
 };
 
-// Function to uninstall a template
-export const uninstallTemplate = (templateId: string): boolean => {
-  // Mock implementation - would actually remove the template from the user's active configurations
-  console.log(`Template ${templateId} uninstalled`);
-  return true;
+// Function to get integrations
+export const getIntegrations = (): Integration[] => {
+  return integrations;
 };
 
-// Function to update a template
-export const updateTemplate = (templateId: string): boolean => {
-  // Mock implementation - would actually update the template to the latest version
-  console.log(`Template ${templateId} updated`);
-  return true;
+// Function to get collaborators
+export const getCollaborators = (): Collaborator[] => {
+  return collaborators;
 };
 
-// Function to export a template
-export const exportTemplate = (templateId: string): object => {
-  const template = getTemplateById(templateId);
-  // In a real implementation, this would format the template for export
-  return template || {};
-};
-
-// Function to generate a template report
-export const generateTemplateReport = (templateId: string): object => {
-  const template = getTemplateById(templateId);
-  // In a real implementation, this would generate a detailed report about the template
+// Function to get all data for templates
+export const getAllDataForTemplates = () => {
   return {
-    template,
-    usageStats: {
-      timesInstalled: 12,
-      activeInstallations: 8,
-      averageRating: 4.5
-    }
+    workflows: getWorkflows(),
+    departments: getDepartments(),
+    pipelines: getPipelines(),
+    stages: getStages(),
+    agents: getMockAgents(),
+    assets: getAssets()
   };
 };
 
-// Function to import a template (would receive a file or object in a real implementation)
-export const importTemplate = (templateData: any): Template | null => {
-  // Mock implementation - would validate and process the imported template
-  const newTemplate: Template = {
-    id: `template-${mockTemplates.length + 1}`,
-    type: templateData.type || "workflow",
-    name: templateData.name || "Imported Template",
-    version: templateData.version || "1.0.0",
-    data: templateData.data || {},
-    updatedAt: new Date()
-  };
+// Function to get a specific template by type and ID
+export const getTemplateByTypeAndId = (type: string, id: string) => {
+  let item;
   
-  // In a real implementation, we would add this to the database
-  // mockTemplates.push(newTemplate);
+  switch (type) {
+    case 'workflow':
+      item = workflows.find(w => w.id === id);
+      break;
+    case 'department':
+      item = getDepartments().find(d => d.id === id);
+      break;
+    case 'pipeline':
+      item = getPipelines().find(p => p.id === id);
+      break;
+    case 'stage':
+      item = getStages().find(s => s.id === id);
+      break;
+    case 'agent':
+      item = getMockAgents().find(a => a.id === id);
+      break;
+    case 'asset':
+      item = assets.find(a => a.id === id);
+      break;
+    default:
+      return null;
+  }
   
-  return newTemplate;
+  return item || null;
 };

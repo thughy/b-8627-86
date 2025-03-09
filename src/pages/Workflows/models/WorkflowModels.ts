@@ -15,7 +15,7 @@ export interface Department {
   id: string;
   title: string;
   description: string;
-  color?: string; // Adding color property
+  color?: string;
 }
 
 // Define types for pipelines
@@ -32,7 +32,7 @@ export interface Stage {
   id: string;
   pipelineId: string;
   title: string;
-  description?: string; // Adding description property
+  description?: string;
   order: number;
 }
 
@@ -43,7 +43,7 @@ export interface Deal {
   description?: string;
   stageId: string;
   status: 'open' | 'won' | 'lost' | 'completed';
-  type?: string; // Adding type property
+  type?: string;
   amount?: number;
   startDate?: Date;
   endDate?: Date;
@@ -60,7 +60,7 @@ export interface Asset {
   description?: string;
   type: string;
   amount?: number;
-  status: 'open' | 'processing' | 'completed' | 'cancelled'; // Fixed spelling ('cancelled' instead of 'canceled')
+  status: 'open' | 'processing' | 'completed' | 'cancelled';
   startDate?: Date;
   endDate?: Date;
   workEnvironment?: {
@@ -125,7 +125,7 @@ export interface Agent {
     chat?: boolean;
     webSearch?: boolean;
   };
-  llmModel?: string; // Adding llmModel property
+  llmModel?: string;
   status: 'active' | 'paused' | 'blocked';
   createdAt: Date;
   updatedAt: Date;
@@ -152,7 +152,9 @@ export interface Integration {
   type: string;
   provider: string;
   status: string;
-  config: Record<string, any>;
+  config?: Record<string, any>;
+  credentials?: Record<string, any>;
+  isActive?: boolean;
   createdAt: Date;
   updatedAt?: Date;
 }

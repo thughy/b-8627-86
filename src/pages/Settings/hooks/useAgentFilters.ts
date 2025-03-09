@@ -26,8 +26,8 @@ export const useAgentFilters = (agents: Agent[]) => {
   const filteredAgents = agents.filter(agent => {
     // Search filter
     if (filters.search && 
-        !agent.profile.name.toLowerCase().includes(filters.search.toLowerCase()) &&
-        !agent.profile.role.toLowerCase().includes(filters.search.toLowerCase())) {
+        !agent.profile.agentName.toLowerCase().includes(filters.search.toLowerCase()) &&
+        !agent.profile.agentRole.toLowerCase().includes(filters.search.toLowerCase())) {
       return false;
     }
     

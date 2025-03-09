@@ -3,6 +3,7 @@ import React from "react";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Eye, Ear, Mic, Phone, Video, Calendar, Mail, FileText, Database, MessageSquare, Search } from "lucide-react";
+import { Agent } from "@/pages/Workflows/models/WorkflowModels";
 
 interface Tool {
   id: string;
@@ -11,7 +12,7 @@ interface Tool {
 }
 
 interface AgentToolsTabProps {
-  tools: string[];
+  tools: Agent['tools'];
   onToolToggle: (toolId: string, enabled: boolean) => void;
 }
 
@@ -35,7 +36,7 @@ const AgentToolsTab = ({ tools, onToolToggle }: AgentToolsTabProps) => {
       <Label>Ferramentas disponíveis</Label>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
         {AVAILABLE_TOOLS.map(tool => {
-          const isActive = tools?.includes(tool.id);
+          const isActive = tools && tools[tool.id as keyof typeof tools];
           return (
             <div key={tool.id} className={`p-3 rounded-md border ${isActive ? 'border-primary bg-primary/5' : 'border-input'}`}>
               <div className="flex items-center justify-between">
@@ -44,7 +45,7 @@ const AgentToolsTab = ({ tools, onToolToggle }: AgentToolsTabProps) => {
                   <span className={`font-medium ${isActive ? 'text-primary' : ''}`}>{tool.name}</span>
                 </div>
                 <Switch 
-                  checked={isActive}
+                  checked={!!isActive}
                   onCheckedChange={(checked) => onToolToggle(tool.id, checked)}
                 />
               </div>

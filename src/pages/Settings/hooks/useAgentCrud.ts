@@ -37,7 +37,7 @@ export const useAgentCrud = (initialAgents: Agent[] = []) => {
       ));
       toast({
         title: "Agente atualizado",
-        description: `O agente ${agentData.profile?.name} foi atualizado com sucesso.`,
+        description: `O agente ${agentData.profile?.agentName} foi atualizado com sucesso.`,
       });
     } else {
       // Create new agent
@@ -52,7 +52,7 @@ export const useAgentCrud = (initialAgents: Agent[] = []) => {
       setAgents(prev => [...prev, newAgent]);
       toast({
         title: "Agente criado",
-        description: `O agente ${agentData.profile?.name} foi criado com sucesso.`,
+        description: `O agente ${agentData.profile?.agentName} foi criado com sucesso.`,
       });
     }
     setIsModalOpen(false);

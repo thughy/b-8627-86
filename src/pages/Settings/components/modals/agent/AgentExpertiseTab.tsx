@@ -10,13 +10,6 @@ interface AgentExpertiseTabProps {
 }
 
 const AgentExpertiseTab = ({ expertise, onExpertiseChange }: AgentExpertiseTabProps) => {
-  // Helper to get textual representation of fields
-  const getFieldText = (field: string | string[]) => {
-    if (typeof field === 'string') return field;
-    if (Array.isArray(field)) return field.join('\n');
-    return '';
-  };
-
   // Handle text area changes
   const handleTextChange = (field: string, value: string) => {
     onExpertiseChange(field, value);
@@ -28,7 +21,7 @@ const AgentExpertiseTab = ({ expertise, onExpertiseChange }: AgentExpertiseTabPr
         <Label htmlFor="knowledge">Conhecimentos</Label>
         <Textarea 
           id="knowledge"
-          value={getFieldText(expertise?.knowledge || "")}
+          value={expertise?.knowledge || ""}
           onChange={(e) => handleTextChange("knowledge", e.target.value)}
           placeholder="Um conhecimento por linha"
           rows={3}
@@ -39,7 +32,7 @@ const AgentExpertiseTab = ({ expertise, onExpertiseChange }: AgentExpertiseTabPr
         <Label htmlFor="skills">Habilidades</Label>
         <Textarea 
           id="skills"
-          value={getFieldText(expertise?.skills || "")}
+          value={expertise?.skills || ""}
           onChange={(e) => handleTextChange("skills", e.target.value)}
           placeholder="Uma habilidade por linha"
           rows={3}
@@ -50,7 +43,7 @@ const AgentExpertiseTab = ({ expertise, onExpertiseChange }: AgentExpertiseTabPr
         <Label htmlFor="examples">Exemplos</Label>
         <Textarea 
           id="examples"
-          value={getFieldText(expertise?.examples || "")}
+          value={expertise?.examples || ""}
           onChange={(e) => handleTextChange("examples", e.target.value)}
           placeholder="Um exemplo por linha"
           rows={3}
@@ -61,7 +54,7 @@ const AgentExpertiseTab = ({ expertise, onExpertiseChange }: AgentExpertiseTabPr
         <Label htmlFor="tasks">Tarefas</Label>
         <Textarea 
           id="tasks"
-          value={getFieldText(expertise?.tasks || "")}
+          value={expertise?.tasks || ""}
           onChange={(e) => handleTextChange("tasks", e.target.value)}
           placeholder="Uma tarefa por linha"
           rows={3}

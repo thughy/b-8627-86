@@ -85,6 +85,8 @@ const IntegrationsSettings = () => {
         name: integrationData.name || "Nova Integração",
         type: integrationData.type || "message",
         provider: integrationData.provider || "",
+        status: "active",
+        config: integrationData.config || {},
         credentials: integrationData.credentials || {},
         isActive: integrationData.isActive !== undefined ? integrationData.isActive : true,
         createdAt: new Date(),

@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   Dialog, 
   DialogContent, 
@@ -32,22 +32,39 @@ const IntegrationConfigModal = ({
 }: IntegrationConfigModalProps) => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("general");
-  const [formData, setFormData] = useState<Partial<Integration>>(
-    integration || {
-      name: "",
-      type: "message",
-      provider: "",
-      credentials: {},
-      isActive: true
+  const [formData, setFormData] = useState<Partial<Integration>>({
+    name: "",
+    type: "message",
+    provider: "",
+    status: "active",
+    credentials: {},
+    isActive: true
+  });
+
+  useEffect(() => {
+    if (integration) {
+      setFormData({
+        ...integration,
+        credentials: integration.credentials || {}
+      });
+    } else {
+      setFormData({
+        name: "",
+        type: "message",
+        provider: "",
+        status: "active",
+        credentials: {},
+        isActive: true
+      });
     }
-  );
+  }, [integration]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleTypeChange = (type: 'message' | 'payment' | 'llm' | 'call' | 'email' | 'custom') => {
+  const handleTypeChange = (type: string) => {
     setFormData(prev => ({ ...prev, type }));
   };
 
@@ -55,7 +72,7 @@ const IntegrationConfigModal = ({
     setFormData(prev => ({
       ...prev,
       credentials: {
-        ...prev.credentials,
+        ...(prev.credentials || {}),
         [key]: value
       }
     }));
@@ -287,7 +304,7 @@ const IntegrationConfigModal = ({
                 <Label>Tipo de Integração</Label>
                 <Select 
                   value={formData.type} 
-                  onValueChange={(value) => handleTypeChange(value as any)}
+                  onValueChange={handleTypeChange}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione o tipo" />

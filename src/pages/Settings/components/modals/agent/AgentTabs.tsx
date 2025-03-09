@@ -37,8 +37,8 @@ const AgentTabs = ({
 }: AgentTabsProps) => {
   // Mock data for departments, pipelines, and stages
   const departments: Department[] = [
-    { id: "dept1", title: "Comercial", description: "Departamento comercial" },
-    { id: "dept2", title: "Suporte", description: "Departamento de suporte" }
+    { id: "dept1", title: "Comercial", description: "Departamento comercial", color: "#3b82f6" },
+    { id: "dept2", title: "Suporte", description: "Departamento de suporte", color: "#10b981" }
   ];
   
   const pipelines: Pipeline[] = [
@@ -47,10 +47,10 @@ const AgentTabs = ({
   ];
   
   const stages: Stage[] = [
-    { id: "stage1", pipelineId: "pipe1", title: "Prospecção", order: 1 },
-    { id: "stage2", pipelineId: "pipe1", title: "Qualificação", order: 2 },
-    { id: "stage3", pipelineId: "pipe2", title: "Triagem", order: 1 },
-    { id: "stage4", pipelineId: "pipe2", title: "Resolução", order: 2 }
+    { id: "stage1", pipelineId: "pipe1", title: "Prospecção", description: "Etapa de prospecção de clientes", order: 1 },
+    { id: "stage2", pipelineId: "pipe1", title: "Qualificação", description: "Etapa de qualificação de leads", order: 2 },
+    { id: "stage3", pipelineId: "pipe2", title: "Triagem", description: "Etapa de triagem de chamados", order: 1 },
+    { id: "stage4", pipelineId: "pipe2", title: "Resolução", description: "Etapa de resolução de problemas", order: 2 }
   ];
 
   // Ensure default values for nested objects
@@ -76,6 +76,7 @@ const AgentTabs = ({
   };
 
   const rag = formData.rag || [];
+  const tools = formData.tools || {};
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-5">
@@ -129,7 +130,7 @@ const AgentTabs = ({
 
       <TabsContent value="tools" className="space-y-4 mt-4">
         <AgentToolsTab 
-          tools={formData.tools || {}} 
+          tools={tools} 
           onToolToggle={handleToolsChange} 
         />
       </TabsContent>
