@@ -47,7 +47,7 @@ const WorkflowFilters: React.FC<WorkflowFiltersProps> = ({
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Buscar negócios..."
-            className="pl-8"
+            className="pl-8 thin-border"
             value={searchTerm}
             onChange={e => onSearchChange(e.target.value)}
           />
@@ -56,12 +56,12 @@ const WorkflowFilters: React.FC<WorkflowFiltersProps> = ({
         {/* Department/Workflow Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="w-full md:w-56 justify-between">
+            <Button variant="outline" className="w-full md:w-56 justify-between thin-border">
               <span>{selectedWorkflowName}</span>
               <ChevronDown className="h-4 w-4 ml-2" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-56 bg-[#222222]">
+          <DropdownMenuContent align="start" className="w-56 bg-[#222222] thin-border">
             {workflows.map(workflow => (
               <DropdownMenuItem 
                 key={workflow.id} 
@@ -77,12 +77,12 @@ const WorkflowFilters: React.FC<WorkflowFiltersProps> = ({
         {/* Pipeline Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="w-full md:w-56 justify-between">
+            <Button variant="outline" className="w-full md:w-56 justify-between thin-border">
               <span>{selectedPipelineName}</span>
               <ChevronDown className="h-4 w-4 ml-2" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-56 bg-[#222222]">
+          <DropdownMenuContent align="start" className="w-56 bg-[#222222] thin-border">
             {pipelines.map(pipeline => (
               <DropdownMenuItem 
                 key={pipeline.id} 
@@ -101,6 +101,7 @@ const WorkflowFilters: React.FC<WorkflowFiltersProps> = ({
           variant="outline" 
           size="icon" 
           onClick={() => onViewModeChange('kanban')}
+          className="thin-border"
         >
           <Columns className={`h-4 w-4 ${viewMode === 'kanban' ? 'text-primary' : ''}`} />
         </Button>
@@ -108,10 +109,11 @@ const WorkflowFilters: React.FC<WorkflowFiltersProps> = ({
           variant="outline" 
           size="icon" 
           onClick={() => onViewModeChange('list')}
+          className="thin-border"
         >
           <List className={`h-4 w-4 ${viewMode === 'list' ? 'text-primary' : ''}`} />
         </Button>
-        <Button variant="outline" size="icon">
+        <Button variant="outline" size="icon" className="thin-border">
           <Filter className="h-4 w-4" />
         </Button>
       </div>
