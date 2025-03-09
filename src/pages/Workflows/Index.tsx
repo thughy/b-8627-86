@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -89,51 +89,57 @@ const WorkflowsPage = () => {
           onViewModeChange={setViewMode} 
         />
 
-        <TabsContent value="all" className="space-y-6 mt-0">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <DepartmentDropdown
-              departments={departments}
-              selectedDepartment={selectedDepartment || departments[0]}
-              onSelectDepartment={handleSelectDepartment}
-            />
-            
-            <Button 
-              onClick={() => handleAction("createPipeline")}
-              className="sm:flex-none flex-1"
-              variant="outline"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Novo Pipeline
-            </Button>
-          </div>
-
-          {viewMode === "kanban" ? (
-            <div className="space-y-8">
-              {pipelines.map((pipeline: Pipeline) => (
-                <PipelineCard 
-                  key={pipeline.id} 
-                  pipeline={pipeline} 
-                  onAction={handleAction}
-                />
-              ))}
+        <Tabs defaultValue="all">
+          <TabsList className="hidden">
+            <TabsTrigger value="all">Todos</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="all" className="space-y-6 mt-0">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <DepartmentDropdown
+                departments={departments}
+                selectedDepartment={selectedDepartment || departments[0]}
+                onSelectDepartment={handleSelectDepartment}
+              />
               
-              {pipelines.length === 0 && (
-                <div className="flex flex-col items-center justify-center bg-muted/30 rounded-lg p-8 text-center">
-                  <h3 className="text-lg font-medium mb-2">Nenhum pipeline encontrado</h3>
-                  <p className="text-muted-foreground mb-4">
-                    Não existe nenhum pipeline configurado para este departamento.
-                  </p>
-                  <Button onClick={() => handleAction("createPipeline")}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Criar Novo Pipeline
-                  </Button>
-                </div>
-              )}
+              <Button 
+                onClick={() => handleAction("createPipeline")}
+                className="sm:flex-none flex-1"
+                variant="outline"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Novo Pipeline
+              </Button>
             </div>
-          ) : (
-            <ListView onAction={handleAction} />
-          )}
-        </TabsContent>
+
+            {viewMode === "kanban" ? (
+              <div className="space-y-8">
+                {pipelines.map((pipeline: Pipeline) => (
+                  <PipelineCard 
+                    key={pipeline.id} 
+                    pipeline={pipeline} 
+                    onAction={handleAction}
+                  />
+                ))}
+                
+                {pipelines.length === 0 && (
+                  <div className="flex flex-col items-center justify-center bg-muted/30 rounded-lg p-8 text-center">
+                    <h3 className="text-lg font-medium mb-2">Nenhum pipeline encontrado</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Não existe nenhum pipeline configurado para este departamento.
+                    </p>
+                    <Button onClick={() => handleAction("createPipeline")}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Criar Novo Pipeline
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <ListView onAction={handleAction} />
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
     </DashboardLayout>
   );
