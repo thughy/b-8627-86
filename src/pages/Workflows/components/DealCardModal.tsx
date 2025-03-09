@@ -84,9 +84,9 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
 
         {/* Conteúdo principal em colunas */}
         <div className="flex-1 overflow-hidden p-6 pt-0">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
+          <div className="grid grid-cols-12 gap-6 h-full">
             {/* Coluna de Parâmetros */}
-            <div className="h-full flex flex-col overflow-hidden">
+            <div className="col-span-4 h-full flex flex-col overflow-hidden">
               <h3 className="text-lg font-medium mb-3">Parâmetros</h3>
               <ScrollArea className="flex-1">
                 <div className="pr-4">
@@ -96,7 +96,7 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
             </div>
             
             {/* Coluna de Workspace */}
-            <div className="h-full flex flex-col border-l border-border overflow-hidden">
+            <div className="col-span-8 h-full flex flex-col border-l border-border overflow-hidden">
               <h3 className="text-lg font-medium mb-3 pl-4">Workspace</h3>
               <div className="pl-4 flex-1 overflow-hidden">
                 <DealWorkspaceTab 
