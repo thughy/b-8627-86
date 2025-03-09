@@ -49,6 +49,8 @@ export interface Deal {
   endDate?: Date;
   customerName?: string;
   customerOrganization?: string;
+  interests?: string;
+  reasonForLoss?: string;
   createdAt: Date;
 }
 

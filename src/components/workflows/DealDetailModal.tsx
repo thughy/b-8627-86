@@ -1,23 +1,34 @@
 
 import React, { useState } from 'react';
 import { Deal, Asset } from '@/pages/Workflows/models/WorkflowModels';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { 
-  PenLine, FileText, Mail, MessageSquare, Calendar, 
-  DollarSign, Building, BarChart, CheckSquare, Image 
+  Building2, 
+  Calendar, 
+  CreditCard, 
+  FileText, 
+  MessageSquare, 
+  CheckSquare, 
+  User, 
+  Package, 
+  Mail
 } from 'lucide-react';
 import AssetCard from './AssetCard';
-import AssetConfigModal from '@/pages/Settings/components/modals/AssetConfigModal';
-import { useToast } from '@/hooks/use-toast';
 
 interface DealDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
-  deal: Deal | null;
+  deal: Deal;
   onCreateAsset: (dealId: string, asset: Partial<Asset>) => void;
 }
 
@@ -27,356 +38,272 @@ const DealDetailModal: React.FC<DealDetailModalProps> = ({
   deal,
   onCreateAsset
 }) => {
-  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('details');
-  const [activeFocusTab, setActiveFocusTab] = useState('all');
-  const [isAssetModalOpen, setIsAssetModalOpen] = useState(false);
-  const [currentAsset, setCurrentAsset] = useState<Asset | null>(null);
+  const [activeWorkspaceTab, setActiveWorkspaceTab] = useState<string>('all');
 
-  // Sample assets (in a real app, these would come from the database)
-  const [assets, setAssets] = useState<Asset[]>([
+  // Example assets for this deal
+  const assets: Asset[] = [
     {
       id: 'asset-1',
-      dealId: 'deal-1',
+      dealId: deal.id,
       title: 'Proposta Comercial',
-      description: 'Proposta detalhada para o cliente',
-      type: 'proposal',
-      amount: 5000,
+      description: 'Documento com detalhes da proposta',
+      type: 'document',
       status: 'completed',
       createdAt: new Date(),
-      updatedAt: new Date(),
-      workEnvironment: {
-        workflowTitle: 'Workflow de Vendas',
-        departmentTitle: 'Comercial',
-        stageTitle: 'Proposta'
-      }
+      updatedAt: new Date()
+    },
+    {
+      id: 'asset-2',
+      dealId: deal.id,
+      title: 'Contrato de Serviço',
+      description: 'Contrato para assinatura',
+      type: 'contract',
+      status: 'processing',
+      createdAt: new Date(),
+      updatedAt: new Date()
     }
-  ]);
+  ];
 
-  const handleAddAsset = () => {
-    if (!deal) return;
-    setCurrentAsset(null);
-    setIsAssetModalOpen(true);
+  const handleCreateAsset = () => {
+    const newAsset: Partial<Asset> = {
+      title: 'Novo Asset',
+      description: 'Descrição do novo asset',
+      type: 'document',
+      status: 'open'
+    };
+    onCreateAsset(deal.id, newAsset);
   };
-  
-  const handleEditAsset = (asset: Asset) => {
-    setCurrentAsset(asset);
-    setIsAssetModalOpen(true);
-  };
-  
-  const handleDeleteAsset = (assetId: string) => {
-    setAssets(prev => prev.filter(asset => asset.id !== assetId));
-    toast({
-      title: "Asset removido",
-      description: "O asset foi removido com sucesso."
-    });
-  };
-  
-  const handleSaveAsset = (assetData: Asset) => {
-    if (currentAsset) {
-      // Update existing asset
-      setAssets(prev => prev.map(asset => 
-        asset.id === assetData.id ? assetData : asset
-      ));
-      toast({
-        title: "Asset atualizado",
-        description: "O asset foi atualizado com sucesso."
-      });
-    } else if (deal) {
-      // Create new asset
-      const newAsset: Asset = {
-        ...assetData,
-        id: `asset-${Date.now()}`,
-        dealId: deal.id,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-      
-      setAssets(prev => [...prev, newAsset]);
-      onCreateAsset(deal.id, newAsset);
-      
-      toast({
-        title: "Asset adicionado",
-        description: "O novo asset foi adicionado com sucesso."
-      });
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'won':
+        return <Badge className="bg-green-500">Ganho</Badge>;
+      case 'lost':
+        return <Badge className="bg-red-500">Perdido</Badge>;
+      case 'completed':
+        return <Badge className="bg-purple-500">Concluído</Badge>;
+      default:
+        return <Badge className="bg-blue-500">Aberto</Badge>;
     }
-    
-    setIsAssetModalOpen(false);
   };
 
-  const handleAddNote = () => {
-    toast({
-      title: "Adicionar Nota",
-      description: "Funcionalidade em desenvolvimento."
-    });
-  };
-
-  const handleAddTask = () => {
-    toast({
-      title: "Adicionar Tarefa",
-      description: "Funcionalidade em desenvolvimento."
-    });
-  };
-
-  const handleAddDocument = () => {
-    toast({
-      title: "Adicionar Documento",
-      description: "Funcionalidade em desenvolvimento."
-    });
-  };
-
-  const handleAddEmail = () => {
-    toast({
-      title: "Enviar Email",
-      description: "Funcionalidade em desenvolvimento."
-    });
-  };
-
-  if (!deal) {
-    return null;
+  // Type guard for custom deal properties
+  interface ExtendedDeal extends Deal {
+    reasonForLoss?: string;
+    interests?: string;
   }
-
-  const getStatusBadgeColor = (status: string) => {
-    switch (status) {
-      case 'won': return 'bg-green-500';
-      case 'lost': return 'bg-red-500';
-      case 'completed': return 'bg-blue-500';
-      default: return 'bg-amber-500';
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'won': return 'Ganho';
-      case 'lost': return 'Perdido';
-      case 'completed': return 'Concluído';
-      default: return 'Aberto';
-    }
-  };
+  
+  const extendedDeal = deal as ExtendedDeal;
 
   return (
-    <>
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-auto">
-          <DialogHeader>
-            <DialogTitle className="text-xl flex items-center justify-between">
-              <span>{deal.title}</span>
-              <Badge className={getStatusBadgeColor(deal.status)}>
-                {getStatusLabel(deal.status)}
-              </Badge>
-            </DialogTitle>
-          </DialogHeader>
-
-          <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="mt-4">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="details" className="flex items-center gap-2">
-                <BarChart className="h-4 w-4" />
-                <span>Detalhes</span>
-              </TabsTrigger>
-              <TabsTrigger value="workspace" className="flex items-center gap-2">
-                <Building className="h-4 w-4" />
-                <span>Workspace</span>
-              </TabsTrigger>
-              <TabsTrigger value="chat" className="flex items-center gap-2">
-                <MessageSquare className="h-4 w-4" />
-                <span>Chat</span>
-              </TabsTrigger>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
+        <DialogHeader>
+          <DialogTitle className="text-xl">{deal.title}</DialogTitle>
+        </DialogHeader>
+        
+        <div className="flex flex-1 overflow-hidden">
+          <Tabs defaultValue="details" className="flex-1 flex flex-col" onValueChange={setActiveTab} value={activeTab}>
+            <TabsList className="grid grid-cols-3">
+              <TabsTrigger value="details">Detalhes</TabsTrigger>
+              <TabsTrigger value="workspace">Workspace</TabsTrigger>
+              <TabsTrigger value="chat">Chat</TabsTrigger>
             </TabsList>
-
-            <TabsContent value="details" className="space-y-4 mt-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-500">Cliente</h3>
-                    <p className="font-medium">{deal.customerName || 'N/A'}</p>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-500">Organização</h3>
-                    <p>{deal.customerOrganization || 'N/A'}</p>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-500">Tipo</h3>
-                    <p>{deal.type || 'N/A'}</p>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-500">Status</h3>
-                    <Badge className={getStatusBadgeColor(deal.status)}>
-                      {getStatusLabel(deal.status)}
-                    </Badge>
-                  </div>
-                  
-                  {deal.status === 'lost' && (
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500">Motivo da Perda</h3>
-                      <p>{deal.reasonForLoss || 'Não especificado'}</p>
-                    </div>
-                  )}
-                  
-                  {deal.interests && (
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500">Interesse</h3>
-                      <p>{deal.interests}</p>
-                    </div>
-                  )}
-                </div>
-                
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500">Valor</h3>
-                      <p className="font-medium text-lg">{deal.amount ? formatCurrency(deal.amount) : 'N/A'}</p>
-                    </div>
-                  </div>
-                  
+            
+            <TabsContent value="details" className="flex-1 overflow-hidden">
+              <ScrollArea className="h-[60vh]">
+                <div className="space-y-4 p-2">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <h3 className="text-sm font-medium text-gray-500">Data de Início</h3>
-                      <p>{deal.startDate ? formatDate(deal.startDate) : formatDate(deal.createdAt)}</p>
+                      <h3 className="font-medium mb-1">Tipo</h3>
+                      <p className="text-muted-foreground">{deal.type || 'Não especificado'}</p>
+                    </div>
+                    <div>
+                      <h3 className="font-medium mb-1">Status</h3>
+                      {getStatusBadge(deal.status)}
                     </div>
                     
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500">Previsão de Conclusão</h3>
-                      <p>{deal.endDate ? formatDate(deal.endDate) : 'N/A'}</p>
-                    </div>
+                    {extendedDeal.interests && (
+                      <div>
+                        <h3 className="font-medium mb-1">Interesse</h3>
+                        <p className="text-muted-foreground">{extendedDeal.interests}</p>
+                      </div>
+                    )}
+                    
+                    {deal.status === 'lost' && extendedDeal.reasonForLoss && (
+                      <div>
+                        <h3 className="font-medium mb-1">Motivo da Perda</h3>
+                        <p className="text-muted-foreground">{extendedDeal.reasonForLoss}</p>
+                      </div>
+                    )}
+                    
+                    {deal.startDate && (
+                      <div>
+                        <h3 className="font-medium mb-1">Data de Início</h3>
+                        <div className="flex items-center gap-1 text-muted-foreground">
+                          <Calendar className="h-4 w-4" />
+                          <span>{formatDate(deal.startDate)}</span>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {deal.endDate && (
+                      <div>
+                        <h3 className="font-medium mb-1">Data de Término</h3>
+                        <div className="flex items-center gap-1 text-muted-foreground">
+                          <Calendar className="h-4 w-4" />
+                          <span>{formatDate(deal.endDate)}</span>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {deal.amount !== undefined && (
+                      <div>
+                        <h3 className="font-medium mb-1">Valor</h3>
+                        <div className="flex items-center gap-1 font-medium">
+                          <CreditCard className="h-4 w-4 text-muted-foreground" />
+                          <span>{formatCurrency(deal.amount)}</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-500">Descrição</h3>
-                    <p className="text-sm">{deal.description || 'Sem descrição'}</p>
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="workspace" className="space-y-4 mt-4">
-              <div className="flex justify-between items-center">
-                <div className="text-lg font-medium">Workspace</div>
-                <div className="flex gap-2">
-                  <Button size="sm" variant="outline" onClick={handleAddAsset}>
-                    <FileText className="h-4 w-4 mr-2" />
-                    Asset
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={handleAddTask}>
-                    <CheckSquare className="h-4 w-4 mr-2" />
-                    Tarefa
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={handleAddNote}>
-                    <PenLine className="h-4 w-4 mr-2" />
-                    Nota
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={handleAddDocument}>
-                    <Image className="h-4 w-4 mr-2" />
-                    Documento
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={handleAddEmail}>
-                    <Mail className="h-4 w-4 mr-2" />
-                    Email
-                  </Button>
-                </div>
-              </div>
-
-              <Tabs defaultValue={activeFocusTab} onValueChange={setActiveFocusTab}>
-                <TabsList className="w-full">
-                  <TabsTrigger value="all">Todos</TabsTrigger>
-                  <TabsTrigger value="notes">Notas</TabsTrigger>
-                  <TabsTrigger value="tasks">Tarefas</TabsTrigger>
-                  <TabsTrigger value="assets">Assets</TabsTrigger>
-                  <TabsTrigger value="emails">Emails</TabsTrigger>
-                  <TabsTrigger value="documents">Documentos</TabsTrigger>
-                  <TabsTrigger value="history">Histórico</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="all" className="mt-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {assets.map(asset => (
-                      <AssetCard 
-                        key={asset.id} 
-                        asset={asset} 
-                        onEditAsset={handleEditAsset}
-                        onDeleteAsset={handleDeleteAsset}
-                      />
-                    ))}
-                    
-                    {assets.length === 0 && (
-                      <div className="col-span-2 text-center py-8 text-muted-foreground">
-                        Nenhum item para exibir.
+                  <div className="border-t pt-4">
+                    <h3 className="font-medium mb-2">Cliente</h3>
+                    {deal.customerName && (
+                      <div className="flex items-center gap-2 mb-2">
+                        <User className="h-4 w-4 text-muted-foreground" />
+                        <span>{deal.customerName}</span>
+                      </div>
+                    )}
+                    {deal.customerOrganization && (
+                      <div className="flex items-center gap-2">
+                        <Building2 className="h-4 w-4 text-muted-foreground" />
+                        <span>{deal.customerOrganization}</span>
                       </div>
                     )}
                   </div>
-                </TabsContent>
-
-                <TabsContent value="assets" className="mt-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {assets.map(asset => (
-                      <AssetCard 
-                        key={asset.id} 
-                        asset={asset} 
-                        onEditAsset={handleEditAsset}
-                        onDeleteAsset={handleDeleteAsset}
-                      />
-                    ))}
-                    
-                    {assets.length === 0 && (
-                      <div className="col-span-2 text-center py-8 text-muted-foreground">
-                        Nenhum asset encontrado.
-                      </div>
-                    )}
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="notes" className="mt-4">
-                  <div className="text-center py-8 text-muted-foreground">
-                    Nenhuma nota encontrada.
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="tasks" className="mt-4">
-                  <div className="text-center py-8 text-muted-foreground">
-                    Nenhuma tarefa encontrada.
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="emails" className="mt-4">
-                  <div className="text-center py-8 text-muted-foreground">
-                    Nenhum email encontrado.
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="documents" className="mt-4">
-                  <div className="text-center py-8 text-muted-foreground">
-                    Nenhum documento encontrado.
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="history" className="mt-4">
-                  <div className="text-center py-8 text-muted-foreground">
-                    Nenhum registro de histórico.
-                  </div>
-                </TabsContent>
-              </Tabs>
+                  
+                  {deal.description && (
+                    <div className="border-t pt-4">
+                      <h3 className="font-medium mb-2">Descrição</h3>
+                      <p className="text-muted-foreground">{deal.description}</p>
+                    </div>
+                  )}
+                </div>
+              </ScrollArea>
             </TabsContent>
-
-            <TabsContent value="chat" className="mt-4">
-              <div className="text-center py-20 text-muted-foreground">
-                Chat não disponível.
+            
+            <TabsContent value="workspace" className="flex-1 overflow-hidden">
+              <div className="grid grid-cols-1 md:grid-cols-5 h-full overflow-hidden">
+                <div className="col-span-5 md:col-span-1 border-r p-3 flex flex-col">
+                  <h3 className="font-medium mb-3">Ações</h3>
+                  <div className="space-y-2">
+                    <Button variant="outline" className="w-full justify-start" size="sm">
+                      <FileText className="h-4 w-4 mr-2" />
+                      Nota
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start" size="sm">
+                      <CheckSquare className="h-4 w-4 mr-2" />
+                      Tarefa
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start" size="sm" onClick={handleCreateAsset}>
+                      <Package className="h-4 w-4 mr-2" />
+                      Asset
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start" size="sm">
+                      <FileText className="h-4 w-4 mr-2" />
+                      Documento
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start" size="sm">
+                      <Mail className="h-4 w-4 mr-2" />
+                      Email
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className="col-span-5 md:col-span-4 flex flex-col overflow-hidden">
+                  <div className="p-3 border-b">
+                    <Tabs defaultValue="all" onValueChange={setActiveWorkspaceTab} value={activeWorkspaceTab}>
+                      <TabsList>
+                        <TabsTrigger value="all">Todos</TabsTrigger>
+                        <TabsTrigger value="notes">Notas</TabsTrigger>
+                        <TabsTrigger value="tasks">Tarefas</TabsTrigger>
+                        <TabsTrigger value="assets">Assets</TabsTrigger>
+                        <TabsTrigger value="emails">Emails</TabsTrigger>
+                        <TabsTrigger value="documents">Documentos</TabsTrigger>
+                      </TabsList>
+                    </Tabs>
+                  </div>
+                  
+                  <ScrollArea className="flex-1 p-3">
+                    <div className="space-y-3">
+                      {(activeWorkspaceTab === 'all' || activeWorkspaceTab === 'assets') && (
+                        <div>
+                          <h4 className="text-sm font-medium mb-2">Assets</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {assets.map(asset => (
+                              <AssetCard 
+                                key={asset.id} 
+                                asset={asset} 
+                                onViewAsset={() => {}} 
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {(activeWorkspaceTab === 'all' || activeWorkspaceTab === 'notes') && (
+                        <div>
+                          <h4 className="text-sm font-medium mb-2">Notas</h4>
+                          <div className="text-muted-foreground text-sm">Nenhuma nota encontrada</div>
+                        </div>
+                      )}
+                      
+                      {(activeWorkspaceTab === 'all' || activeWorkspaceTab === 'tasks') && (
+                        <div>
+                          <h4 className="text-sm font-medium mb-2">Tarefas</h4>
+                          <div className="text-muted-foreground text-sm">Nenhuma tarefa encontrada</div>
+                        </div>
+                      )}
+                    </div>
+                  </ScrollArea>
+                </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="chat" className="flex-1 overflow-hidden">
+              <div className="h-full flex flex-col">
+                <ScrollArea className="flex-1 p-4">
+                  <div className="space-y-4">
+                    <div className="bg-muted/40 p-3 rounded-lg max-w-[80%]">
+                      <div className="font-medium text-xs mb-1">Sistema</div>
+                      <div className="text-sm">Negócio criado com sucesso.</div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {formatDate(deal.createdAt)}
+                      </div>
+                    </div>
+                  </div>
+                </ScrollArea>
+                
+                <div className="p-3 border-t flex">
+                  <input 
+                    type="text" 
+                    placeholder="Digite uma mensagem..." 
+                    className="flex-1 bg-muted/40 rounded-l-md px-3 py-2 focus:outline-none"
+                  />
+                  <Button className="rounded-l-none">
+                    <MessageSquare className="h-4 w-4 mr-2" />
+                    Enviar
+                  </Button>
+                </div>
               </div>
             </TabsContent>
           </Tabs>
-        </DialogContent>
-      </Dialog>
-      
-      {isAssetModalOpen && (
-        <AssetConfigModal 
-          isOpen={isAssetModalOpen}
-          onClose={() => setIsAssetModalOpen(false)}
-          asset={currentAsset || undefined}
-          onSave={handleSaveAsset}
-        />
-      )}
-    </>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
