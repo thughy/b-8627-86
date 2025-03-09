@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { Deal, Asset } from '@/pages/Workflows/models/WorkflowModels';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MessageCircle, FileText, History, CheckSquare, Mail, Image, File } from 'lucide-react';
-import { useChatMessages } from '@/pages/Workflows/hooks/useChatMessages';
 import ChatSection from './workspace/ChatSection';
 import FocusTabContent from './workspace/FocusTabContent';
 import HistoryTabContent from './workspace/HistoryTabContent';
@@ -28,7 +27,14 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
   onCreateEmail
 }) => {
   const [activeTab, setActiveTab] = useState('chat');
-  const { messages, sendMessage } = useChatMessages(deal.id);
+  const [messages, setMessages] = useState<any[]>([]); // Just a placeholder until we implement hooks
+
+  // Simplified handler that will be replaced later
+  const handleSendMessage = (message: string) => {
+    console.log("Message sent:", message);
+    // This function is just a placeholder and doesn't actually add messages
+    // Will be replaced with the real implementation later
+  };
 
   // Example assets for this deal (in a real scenario, would be loaded from API)
   const assets: Asset[] = [
@@ -53,10 +59,6 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
       updatedAt: new Date()
     }
   ];
-
-  const handleSendMessage = (message: string) => {
-    sendMessage(message);
-  };
 
   return (
     <div className="p-4">
