@@ -16,7 +16,7 @@ interface Message {
 interface ChatSectionProps {
   dealId: string;
   messages: Message[];
-  onSendMessage: (message: string) => void; // Changed from optional to required
+  onSendMessage: (message: string) => void; // Required
 }
 
 const ChatSection: React.FC<ChatSectionProps> = ({ dealId, messages, onSendMessage }) => {
