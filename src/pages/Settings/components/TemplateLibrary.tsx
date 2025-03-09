@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Search, Filter, Copy, Download, Upload, FileText, ChevronDown } from "lucide-react";
+import { Plus, Search, Filter, Download, Upload, FileText, ChevronDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { 
   DropdownMenu,
@@ -39,17 +39,17 @@ const TemplateLibrary = () => {
     });
   };
 
-  const handleExportTemplate = (template: Template) => {
+  const handleGenerateTemplateReport = (template: Template) => {
     toast({
-      title: "Exportar Template",
-      description: `Exportar template: ${template.name}`,
+      title: "Relatório de Template",
+      description: `Gerando relatório para o template: ${template.name}`,
     });
   };
 
-  const handleGenerateReport = () => {
+  const handleExportTemplate = (template: Template) => {
     toast({
-      title: "Relatório de Templates",
-      description: "Gerando relatório de templates",
+      title: "Exportar Template",
+      description: `Exportando template: ${template.name}`,
     });
   };
 
@@ -96,10 +96,6 @@ const TemplateLibrary = () => {
             </CardDescription>
           </div>
           <div className="flex gap-2">
-            <Button onClick={handleGenerateReport} variant="outline" className="flex-shrink-0">
-              <FileText className="h-4 w-4 mr-2" />
-              Relatório
-            </Button>
             <Button onClick={handleImportTemplate} className="flex-shrink-0">
               <Upload className="h-4 w-4 mr-2" />
               Importar Template
@@ -153,6 +149,14 @@ const TemplateLibrary = () => {
                     {formatDate(template.updatedAt)}
                   </div>
                   <div className="col-span-2 flex justify-end gap-2">
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => handleGenerateTemplateReport(template)}
+                      title="Gerar relatório"
+                    >
+                      <FileText className="h-4 w-4" />
+                    </Button>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="outline" size="sm">
@@ -170,15 +174,11 @@ const TemplateLibrary = () => {
                         <DropdownMenuItem onClick={() => handleTemplateAction(template, 'uninstall')}>
                           Desinstalar
                         </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleExportTemplate(template)}>
+                          Exportar
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                    <Button 
-                      variant="ghost" 
-                      size="icon"
-                      onClick={() => handleExportTemplate(template)}
-                    >
-                      <Download className="h-4 w-4" />
-                    </Button>
                   </div>
                 </div>
               ))
