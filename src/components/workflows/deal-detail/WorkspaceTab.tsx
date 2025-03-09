@@ -6,7 +6,6 @@ import ChatSection from './workspace/ChatSection';
 import FocusSection from './workspace/FocusSection';
 import HistorySection from './workspace/HistorySection';
 import { useToast } from '@/hooks/use-toast';
-import { ChatMessage } from '@/pages/Workflows/hooks/useChatMessages';
 
 interface WorkspaceTabProps {
   assets: Asset[];
@@ -25,21 +24,12 @@ const WorkspaceTab: React.FC<WorkspaceTabProps> = ({
   const [activeWorkspaceTab, setActiveWorkspaceTab] = useState<string>('all');
   const { toast } = useToast();
   
-  // Simplified approach using local state for messages
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-
   // Set chat as default active section when deal changes
   useEffect(() => {
     if (dealId) {
       setActiveSection('chat');
     }
   }, [dealId]);
-
-  // Simplified placeholder function for sending messages
-  const handleSendMessage = (content: string) => {
-    console.log("Message sent (disabled):", content);
-    // This functionality is disabled for now
-  };
 
   const handleCreateAction = (actionType: string) => {
     switch (actionType) {
@@ -70,11 +60,7 @@ const WorkspaceTab: React.FC<WorkspaceTabProps> = ({
       
       <div className="col-span-5 md:col-span-4 flex flex-col overflow-hidden">
         {activeSection === 'chat' && (
-          <ChatSection 
-            dealId={dealId || ''} 
-            messages={messages} 
-            onSendMessage={handleSendMessage}
-          />
+          <ChatSection dealId={dealId || ''} />
         )}
         
         {activeSection === 'focus' && (
