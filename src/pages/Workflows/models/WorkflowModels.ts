@@ -1,4 +1,3 @@
-
 export interface Workflow {
   id: string;
   title: string;
@@ -131,7 +130,7 @@ export interface Collaborator {
   phone?: string;
   hierarchyLevel?: string;
   type: 'subscriber' | 'collaborator' | 'developer' | 'master';
-  status: 'active' | 'inactive';
+  status: 'active' | 'inactive' | 'pending';
   createdAt: Date;
   updatedAt: Date;
 }

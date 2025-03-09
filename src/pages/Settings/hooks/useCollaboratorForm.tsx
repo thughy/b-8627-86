@@ -39,7 +39,7 @@ export const useCollaboratorForm = ({
         phone: "",
         hierarchyLevel: "",
         type: "collaborator",
-        status: "active",
+        status: "pending", // Alterado para "pending" para refletir o status de convite
       });
     }
   }, [collaborator]);
@@ -61,7 +61,7 @@ export const useCollaboratorForm = ({
       return;
     }
 
-    // Create new collaborator or update existing one
+    // Create new collaborator invitation or update existing one
     const savedCollaborator: Collaborator = {
       id: collaborator?.id || `collab-${Date.now()}`,
       name: formData.name!,
@@ -70,10 +70,21 @@ export const useCollaboratorForm = ({
       phone: formData.phone || "",
       hierarchyLevel: formData.hierarchyLevel || "",
       type: (formData.type as "subscriber" | "collaborator" | "developer" | "master") || "collaborator",
-      status: (formData.status as "active" | "inactive") || "active",
+      status: collaborator ? formData.status as "active" | "inactive" | "pending" : "pending", // Use "pending" for new invites
       createdAt: collaborator?.createdAt || new Date(),
       updatedAt: new Date(),
     };
+
+    // Se não for edição, simula o envio de um email de convite
+    if (!collaborator) {
+      // Simulação do envio de email - aqui seria integrado um serviço real de emails
+      console.log(`Enviando convite para ${savedCollaborator.email}...`);
+      
+      toast({
+        title: "Convite enviado",
+        description: `Um convite foi enviado para ${savedCollaborator.email}`,
+      });
+    }
 
     onSave(savedCollaborator);
     onClose();

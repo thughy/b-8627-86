@@ -50,12 +50,12 @@ const CollaboratorConfigModal: React.FC<CollaboratorConfigModalProps> = ({
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>
-            {collaborator ? "Editar Colaborador" : "Adicionar Colaborador"}
+            {collaborator ? "Editar Colaborador" : "Convidar Colaborador"}
           </DialogTitle>
           <DialogDescription>
             {collaborator
               ? "Atualize as informações do colaborador no sistema."
-              : "Preencha os dados para adicionar um novo colaborador."}
+              : "Preencha os dados para enviar um convite para um novo colaborador."}
           </DialogDescription>
         </DialogHeader>
 

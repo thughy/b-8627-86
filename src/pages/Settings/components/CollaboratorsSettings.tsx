@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { 
   Card, 
@@ -75,8 +76,8 @@ const CollaboratorsSettings = () => {
       // Add new collaborator
       setCollaborators(prev => [...prev, collaboratorData]);
       toast({
-        title: "Colaborador adicionado",
-        description: `O colaborador ${collaboratorData.name} foi adicionado com sucesso.`,
+        title: "Convite enviado",
+        description: `Um convite foi enviado para ${collaboratorData.email}.`,
       });
     }
     setIsModalOpen(false);
@@ -88,6 +89,8 @@ const CollaboratorsSettings = () => {
         return <Badge className="bg-green-500 hover:bg-green-600">Ativo</Badge>;
       case 'inactive':
         return <Badge className="bg-red-500 hover:bg-red-600">Inativo</Badge>;
+      case 'pending':
+        return <Badge className="bg-yellow-500 hover:bg-yellow-600">Pendente</Badge>;
       default:
         return null;
     }
@@ -105,7 +108,7 @@ const CollaboratorsSettings = () => {
           </div>
           <Button onClick={handleAddCollaborator} className="flex-shrink-0">
             <Plus className="h-4 w-4 mr-2" />
-            Adicionar Colaborador
+            Convidar Colaborador
           </Button>
         </div>
       </CardHeader>
@@ -162,11 +165,22 @@ const CollaboratorsSettings = () => {
                         <DropdownMenuItem onClick={() => handleEditCollaborator(collaborator)}>
                           Editar
                         </DropdownMenuItem>
+                        {collaborator.status === 'pending' && (
+                          <DropdownMenuItem onClick={() => {
+                            // Simula o reenvio do convite
+                            toast({
+                              title: "Convite reenviado",
+                              description: `Um novo convite foi enviado para ${collaborator.email}.`,
+                            });
+                          }}>
+                            Reenviar convite
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem 
                           onClick={() => handleDeleteCollaborator(collaborator)}
                           className="text-red-500 focus:text-red-500"
                         >
-                          Remover
+                          {collaborator.status === 'pending' ? 'Cancelar convite' : 'Remover'}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

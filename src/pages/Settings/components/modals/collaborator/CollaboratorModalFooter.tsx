@@ -2,7 +2,7 @@
 import React from "react";
 import { DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { X, Save, Trash2 } from "lucide-react";
+import { X, Save, Trash2, Send } from "lucide-react";
 
 interface CollaboratorModalFooterProps {
   onClose: () => void;
@@ -35,8 +35,17 @@ const CollaboratorModalFooter: React.FC<CollaboratorModalFooterProps> = ({
         )}
       </div>
       <Button onClick={onSave}>
-        <Save className="h-4 w-4 mr-2" />
-        Salvar
+        {isEditMode ? (
+          <>
+            <Save className="h-4 w-4 mr-2" />
+            Salvar
+          </>
+        ) : (
+          <>
+            <Send className="h-4 w-4 mr-2" />
+            Enviar Convite
+          </>
+        )}
       </Button>
     </DialogFooter>
   );
