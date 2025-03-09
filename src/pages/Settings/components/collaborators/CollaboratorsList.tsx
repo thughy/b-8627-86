@@ -9,7 +9,9 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
+  PaginationEllipsis
 } from "@/components/ui/pagination";
+import { getPageRange } from "@/lib/utils";
 
 interface CollaboratorsListProps {
   collaborators: Collaborator[];
@@ -54,7 +56,7 @@ const CollaboratorsList: React.FC<CollaboratorsListProps> = ({
     if (currentPage > 3) {
       items.push(
         <PaginationItem key="ellipsis-1">
-          <span className="flex h-9 w-9 items-center justify-center">...</span>
+          <PaginationEllipsis />
         </PaginationItem>
       );
     }
@@ -83,7 +85,7 @@ const CollaboratorsList: React.FC<CollaboratorsListProps> = ({
     if (currentPage < totalPages - 2) {
       items.push(
         <PaginationItem key="ellipsis-2">
-          <span className="flex h-9 w-9 items-center justify-center">...</span>
+          <PaginationEllipsis />
         </PaginationItem>
       );
     }
@@ -170,7 +172,7 @@ const CollaboratorsList: React.FC<CollaboratorsListProps> = ({
             </PaginationContent>
           </Pagination>
           <div className="text-center text-sm text-muted-foreground mt-2">
-            Mostrando {Math.min(itemsPerPage, collaborators.length)} de {itemsPerPage * (currentPage - 1) + collaborators.length} resultados
+            Mostrando {collaborators.length} de {itemsPerPage * (currentPage - 1) + collaborators.length} resultados
           </div>
         </div>
       )}
