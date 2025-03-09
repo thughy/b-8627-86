@@ -1,5 +1,5 @@
 
-import React, { memo } from "react";
+import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Filter } from "lucide-react";
@@ -24,11 +24,11 @@ const CollaboratorsSearch: React.FC<CollaboratorsSearchProps> = ({
           onChange={(e) => onSearchChange(e.target.value)}
         />
       </div>
-      <Button variant="outline" size="icon" className="flex-shrink-0" type="button">
+      <Button variant="outline" size="icon" className="flex-shrink-0">
         <Filter className="h-4 w-4" />
       </Button>
     </div>
   );
 };
 
-export default memo(CollaboratorsSearch);
+export default CollaboratorsSearch;
