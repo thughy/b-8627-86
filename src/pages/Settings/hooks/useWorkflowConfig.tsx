@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -26,33 +25,28 @@ export const useWorkflowConfig = (
     }
   );
 
-  // State for departments, pipelines, stages, agents and assets
   const [departments, setDepartments] = useState<Department[]>([]);
   const [pipelines, setPipelines] = useState<Pipeline[]>([]);
   const [stages, setStages] = useState<Stage[]>([]);
   const [agents, setAgents] = useState<Agent[]>([]);
   const [assets, setAssets] = useState<Asset[]>([]);
 
-  // States for selected elements
   const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
   const [selectedPipeline, setSelectedPipeline] = useState<Pipeline | null>(null);
   const [selectedStage, setSelectedStage] = useState<Stage | null>(null);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
 
-  // Forms for creating new items
   const [newDepartment, setNewDepartment] = useState<Partial<Department>>({ title: "", description: "" });
   const [newPipeline, setNewPipeline] = useState<Partial<Pipeline>>({ title: "", description: "" });
   const [newStage, setNewStage] = useState<Partial<Stage>>({ title: "", description: "", order: 0 });
   const [newAgent, setNewAgent] = useState<Partial<Agent>>({ profile: { name: "", role: "", goal: "" } });
   const [newAsset, setNewAsset] = useState<Partial<Asset>>({ title: "", description: "", type: "", status: "open" });
 
-  // States for expand/collapse sections
   const [expandedDepartments, setExpandedDepartments] = useState<Record<string, boolean>>({});
   const [expandedPipelines, setExpandedPipelines] = useState<Record<string, boolean>>({});
   const [expandedStages, setExpandedStages] = useState<Record<string, boolean>>({});
 
-  // Reset form data when opening the modal
   useEffect(() => {
     if (isOpen) {
       setFormData(
@@ -63,9 +57,7 @@ export const useWorkflowConfig = (
         }
       );
       
-      // For demonstration, initialize with sample data
       if (workflow) {
-        // Simulate loading departments, pipelines, etc.
         const demoData = getDemoData(workflow.id);
         setDepartments(demoData.departments);
         setPipelines(demoData.pipelines);
@@ -73,21 +65,18 @@ export const useWorkflowConfig = (
         setAgents(demoData.agents);
         setAssets(demoData.assets);
 
-        // Initialize expanded departments
         const deptExpanded: Record<string, boolean> = {};
         demoData.departments.forEach(dept => {
           deptExpanded[dept.id] = false;
         });
         setExpandedDepartments(deptExpanded);
 
-        // Initialize expanded pipelines
         const pipeExpanded: Record<string, boolean> = {};
         demoData.pipelines.forEach(pipe => {
           pipeExpanded[pipe.id] = false;
         });
         setExpandedPipelines(pipeExpanded);
 
-        // Initialize expanded stages
         const stageExpanded: Record<string, boolean> = {};
         demoData.stages.forEach(stage => {
           stageExpanded[stage.id] = false;
@@ -164,7 +153,6 @@ export const useWorkflowConfig = (
     setSelectedDepartment(department);
     setNewDepartment({ title: "", description: "" });
     
-    // Initialize as expanded
     setExpandedDepartments(prev => ({
       ...prev,
       [department.id]: true
@@ -198,7 +186,6 @@ export const useWorkflowConfig = (
     setSelectedPipeline(pipeline);
     setNewPipeline({ title: "", description: "" });
     
-    // Initialize as expanded
     setExpandedPipelines(prev => ({
       ...prev,
       [pipeline.id]: true
@@ -237,7 +224,6 @@ export const useWorkflowConfig = (
     setSelectedStage(stage);
     setNewStage({ title: "", description: "", order: 0 });
     
-    // Initialize as expanded
     setExpandedStages(prev => ({
       ...prev,
       [stage.id]: true
@@ -299,7 +285,7 @@ export const useWorkflowConfig = (
 
     const asset: Asset = {
       id: `asset-${Date.now()}`,
-      dealId: stageId, // Associating with the stage
+      dealId: stageId,
       title: newAsset.title,
       description: newAsset.description || "",
       type: newAsset.type || "Documento",
@@ -319,7 +305,6 @@ export const useWorkflowConfig = (
   };
 
   const handleDeleteDepartment = (departmentId: string) => {
-    // Confirm deletion
     toast({
       title: "Remover Departamento",
       description: `Tem certeza que deseja remover este departamento? Todos os pipelines e estágios associados também serão removidos.`,
@@ -328,27 +313,22 @@ export const useWorkflowConfig = (
         <Button 
           variant="outline" 
           onClick={() => {
-            // Remove department
             setDepartments(prev => prev.filter(d => d.id !== departmentId));
             
-            // Remove associated pipelines
             const pipelineIds = pipelines
               .filter(p => p.departmentId === departmentId)
               .map(p => p.id);
             
             setPipelines(prev => prev.filter(p => p.departmentId !== departmentId));
             
-            // Remove associated stages
             const stageIds = stages
               .filter(s => pipelineIds.includes(s.pipelineId))
               .map(s => s.id);
             
             setStages(prev => prev.filter(s => !pipelineIds.includes(s.pipelineId)));
             
-            // Remove associated agents
             setAgents(prev => prev.filter(a => !stageIds.includes(a.stageId)));
             
-            // Update selections
             if (selectedDepartment?.id === departmentId) {
               setSelectedDepartment(null);
             }
@@ -366,7 +346,6 @@ export const useWorkflowConfig = (
   };
 
   const handleDeletePipeline = (pipelineId: string) => {
-    // Confirm deletion
     toast({
       title: "Remover Pipeline",
       description: `Tem certeza que deseja remover este pipeline? Todos os estágios associados também serão removidos.`,
@@ -375,20 +354,16 @@ export const useWorkflowConfig = (
         <Button 
           variant="outline" 
           onClick={() => {
-            // Remove pipeline
             setPipelines(prev => prev.filter(p => p.id !== pipelineId));
             
-            // Remove associated stages
             const stageIds = stages
               .filter(s => s.pipelineId === pipelineId)
               .map(s => s.id);
             
             setStages(prev => prev.filter(s => s.pipelineId !== pipelineId));
             
-            // Remove associated agents
             setAgents(prev => prev.filter(a => !stageIds.includes(a.stageId)));
             
-            // Update selections
             if (selectedPipeline?.id === pipelineId) {
               setSelectedPipeline(null);
             }
@@ -406,7 +381,6 @@ export const useWorkflowConfig = (
   };
 
   const handleDeleteStage = (stageId: string) => {
-    // Confirm deletion
     toast({
       title: "Remover Estágio",
       description: `Tem certeza que deseja remover este estágio? Todos os agentes associados também serão removidos.`,
@@ -415,13 +389,10 @@ export const useWorkflowConfig = (
         <Button 
           variant="outline" 
           onClick={() => {
-            // Remove stage
             setStages(prev => prev.filter(s => s.id !== stageId));
             
-            // Remove associated agents
             setAgents(prev => prev.filter(a => a.stageId !== stageId));
             
-            // Update selections
             if (selectedStage?.id === stageId) {
               setSelectedStage(null);
             }
@@ -439,7 +410,6 @@ export const useWorkflowConfig = (
   };
 
   const handleDeleteAgent = (agentId: string) => {
-    // Confirm deletion
     toast({
       title: "Remover Agente",
       description: `Tem certeza que deseja remover este agente?`,
@@ -448,10 +418,8 @@ export const useWorkflowConfig = (
         <Button 
           variant="outline" 
           onClick={() => {
-            // Remove agent
             setAgents(prev => prev.filter(a => a.id !== agentId));
             
-            // Update selections
             if (selectedAgent?.id === agentId) {
               setSelectedAgent(null);
             }
@@ -469,7 +437,6 @@ export const useWorkflowConfig = (
   };
 
   const handleDeleteAsset = (assetId: string) => {
-    // Confirm deletion
     toast({
       title: "Remover Asset",
       description: `Tem certeza que deseja remover este asset?`,
@@ -478,10 +445,8 @@ export const useWorkflowConfig = (
         <Button 
           variant="outline" 
           onClick={() => {
-            // Remove asset
             setAssets(prev => prev.filter(a => a.id !== assetId));
             
-            // Update selections
             if (selectedAsset?.id === assetId) {
               setSelectedAsset(null);
             }
