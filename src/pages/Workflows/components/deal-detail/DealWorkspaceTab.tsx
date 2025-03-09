@@ -2,7 +2,6 @@
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Asset, Deal } from '@/pages/Workflows/models/WorkflowModels';
-import { useChatMessages } from '../../hooks/useChatMessages';
 import ChatSection from './workspace/ChatSection';
 import FocusTabContent from './workspace/FocusTabContent';
 import HistoryTabContent from './workspace/HistoryTabContent';
@@ -25,7 +24,6 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
   onCreateDocument,
   onCreateEmail
 }) => {
-  const { messages, sendMessage } = useChatMessages(deal.id);
   const [activeTab, setActiveTab] = React.useState('chat');
 
   // Exemplo de assets para este deal (em um cenário real, viriam da API)
@@ -71,11 +69,7 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
         </TabsList>
         
         <TabsContent value="chat" className="border-none p-0">
-          <ChatSection 
-            dealId={deal.id} 
-            messages={messages}
-            sendMessage={sendMessage}
-          />
+          <ChatSection dealId={deal.id} />
         </TabsContent>
         
         <TabsContent value="focus" className="border-none p-0">
