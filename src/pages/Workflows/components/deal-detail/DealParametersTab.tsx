@@ -36,18 +36,20 @@ const DealParametersTab: React.FC<DealParametersTabProps> = ({ deal, onEditDeal 
   };
 
   const statusOptions = [
-    { value: 'open', label: 'Em aberto' },
+    { value: 'open', label: 'Aberto' },
     { value: 'won', label: 'Ganho' },
     { value: 'lost', label: 'Perdido' },
     { value: 'completed', label: 'Concluído' },
   ];
 
   const typeOptions = [
-    { value: 'lead', label: 'Lead' },
-    { value: 'contract', label: 'Contrato' },
+    { value: 'product', label: 'Produto' },
+    { value: 'service', label: 'Serviço' },
     { value: 'property', label: 'Imóvel' },
-    { value: 'vehicle', label: 'Veículo' },
-    { value: 'proposal', label: 'Proposta' },
+    { value: 'vehicle', label: 'Automóvel' },
+    { value: 'rental', label: 'Aluguel' },
+    { value: 'subscription', label: 'Assinatura' },
+    { value: 'contract', label: 'Contrato' },
   ];
 
   const interestsOptions = [
@@ -59,9 +61,17 @@ const DealParametersTab: React.FC<DealParametersTabProps> = ({ deal, onEditDeal 
 
   const reasonForLossOptions = [
     { value: 'price', label: 'Preços' },
-    { value: 'quality', label: 'Qualidade' },
     { value: 'deadline', label: 'Prazo' },
+    { value: 'quality', label: 'Qualidade' },
+    { value: 'technical', label: 'Técnica' },
+    { value: 'unavailability', label: 'Indisponibilidade' },
+    { value: 'delay', label: 'Atraso' },
     { value: 'competitor', label: 'Concorrência' },
+  ];
+
+  const customerTypeOptions = [
+    { value: 'person', label: 'Pessoa Física' },
+    { value: 'organization', label: 'Pessoa Jurídica' },
   ];
 
   return (
@@ -87,6 +97,17 @@ const DealParametersTab: React.FC<DealParametersTabProps> = ({ deal, onEditDeal 
                 onChange={(value) => handleChange('type', value)}
                 options={typeOptions}
                 placeholder="Selecione o tipo"
+              />
+            </FormField>
+
+            <FormField id="customerType" label="Tipo de Cliente">
+              <SelectField
+                id="customerType"
+                label="Tipo de cliente"
+                value={formState.customerType || ''}
+                onChange={(value) => handleChange('customerType', value)}
+                options={customerTypeOptions}
+                placeholder="Selecione o tipo de cliente"
               />
             </FormField>
 

@@ -49,6 +49,7 @@ export interface Deal {
   endDate?: Date;
   customerName?: string;
   customerOrganization?: string;
+  customerType?: 'person' | 'organization';
   interests?: string;
   reasonForLoss?: string;
   createdAt: Date;

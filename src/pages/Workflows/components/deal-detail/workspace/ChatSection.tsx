@@ -16,7 +16,7 @@ interface Message {
 interface ChatSectionProps {
   dealId: string;
   messages: Message[];
-  onSendMessage?: (message: string) => void; // This is the current prop name
+  onSendMessage: (message: string) => void; // Changed from optional to required
 }
 
 const ChatSection: React.FC<ChatSectionProps> = ({ dealId, messages, onSendMessage }) => {
@@ -33,10 +33,7 @@ const ChatSection: React.FC<ChatSectionProps> = ({ dealId, messages, onSendMessa
   const handleSendMessage = () => {
     if (messageText.trim() === '') return;
     
-    if (onSendMessage) {
-      onSendMessage(messageText);
-    }
-    
+    onSendMessage(messageText);
     setMessageText('');
   };
 

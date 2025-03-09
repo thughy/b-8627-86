@@ -55,9 +55,7 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
   ];
 
   const handleSendMessage = (message: string) => {
-    if (sendMessage) {
-      sendMessage(message);
-    }
+    sendMessage(message);
   };
 
   return (
