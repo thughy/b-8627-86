@@ -3,7 +3,7 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Eye, Workflow } from "lucide-react";
+import { Eye, Workflow } from "lucide-react";
 import { Workflow as WorkflowType } from "@/pages/Workflows/models/WorkflowModels";
 
 interface WorkflowListItemProps {
@@ -28,7 +28,7 @@ const WorkflowListItem = ({
   
   return (
     <Card className="hover:bg-muted/20 transition-colors">
-      <CardContent className="p-4 flex items-center justify-between">
+      <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-4">
           <div className={`bg-primary/10 p-2 rounded-md ${isActive ? 'text-primary' : 'text-muted-foreground'}`}>
             <Workflow className="h-5 w-5" />
@@ -48,15 +48,15 @@ const WorkflowListItem = ({
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 self-end sm:self-auto">
           <Button 
-            variant="ghost" 
+            variant="default" 
             size="sm" 
             className="flex items-center gap-1"
             onClick={() => onAction("viewDeals", workflow)}
           >
             <Eye className="h-4 w-4" />
-            <span className="hidden sm:inline">Operar</span>
+            <span className="sm:inline">Operar Workflow</span>
           </Button>
         </div>
       </CardContent>

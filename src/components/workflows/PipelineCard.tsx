@@ -17,14 +17,6 @@ const PipelineCard = ({ pipeline, onAction }: PipelineCardProps) => {
           <CardTitle className="text-xl">{pipeline.title}</CardTitle>
           <p className="text-sm text-muted-foreground">{pipeline.description}</p>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => onAction("editPipeline", pipeline)}
-            className="text-sm text-muted-foreground hover:text-foreground"
-          >
-            Editar Pipeline
-          </button>
-        </div>
       </CardHeader>
       <CardContent>
         <KanbanBoard 

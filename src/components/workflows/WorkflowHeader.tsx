@@ -1,17 +1,20 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { PlusCircle } from "lucide-react";
 
 interface WorkflowHeaderProps {
   title?: string;
   description?: string;
-  onCreateWorkflow?: () => void;
+  onCreateDeal?: () => void;
+  showCreateButton?: boolean;
 }
 
 const WorkflowHeader = ({ 
   title = "Workflows", 
   description = "Gerencie seus fluxos de trabalho",
-  onCreateWorkflow 
+  onCreateDeal,
+  showCreateButton = false
 }: WorkflowHeaderProps) => {
   return (
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -20,9 +23,10 @@ const WorkflowHeader = ({
         <p className="text-muted-foreground">{description}</p>
       </div>
       
-      {onCreateWorkflow && (
-        <Button onClick={onCreateWorkflow}>
-          Criar Workflow
+      {showCreateButton && onCreateDeal && (
+        <Button onClick={onCreateDeal} className="flex items-center gap-1">
+          <PlusCircle className="h-4 w-4" />
+          Criar Deal
         </Button>
       )}
     </div>

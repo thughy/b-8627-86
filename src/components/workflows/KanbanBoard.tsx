@@ -18,7 +18,7 @@ const KanbanBoard = ({ stages, pipelineId, onAction }: KanbanBoardProps) => {
   
   return (
     <div className="overflow-x-auto pb-4">
-      <div className="flex gap-4" style={{ minWidth: stages.length * 320 + "px" }}>
+      <div className="flex gap-4" style={{ minWidth: Math.max(stages.length * 320, 100) + "px" }}>
         {sortedStages.map((stage) => {
           const deals = getDealsByStage(stage.id);
           return (
@@ -31,14 +31,20 @@ const KanbanBoard = ({ stages, pipelineId, onAction }: KanbanBoardProps) => {
                   </span>
                 </div>
                 
-                <div className="space-y-3 flex-1">
-                  {deals.map((deal) => (
-                    <DealCard 
-                      key={deal.id} 
-                      deal={deal} 
-                      onAction={onAction} 
-                    />
-                  ))}
+                <div className="space-y-3 flex-1 min-h-[200px]">
+                  {deals.length > 0 ? (
+                    deals.map((deal) => (
+                      <DealCard 
+                        key={deal.id} 
+                        deal={deal} 
+                        onAction={onAction} 
+                      />
+                    ))
+                  ) : (
+                    <div className="flex items-center justify-center h-full">
+                      <p className="text-sm text-muted-foreground">Sem deals</p>
+                    </div>
+                  )}
                 </div>
                 
                 <Button 
