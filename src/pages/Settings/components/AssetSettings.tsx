@@ -15,11 +15,14 @@ import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { getAssets } from "../services/settingsService";
 import { Asset } from "@/pages/Workflows/models/WorkflowModels";
+import AssetConfigModal from "./modals/AssetConfigModal";
 
 const AssetSettings = () => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [assets, setAssets] = useState<Asset[]>(getAssets());
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>(undefined);
 
   const filteredAssets = assets.filter((asset) => 
     asset.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -28,32 +31,67 @@ const AssetSettings = () => {
   );
 
   const handleAddAsset = () => {
-    toast({
-      title: "Adicionar Asset",
-      description: "Funcionalidade em desenvolvimento",
-    });
+    setSelectedAsset(undefined);
+    setIsModalOpen(true);
   };
 
   const handleViewAsset = (asset: Asset) => {
-    toast({
-      title: "Visualizar Asset",
-      description: `Visualizar asset: ${asset.title}`,
-    });
+    setSelectedAsset(asset);
+    setIsModalOpen(true);
   };
 
   const handleEditAsset = (asset: Asset) => {
-    toast({
-      title: "Editar Asset",
-      description: `Editar asset: ${asset.title}`,
-    });
+    setSelectedAsset(asset);
+    setIsModalOpen(true);
   };
 
   const handleDeleteAsset = (asset: Asset) => {
     toast({
       title: "Remover Asset",
-      description: `Remover asset: ${asset.title}`,
+      description: `Tem certeza que deseja remover o asset: ${asset.title}?`,
       variant: "destructive",
+      action: (
+        <Button 
+          variant="outline" 
+          onClick={() => {
+            setAssets(prev => prev.filter(a => a.id !== asset.id));
+            toast({
+              title: "Asset removido",
+              description: `O asset ${asset.title} foi removido com sucesso.`,
+            });
+          }}
+        >
+          Confirmar
+        </Button>
+      ),
     });
+  };
+
+  const handleSaveAsset = (assetData: Partial<Asset>) => {
+    if (selectedAsset) {
+      // Update existing asset
+      setAssets(prev => 
+        prev.map(a => 
+          a.id === selectedAsset.id 
+            ? { ...a, ...assetData, updatedAt: new Date() } 
+            : a
+        )
+      );
+    } else {
+      // Add new asset
+      const newAsset: Asset = {
+        id: `asset-${Date.now()}`,
+        dealId: "deal-new",
+        title: assetData.title || "Novo Asset",
+        description: assetData.description,
+        type: assetData.type || "Contrato",
+        amount: assetData.amount,
+        status: assetData.status || "open",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      setAssets(prev => [...prev, newAsset]);
+    }
   };
 
   const getStatusBadge = (status: Asset['status']) => {
@@ -168,6 +206,13 @@ const AssetSettings = () => {
           </div>
         </div>
       </CardContent>
+
+      <AssetConfigModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        asset={selectedAsset}
+        onSave={handleSaveAsset}
+      />
     </Card>
   );
 };

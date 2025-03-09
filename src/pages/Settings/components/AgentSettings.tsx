@@ -21,11 +21,14 @@ import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 import { getAgents } from "../services/settingsService";
 import { Agent } from "@/pages/Workflows/models/WorkflowModels";
+import AgentConfigModal from "./modals/AgentConfigModal";
 
 const AgentSettings = () => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [agents, setAgents] = useState<Agent[]>(getAgents());
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedAgent, setSelectedAgent] = useState<Agent | undefined>(undefined);
 
   const filteredAgents = agents.filter((agent) => 
     agent.profile.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -33,31 +36,83 @@ const AgentSettings = () => {
   );
 
   const handleAddAgent = () => {
-    toast({
-      title: "Adicionar Agente",
-      description: "Funcionalidade em desenvolvimento",
-    });
+    setSelectedAgent(undefined);
+    setIsModalOpen(true);
   };
 
   const handleEditAgent = (agent: Agent) => {
-    toast({
-      title: "Editar Agente",
-      description: `Editar agente: ${agent.profile.name}`,
-    });
+    setSelectedAgent(agent);
+    setIsModalOpen(true);
   };
 
   const handleDeleteAgent = (agent: Agent) => {
     toast({
       title: "Remover Agente",
-      description: `Remover agente: ${agent.profile.name}`,
+      description: `Tem certeza que deseja remover o agente: ${agent.profile.name}?`,
       variant: "destructive",
+      action: (
+        <Button 
+          variant="outline" 
+          onClick={() => {
+            setAgents(prev => prev.filter(a => a.id !== agent.id));
+            toast({
+              title: "Agente removido",
+              description: `O agente ${agent.profile.name} foi removido com sucesso.`,
+            });
+          }}
+        >
+          Confirmar
+        </Button>
+      ),
     });
   };
 
+  const handleSaveAgent = (agentData: Partial<Agent>) => {
+    if (selectedAgent) {
+      // Update existing agent
+      setAgents(prev => 
+        prev.map(a => 
+          a.id === selectedAgent.id 
+            ? { ...a, ...agentData, updatedAt: new Date() } 
+            : a
+        )
+      );
+    } else {
+      // Create a new unique ID
+      const newId = `agent-${Date.now()}`;
+      
+      // Add new agent
+      const newAgent: Agent = {
+        id: newId,
+        stageId: "stage-new",
+        profile: {
+          name: agentData.profile?.name || "Novo Agente",
+          role: agentData.profile?.role || "",
+          goal: agentData.profile?.goal || "",
+        },
+        workEnvironment: agentData.workEnvironment || {},
+        businessRules: agentData.businessRules || {},
+        expertise: agentData.expertise || {},
+        status: agentData.status || "active",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      setAgents(prev => [...prev, newAgent]);
+    }
+  };
+
   const handleChangeStatus = (agent: Agent, status: Agent['status']) => {
+    setAgents(prev => 
+      prev.map(a => 
+        a.id === agent.id 
+          ? { ...a, status, updatedAt: new Date() } 
+          : a
+      )
+    );
+    
     toast({
-      title: "Alterar Status",
-      description: `Alterar status do agente ${agent.profile.name} para ${status}`,
+      title: "Status alterado",
+      description: `O status do agente ${agent.profile.name} foi alterado para ${status}.`,
     });
   };
 
@@ -176,6 +231,13 @@ const AgentSettings = () => {
           </div>
         </div>
       </CardContent>
+
+      <AgentConfigModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        agent={selectedAgent}
+        onSave={handleSaveAgent}
+      />
     </Card>
   );
 };

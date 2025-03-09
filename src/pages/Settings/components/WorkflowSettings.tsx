@@ -15,11 +15,14 @@ import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 import { getWorkflows } from "../services/settingsService";
 import { Workflow } from "@/pages/Workflows/models/WorkflowModels";
+import WorkflowConfigModal from "./modals/WorkflowConfigModal";
 
 const WorkflowSettings = () => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [workflows, setWorkflows] = useState<Workflow[]>(getWorkflows());
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedWorkflow, setSelectedWorkflow] = useState<Workflow | undefined>(undefined);
 
   const filteredWorkflows = workflows.filter((workflow) => 
     workflow.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -27,25 +30,60 @@ const WorkflowSettings = () => {
   );
 
   const handleAddWorkflow = () => {
-    toast({
-      title: "Adicionar Workflow",
-      description: "Funcionalidade em desenvolvimento",
-    });
+    setSelectedWorkflow(undefined);
+    setIsModalOpen(true);
   };
 
   const handleEditWorkflow = (workflow: Workflow) => {
-    toast({
-      title: "Editar Workflow",
-      description: `Editar workflow: ${workflow.title}`,
-    });
+    setSelectedWorkflow(workflow);
+    setIsModalOpen(true);
   };
 
   const handleDeleteWorkflow = (workflow: Workflow) => {
     toast({
       title: "Remover Workflow",
-      description: `Remover workflow: ${workflow.title}`,
+      description: `Tem certeza que deseja remover o workflow: ${workflow.title}?`,
       variant: "destructive",
+      action: (
+        <Button 
+          variant="outline" 
+          onClick={() => {
+            setWorkflows(prev => prev.filter(w => w.id !== workflow.id));
+            toast({
+              title: "Workflow removido",
+              description: `O workflow ${workflow.title} foi removido com sucesso.`,
+            });
+          }}
+        >
+          Confirmar
+        </Button>
+      ),
     });
+  };
+
+  const handleSaveWorkflow = (workflowData: Partial<Workflow>) => {
+    if (selectedWorkflow) {
+      // Update existing workflow
+      setWorkflows(prev => 
+        prev.map(w => 
+          w.id === selectedWorkflow.id 
+            ? { ...w, ...workflowData, updatedAt: new Date() } 
+            : w
+        )
+      );
+    } else {
+      // Add new workflow
+      const newWorkflow: Workflow = {
+        id: `workflow-${Date.now()}`,
+        title: workflowData.title || "Novo Workflow",
+        description: workflowData.description || "",
+        status: workflowData.status || "draft",
+        departmentId: `dept-${Date.now()}`,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      setWorkflows(prev => [...prev, newWorkflow]);
+    }
   };
 
   const getStatusBadge = (status: Workflow['status']) => {
@@ -143,6 +181,13 @@ const WorkflowSettings = () => {
           </div>
         </div>
       </CardContent>
+
+      <WorkflowConfigModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        workflow={selectedWorkflow}
+        onSave={handleSaveWorkflow}
+      />
     </Card>
   );
 };
