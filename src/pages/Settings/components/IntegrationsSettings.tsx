@@ -10,12 +10,18 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Search, Filter, Edit, Trash, MessageSquare, CreditCard, Zap, Phone, Mail, Settings } from "lucide-react";
+import { Plus, Search, Filter, MoreHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 import { getIntegrations } from "../services/settingsService";
 import { Integration } from "@/pages/Workflows/models/WorkflowModels";
 import IntegrationConfigModal from "./modals/IntegrationConfigModal";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 
 const IntegrationsSettings = () => {
   const { toast } = useToast();
@@ -42,7 +48,7 @@ const IntegrationsSettings = () => {
 
   const handleDeleteIntegration = (integration: Integration) => {
     toast({
-      title: "Remover integração",
+      title: "Remover Integração",
       description: `Tem certeza que deseja remover a integração: ${integration.name}?`,
       variant: "destructive",
       action: (
@@ -78,7 +84,7 @@ const IntegrationsSettings = () => {
         id: `integration-${Date.now()}`,
         name: integrationData.name || "Nova Integração",
         type: integrationData.type || "message",
-        provider: integrationData.provider || "Provedor",
+        provider: integrationData.provider || "",
         credentials: integrationData.credentials || {},
         isActive: integrationData.isActive !== undefined ? integrationData.isActive : true,
         createdAt: new Date(),
@@ -88,41 +94,22 @@ const IntegrationsSettings = () => {
     }
   };
 
-  const getTypeIcon = (type: Integration['type']) => {
+  const getIntegrationTypeBadge = (type: Integration['type']) => {
     switch (type) {
       case 'message':
-        return <MessageSquare className="h-4 w-4 text-blue-500" />;
+        return <Badge className="bg-blue-500 hover:bg-blue-600">Mensagem</Badge>;
       case 'payment':
-        return <CreditCard className="h-4 w-4 text-green-500" />;
+        return <Badge className="bg-green-500 hover:bg-green-600">Pagamento</Badge>;
       case 'llm':
-        return <Zap className="h-4 w-4 text-purple-500" />;
+        return <Badge className="bg-purple-500 hover:bg-purple-600">IA</Badge>;
       case 'call':
-        return <Phone className="h-4 w-4 text-orange-500" />;
+        return <Badge className="bg-yellow-500 hover:bg-yellow-600">Telefonia</Badge>;
       case 'email':
-        return <Mail className="h-4 w-4 text-red-500" />;
+        return <Badge className="bg-orange-500 hover:bg-orange-600">Email</Badge>;
       case 'custom':
-        return <Settings className="h-4 w-4 text-gray-500" />;
+        return <Badge className="bg-gray-500 hover:bg-gray-600">Personalizado</Badge>;
       default:
         return null;
-    }
-  };
-
-  const getTypeName = (type: Integration['type']) => {
-    switch (type) {
-      case 'message':
-        return "Mensagens";
-      case 'payment':
-        return "Pagamentos";
-      case 'llm':
-        return "IA";
-      case 'call':
-        return "Telefonia";
-      case 'email':
-        return "Email";
-      case 'custom':
-        return "Personalizado";
-      default:
-        return type;
     }
   };
 
@@ -133,7 +120,7 @@ const IntegrationsSettings = () => {
           <div>
             <CardTitle>Gerenciamento de Integrações</CardTitle>
             <CardDescription>
-              Configure e gerencie as integrações com serviços externos
+              Configure e gerencie as integrações do sistema
             </CardDescription>
           </div>
           <Button onClick={handleAddIntegration} className="flex-shrink-0">
@@ -162,8 +149,8 @@ const IntegrationsSettings = () => {
           <div className="grid grid-cols-6 gap-4 p-4 font-medium border-b">
             <div className="col-span-2">Nome / Provedor</div>
             <div className="col-span-1">Tipo</div>
-            <div className="col-span-1">Status</div>
-            <div className="col-span-1 hidden md:block">Atualizado</div>
+            <div className="col-span-1 hidden md:block">Status</div>
+            <div className="col-span-1 hidden md:block">Criado em</div>
             <div className="col-span-1 text-right">Ações</div>
           </div>
 
@@ -173,37 +160,38 @@ const IntegrationsSettings = () => {
                 <div key={integration.id} className="grid grid-cols-6 gap-4 p-4 items-center">
                   <div className="col-span-2">
                     <div className="font-medium">{integration.name}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {integration.provider}
-                    </div>
-                  </div>
-                  <div className="col-span-1 flex items-center gap-1">
-                    {getTypeIcon(integration.type)}
-                    <span className="text-sm">{getTypeName(integration.type)}</span>
+                    <div className="text-sm text-muted-foreground">{integration.provider}</div>
                   </div>
                   <div className="col-span-1">
-                    <Badge className={integration.isActive ? "bg-green-500" : "bg-gray-500"}>
+                    {getIntegrationTypeBadge(integration.type)}
+                  </div>
+                  <div className="col-span-1 hidden md:block">
+                    <Badge className={integration.isActive ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"}>
                       {integration.isActive ? "Ativo" : "Inativo"}
                     </Badge>
                   </div>
                   <div className="col-span-1 hidden md:block text-muted-foreground">
-                    {formatDate(integration.updatedAt)}
+                    {formatDate(integration.createdAt)}
                   </div>
-                  <div className="col-span-1 flex justify-end gap-2">
-                    <Button 
-                      variant="ghost" 
-                      size="icon"
-                      onClick={() => handleEditIntegration(integration)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="icon"
-                      onClick={() => handleDeleteIntegration(integration)}
-                    >
-                      <Trash className="h-4 w-4" />
-                    </Button>
+                  <div className="col-span-1 flex justify-end">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleEditIntegration(integration)}>
+                          Editar
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => handleDeleteIntegration(integration)}
+                          className="text-red-500 focus:text-red-500"
+                        >
+                          Remover
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </div>
               ))

@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { 
   Card, 
@@ -9,12 +10,18 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Search, Filter, Edit, Trash } from "lucide-react";
+import { Plus, Search, Filter, MoreHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 import { getWorkflows } from "../services/settingsService";
 import { Workflow } from "@/pages/Workflows/models/WorkflowModels";
 import WorkflowConfigModal from "./modals/WorkflowConfigModal";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 
 const WorkflowSettings = () => {
   const { toast } = useToast();
@@ -152,21 +159,25 @@ const WorkflowSettings = () => {
                   <div className="col-span-1">
                     {getStatusBadge(workflow.status)}
                   </div>
-                  <div className="col-span-1 flex justify-end gap-2">
-                    <Button 
-                      variant="ghost" 
-                      size="icon"
-                      onClick={() => handleEditWorkflow(workflow)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="icon"
-                      onClick={() => handleDeleteWorkflow(workflow)}
-                    >
-                      <Trash className="h-4 w-4" />
-                    </Button>
+                  <div className="col-span-1 flex justify-end">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleEditWorkflow(workflow)}>
+                          Editar
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => handleDeleteWorkflow(workflow)}
+                          className="text-red-500 focus:text-red-500"
+                        >
+                          Remover
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </div>
               ))

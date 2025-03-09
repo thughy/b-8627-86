@@ -2,8 +2,14 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Trash } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { Agent } from "@/pages/Workflows/models/WorkflowModels";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 
 interface AgentListProps {
   agents: Agent[];
@@ -56,21 +62,25 @@ const AgentList = ({ agents, onEditAgent, onDeleteAgent }: AgentListProps) => {
               <div className="col-span-1">
                 {getStatusBadge(agent.status)}
               </div>
-              <div className="col-span-1 flex justify-end gap-2">
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  onClick={() => onEditAgent(agent)}
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  onClick={() => onDeleteAgent(agent)}
-                >
-                  <Trash className="h-4 w-4" />
-                </Button>
+              <div className="col-span-1 flex justify-end">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => onEditAgent(agent)}>
+                      Editar
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => onDeleteAgent(agent)}
+                      className="text-red-500 focus:text-red-500"
+                    >
+                      Remover
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           ))
