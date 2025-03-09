@@ -97,8 +97,8 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
               </div>
             </div>
             
-            {/* Coluna de Workspace */}
-            <div className="col-span-8 h-full flex flex-col border-l border-border overflow-hidden">
+            {/* Coluna de Workspace - Removida a borda à esquerda (border-l border-border) */}
+            <div className="col-span-8 h-full flex flex-col overflow-hidden">
               <h3 className="text-lg font-medium mb-3 pl-4">Workspace</h3>
               <div className="pl-4 flex-1 overflow-hidden border rounded-md">
                 <ScrollArea className="h-full">
