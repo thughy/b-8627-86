@@ -6,35 +6,60 @@ import { FileText, CheckSquare, Package, Mail, MessageSquare, History } from 'lu
 interface ActionsSidebarProps {
   activeSection: string;
   onSectionChange: (section: string) => void;
-  onCreateAsset: () => void;
+  onCreateAction: (actionType: string) => void;
 }
 
 const ActionsSidebar: React.FC<ActionsSidebarProps> = ({
   activeSection,
   onSectionChange,
-  onCreateAsset
+  onCreateAction
 }) => {
   return (
     <div className="col-span-5 md:col-span-1 border-r p-3 flex flex-col">
       <h3 className="font-medium mb-3">Ações</h3>
       <div className="space-y-2">
-        <Button variant="outline" className="w-full justify-start" size="sm">
+        <Button 
+          variant="outline" 
+          className="w-full justify-start" 
+          size="sm"
+          onClick={() => onCreateAction('note')}
+        >
           <FileText className="h-4 w-4 mr-2" />
           Nota
         </Button>
-        <Button variant="outline" className="w-full justify-start" size="sm">
+        <Button 
+          variant="outline" 
+          className="w-full justify-start" 
+          size="sm"
+          onClick={() => onCreateAction('task')}
+        >
           <CheckSquare className="h-4 w-4 mr-2" />
           Tarefa
         </Button>
-        <Button variant="outline" className="w-full justify-start" size="sm" onClick={onCreateAsset}>
+        <Button 
+          variant="outline" 
+          className="w-full justify-start" 
+          size="sm" 
+          onClick={() => onCreateAction('asset')}
+        >
           <Package className="h-4 w-4 mr-2" />
           Asset
         </Button>
-        <Button variant="outline" className="w-full justify-start" size="sm">
+        <Button 
+          variant="outline" 
+          className="w-full justify-start" 
+          size="sm"
+          onClick={() => onCreateAction('document')}
+        >
           <FileText className="h-4 w-4 mr-2" />
           Documento
         </Button>
-        <Button variant="outline" className="w-full justify-start" size="sm">
+        <Button 
+          variant="outline" 
+          className="w-full justify-start" 
+          size="sm"
+          onClick={() => onCreateAction('email')}
+        >
           <Mail className="h-4 w-4 mr-2" />
           Email
         </Button>

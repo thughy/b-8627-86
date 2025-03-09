@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { 
@@ -13,7 +12,7 @@ import { getDemoData } from "../../components/modals/workflow/MockDataGenerator"
 
 export const useWorkflowDataInit = (
   isOpen: boolean,
-  workflow?: Workflow,
+  workflow: Workflow | undefined,
   setActiveTab: (tab: "workflow" | "structure" | "versions") => void,
   setSelectedDepartment: React.Dispatch<React.SetStateAction<Department | null>>,
   setSelectedPipeline: React.Dispatch<React.SetStateAction<Pipeline | null>>,
@@ -30,7 +29,6 @@ export const useWorkflowDataInit = (
   const [agents, setAgents] = useState<Agent[]>([]);
   const [assets, setAssets] = useState<Asset[]>([]);
 
-  // Effect to initialize data when the modal opens
   useEffect(() => {
     if (isOpen) {
       if (workflow) {

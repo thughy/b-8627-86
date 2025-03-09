@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Deal, Asset } from '@/pages/Workflows/models/WorkflowModels';
 import {
@@ -31,7 +32,7 @@ const DealDetailModal: React.FC<DealDetailModalProps> = ({
   onDeleteDeal,
   onCancelDeal
 }) => {
-  const [activeTab, setActiveTab] = useState('details');
+  const [activeTab, setActiveTab] = useState('workspace');
 
   // Example assets for this deal
   const assets: Asset[] = [
@@ -90,7 +91,7 @@ const DealDetailModal: React.FC<DealDetailModalProps> = ({
         <DealSummary deal={deal} counters={counters} />
         
         <div className="flex flex-1 overflow-hidden">
-          <Tabs defaultValue="details" className="flex-1 flex flex-col" onValueChange={setActiveTab} value={activeTab}>
+          <Tabs defaultValue="workspace" className="flex-1 flex flex-col" onValueChange={setActiveTab} value={activeTab}>
             <TabsList className="grid grid-cols-2">
               <TabsTrigger value="details">Detalhes</TabsTrigger>
               <TabsTrigger value="workspace">Workspace</TabsTrigger>
@@ -105,6 +106,7 @@ const DealDetailModal: React.FC<DealDetailModalProps> = ({
                 assets={assets}
                 onCreateAsset={handleCreateAsset}
                 dealId={deal.id}
+                deal={deal}
               />
             </TabsContent>
           </Tabs>
