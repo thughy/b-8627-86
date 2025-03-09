@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Edit, Trash, X } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import DealParametersTab from './deal-detail/DealParametersTab';
 import DealWorkspaceTab from './deal-detail/DealWorkspaceTab';
 import DealStatusBadge from './deal-detail/DealStatusBadge';
@@ -85,15 +86,17 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
         <div className="flex-1 overflow-hidden p-6 pt-0">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
             {/* Coluna de Parâmetros */}
-            <div className="overflow-y-auto pr-2">
+            <div className="h-full flex flex-col">
               <h3 className="text-lg font-medium mb-3">Parâmetros</h3>
-              <DealParametersTab deal={deal} onEditDeal={onEditDeal} />
+              <ScrollArea className="flex-1 pr-2">
+                <DealParametersTab deal={deal} onEditDeal={onEditDeal} />
+              </ScrollArea>
             </div>
             
             {/* Coluna de Workspace */}
-            <div className="overflow-y-auto pl-2 border-l border-border">
+            <div className="h-full flex flex-col border-l border-border">
               <h3 className="text-lg font-medium mb-3 pl-4">Workspace</h3>
-              <div className="pl-4">
+              <div className="pl-4 flex-1">
                 <DealWorkspaceTab 
                   deal={deal} 
                   onCreateAsset={onCreateAsset}

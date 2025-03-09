@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -50,8 +51,8 @@ const ChatSection: React.FC<ChatSectionProps> = ({ dealId, messages }) => {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto mb-4 space-y-4">
+    <div className="flex flex-col h-full pb-4">
+      <div className="flex-1 mb-4 space-y-4">
         {messages.length > 0 ? (
           messages.map((message) => (
             <div
@@ -102,7 +103,7 @@ const ChatSection: React.FC<ChatSectionProps> = ({ dealId, messages }) => {
         )}
       </div>
 
-      <div className="flex gap-2 items-center">
+      <div className="flex gap-2 items-center sticky bottom-0 bg-background pt-2">
         <Button
           type="button"
           size="icon"

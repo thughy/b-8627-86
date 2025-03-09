@@ -4,6 +4,7 @@ import { Deal, Asset } from '@/pages/Workflows/models/WorkflowModels';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MessageCircle, FileText, History } from 'lucide-react';
 import { useChatMessages } from '@/pages/Workflows/hooks/useChatMessages';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import ChatSection from './workspace/ChatSection';
 import FocusTabContent from './workspace/FocusTabContent';
 import HistoryTabContent from './workspace/HistoryTabContent';
@@ -72,27 +73,37 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({ deal, onCreateAsset
               Histórico
             </TabsTrigger>
           </TabsList>
+        
+          <div className="ml-auto">
+            <WorkspaceActionButtons onCreateAsset={handleCreateAsset} />
+          </div>
         </Tabs>
-
-        <WorkspaceActionButtons onCreateAsset={handleCreateAsset} />
       </div>
 
       <div className="flex-1 overflow-hidden">
-        <TabsContent value="chat" className="h-full">
-          <ChatSection dealId={deal.id} messages={messages} />
-        </TabsContent>
-        
-        <TabsContent value="focus" className="h-full">
-          <FocusTabContent 
-            deal={deal}
-            assets={assets}
-            onCreateAsset={onCreateAsset}
-          />
-        </TabsContent>
-        
-        <TabsContent value="history" className="h-full">
-          <HistoryTabContent />
-        </TabsContent>
+        <Tabs defaultValue="chat" value={activeTab} className="h-full">
+          <TabsContent value="chat" className="h-full overflow-hidden mt-0">
+            <ScrollArea className="h-full">
+              <ChatSection dealId={deal.id} messages={messages} />
+            </ScrollArea>
+          </TabsContent>
+          
+          <TabsContent value="focus" className="h-full overflow-hidden mt-0">
+            <ScrollArea className="h-full">
+              <FocusTabContent 
+                deal={deal}
+                assets={assets}
+                onCreateAsset={onCreateAsset}
+              />
+            </ScrollArea>
+          </TabsContent>
+          
+          <TabsContent value="history" className="h-full overflow-hidden mt-0">
+            <ScrollArea className="h-full">
+              <HistoryTabContent />
+            </ScrollArea>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
