@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Workflow } from "@/pages/Workflows/models/WorkflowModels";
+import { WorkflowTab } from "../../hooks/workflow/useWorkflowTabs";
 
 // Import the refactored components
 import WorkflowBasicForm from "./workflow/WorkflowBasicForm";
@@ -102,6 +103,14 @@ const WorkflowConfigModal = ({
     onClose();
   };
 
+  // Function to safely handle tab changes with correct typing
+  const handleTabChange = (value: string) => {
+    // This ensures we only set valid tab values
+    if (value === 'workflow' || value === 'structure' || value === 'versions') {
+      setActiveTab(value);
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl h-[90vh] flex flex-col">
@@ -113,7 +122,7 @@ const WorkflowConfigModal = ({
           }
         />
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="flex-1 flex flex-col overflow-hidden">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="workflow">Workflow</TabsTrigger>
             <TabsTrigger value="structure">Estrutura</TabsTrigger>

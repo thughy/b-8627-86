@@ -9,9 +9,14 @@ import HistorySection from './workspace/HistorySection';
 interface WorkspaceTabProps {
   assets: Asset[];
   onCreateAsset: () => void;
+  dealId?: string;
 }
 
-const WorkspaceTab: React.FC<WorkspaceTabProps> = ({ assets, onCreateAsset }) => {
+const WorkspaceTab: React.FC<WorkspaceTabProps> = ({ 
+  assets, 
+  onCreateAsset,
+  dealId 
+}) => {
   const [activeSection, setActiveSection] = useState<string>('focus');
   const [activeWorkspaceTab, setActiveWorkspaceTab] = useState<string>('all');
 
@@ -24,7 +29,7 @@ const WorkspaceTab: React.FC<WorkspaceTabProps> = ({ assets, onCreateAsset }) =>
       />
       
       <div className="col-span-5 md:col-span-4 flex flex-col overflow-hidden">
-        {activeSection === 'chat' && <ChatSection />}
+        {activeSection === 'chat' && <ChatSection dealId={dealId} />}
         
         {activeSection === 'focus' && (
           <FocusSection 

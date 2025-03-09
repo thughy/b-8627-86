@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Deal, Asset } from '@/pages/Workflows/models/WorkflowModels';
 import {
@@ -105,6 +104,7 @@ const DealDetailModal: React.FC<DealDetailModalProps> = ({
               <WorkspaceTab 
                 assets={assets}
                 onCreateAsset={handleCreateAsset}
+                dealId={deal.id}
               />
             </TabsContent>
           </Tabs>
