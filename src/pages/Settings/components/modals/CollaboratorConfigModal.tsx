@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -8,9 +8,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Collaborator } from "@/pages/Workflows/models/WorkflowModels";
-import { useToast } from "@/hooks/use-toast";
 import CollaboratorForm from "./collaborator/CollaboratorForm";
 import CollaboratorModalFooter from "./collaborator/CollaboratorModalFooter";
+import { useCollaboratorForm } from "@/pages/Settings/hooks/useCollaboratorForm";
 
 interface CollaboratorConfigModalProps {
   isOpen: boolean;
@@ -27,73 +27,21 @@ const CollaboratorConfigModal: React.FC<CollaboratorConfigModalProps> = ({
   onDelete,
   collaborator,
 }) => {
-  const { toast } = useToast();
-  const [formData, setFormData] = useState<Partial<Collaborator>>({
-    name: "",
-    role: "",
-    email: "",
-    phone: "",
-    hierarchyLevel: "",
-    type: "collaborator",
-    status: "active",
+  const { 
+    formData, 
+    handleChange, 
+    handleSubmit,
+    isEditMode 
+  } = useCollaboratorForm({
+    collaborator,
+    onSave,
+    onClose
   });
-
-  useEffect(() => {
-    if (collaborator) {
-      setFormData({
-        ...collaborator
-      });
-    } else {
-      // Reset form for new collaborator
-      setFormData({
-        name: "",
-        role: "",
-        email: "",
-        phone: "",
-        hierarchyLevel: "",
-        type: "collaborator",
-        status: "active",
-      });
-    }
-  }, [collaborator, isOpen]);
-
-  const handleChange = (field: keyof Collaborator, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handleSubmit = () => {
-    if (!formData.name || !formData.email || !formData.role) {
-      toast({
-        title: "Campos obrigatórios",
-        description: "Nome, email e função são campos obrigatórios.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Create new collaborator or update existing one
-    const savedCollaborator: Collaborator = {
-      id: collaborator?.id || `collab-${Date.now()}`,
-      name: formData.name!,
-      role: formData.role!,
-      email: formData.email!,
-      phone: formData.phone || "",
-      hierarchyLevel: formData.hierarchyLevel || "",
-      type: (formData.type as "subscriber" | "collaborator" | "developer" | "master") || "collaborator",
-      status: (formData.status as "active" | "inactive") || "active",
-      createdAt: collaborator?.createdAt || new Date(),
-      updatedAt: new Date(),
-    };
-
-    onSave(savedCollaborator);
-  };
 
   const handleDelete = () => {
     if (collaborator?.id) {
       onDelete(collaborator.id);
+      onClose();
     }
   };
 
@@ -120,7 +68,7 @@ const CollaboratorConfigModal: React.FC<CollaboratorConfigModalProps> = ({
           onClose={onClose}
           onSave={handleSubmit}
           onDelete={handleDelete}
-          isEditMode={!!collaborator}
+          isEditMode={isEditMode}
         />
       </DialogContent>
     </Dialog>
