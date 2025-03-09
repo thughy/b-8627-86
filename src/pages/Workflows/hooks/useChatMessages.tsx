@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 export interface ChatMessage {
   id: string;
   sender: 'user' | 'agent' | 'system';
-  senderName?: string;
+  senderName: string; // Changed from optional to required
   text: string;
   content?: string;
   timestamp: Date;

@@ -3,10 +3,10 @@ import { useState } from 'react';
 
 export interface ChatMessage {
   id: string;
-  sender: 'user' | 'system' | 'agent';
+  sender: 'user' | 'system' | 'agent'; // Updated to include 'system'
   senderName: string;
   content: string;
-  text: string; // Adicionando propriedade text que será igual ao content
+  text: string;
   timestamp: Date;
 }
 
@@ -22,7 +22,7 @@ export const useChatState = (initialMessages: ChatMessage[] = []) => {
       sender,
       senderName,
       content,
-      text: content, // Adicionando text igual ao content
+      text: content,
       timestamp: new Date()
     };
 

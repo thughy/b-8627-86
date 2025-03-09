@@ -7,7 +7,8 @@ import { Send } from 'lucide-react';
 interface Message {
   id: string;
   text: string;
-  sender: 'user' | 'agent' | 'system';
+  sender: 'user' | 'agent' | 'system'; // Added 'system' as a valid type
+  senderName?: string; // Added senderName property
   timestamp: Date;
 }
 

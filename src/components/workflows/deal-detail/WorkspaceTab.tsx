@@ -6,7 +6,7 @@ import ChatSection from './workspace/ChatSection';
 import FocusSection from './workspace/FocusSection';
 import HistorySection from './workspace/HistorySection';
 import { useToast } from '@/hooks/use-toast';
-import { useChatMessages } from '@/pages/Workflows/hooks/useChatMessages';
+import { useChatMessages, ChatMessage } from '@/pages/Workflows/hooks/useChatMessages';
 
 interface WorkspaceTabProps {
   assets: Asset[];
@@ -67,6 +67,12 @@ const WorkspaceTab: React.FC<WorkspaceTabProps> = ({
     }
   };
 
+  const handleSendMessage = (content: string) => {
+    if (sendMessage) {
+      sendMessage(content);
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-5 h-full overflow-hidden">
       <ActionsSidebar 
@@ -78,9 +84,9 @@ const WorkspaceTab: React.FC<WorkspaceTabProps> = ({
       <div className="col-span-5 md:col-span-4 flex flex-col overflow-hidden">
         {activeSection === 'chat' && (
           <ChatSection 
-            dealId={dealId} 
+            dealId={dealId || ''} 
             messages={messages} 
-            sendMessage={sendMessage}
+            onSendMessage={handleSendMessage}
           />
         )}
         
