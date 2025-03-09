@@ -28,6 +28,30 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
   const { messages, sendMessage } = useChatMessages(deal.id);
   const [activeTab, setActiveTab] = React.useState('chat');
 
+  // Exemplo de assets para este deal (em um cenário real, viriam da API)
+  const dummyAssets: Asset[] = [
+    {
+      id: 'asset-1',
+      dealId: deal.id,
+      title: 'Proposta Comercial',
+      description: 'Documento com detalhes da proposta',
+      type: 'document',
+      status: 'completed',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: 'asset-2',
+      dealId: deal.id,
+      title: 'Contrato de Serviço',
+      description: 'Contrato para assinatura',
+      type: 'contract',
+      status: 'processing',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+  ];
+
   return (
     <div className="p-4">
       <WorkspaceActionButtons 
@@ -55,7 +79,11 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
         </TabsContent>
         
         <TabsContent value="focus" className="border-none p-0">
-          <FocusTabContent deal={deal} />
+          <FocusTabContent 
+            deal={deal} 
+            assets={dummyAssets}
+            onCreateAsset={onCreateAsset}
+          />
         </TabsContent>
         
         <TabsContent value="history" className="border-none p-0">

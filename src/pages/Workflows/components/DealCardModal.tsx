@@ -84,44 +84,43 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
           </div>
         </DialogHeader>
 
-        {/* Main scrollable content */}
-        <ScrollArea className="flex-1 w-full">
-          <div className="p-6">
-            {/* Informações Resumidas */}
-            <div className="mb-4">
-              <DealSummaryCards deal={deal} />
-              <DealCounters counters={counters} />
-            </div>
+        {/* Informações Resumidas - Não rolável */}
+        <div className="px-6 pt-2 pb-4 flex-shrink-0">
+          <DealSummaryCards deal={deal} />
+          <DealCounters counters={counters} />
+        </div>
 
-            {/* Conteúdo principal em colunas */}
-            <div className="grid grid-cols-12 gap-6">
-              {/* Coluna de Parâmetros */}
-              <div className="col-span-4 flex flex-col">
-                <h3 className="text-lg font-medium mb-3">Parâmetros</h3>
-                <div className="border rounded-md">
-                  <div className="p-4">
-                    <DealParametersTab deal={deal} onEditDeal={onEditDeal} />
-                  </div>
+        {/* Conteúdo principal em colunas - Cada coluna com sua própria área de rolagem */}
+        <div className="flex-1 grid grid-cols-12 gap-6 px-6 pb-6 overflow-hidden">
+          {/* Coluna de Parâmetros com ScrollArea independente */}
+          <div className="col-span-4 flex flex-col overflow-hidden">
+            <h3 className="text-lg font-medium mb-3">Parâmetros</h3>
+            <div className="border rounded-md flex-1 overflow-hidden">
+              <ScrollArea className="h-[calc(80vh-200px)]">
+                <div className="p-4">
+                  <DealParametersTab deal={deal} onEditDeal={onEditDeal} />
                 </div>
-              </div>
-              
-              {/* Coluna de Workspace */}
-              <div className="col-span-8 flex flex-col">
-                <h3 className="text-lg font-medium mb-3 pl-4">Workspace</h3>
-                <div className="pl-4 border rounded-md">
-                  <DealWorkspaceTab 
-                    deal={deal} 
-                    onCreateAsset={onCreateAsset}
-                    onCreateTask={onCreateTask}
-                    onCreateNote={onCreateNote}
-                    onCreateDocument={onCreateDocument}
-                    onCreateEmail={onCreateEmail}
-                  />
-                </div>
-              </div>
+              </ScrollArea>
             </div>
           </div>
-        </ScrollArea>
+          
+          {/* Coluna de Workspace com ScrollArea independente */}
+          <div className="col-span-8 flex flex-col overflow-hidden">
+            <h3 className="text-lg font-medium mb-3 pl-4">Workspace</h3>
+            <div className="pl-4 border rounded-md flex-1 overflow-hidden">
+              <ScrollArea className="h-[calc(80vh-200px)]">
+                <DealWorkspaceTab 
+                  deal={deal} 
+                  onCreateAsset={onCreateAsset}
+                  onCreateTask={onCreateTask}
+                  onCreateNote={onCreateNote}
+                  onCreateDocument={onCreateDocument}
+                  onCreateEmail={onCreateEmail}
+                />
+              </ScrollArea>
+            </div>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );

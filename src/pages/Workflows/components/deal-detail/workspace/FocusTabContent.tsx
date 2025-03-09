@@ -4,11 +4,15 @@ import { Deal, Asset } from '@/pages/Workflows/models/WorkflowModels';
 
 interface FocusTabContentProps {
   deal: Deal;
-  assets: Asset[];
+  assets?: Asset[]; // Tornando assets opcional
   onCreateAsset?: (dealId: string, asset?: Partial<Asset>) => void;
 }
 
-const FocusTabContent: React.FC<FocusTabContentProps> = ({ deal, assets, onCreateAsset }) => {
+const FocusTabContent: React.FC<FocusTabContentProps> = ({ 
+  deal, 
+  assets = [], // Valor padrão como array vazio
+  onCreateAsset 
+}) => {
   return (
     <div className="space-y-4">
       <div>
