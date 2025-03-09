@@ -6,7 +6,7 @@ import ChatSection from './workspace/ChatSection';
 import FocusSection from './workspace/FocusSection';
 import HistorySection from './workspace/HistorySection';
 import { useToast } from '@/hooks/use-toast';
-import { useChatMessages, ChatMessage } from '@/pages/Workflows/hooks/useChatMessages';
+import { ChatMessage } from '@/pages/Workflows/hooks/useChatMessages';
 
 interface WorkspaceTabProps {
   assets: Asset[];
@@ -25,8 +25,8 @@ const WorkspaceTab: React.FC<WorkspaceTabProps> = ({
   const [activeWorkspaceTab, setActiveWorkspaceTab] = useState<string>('all');
   const { toast } = useToast();
   
-  // Use our global chat messages store
-  const { messages, sendMessage } = useChatMessages(dealId);
+  // Simplified approach using local state for messages
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   // Set chat as default active section when deal changes
   useEffect(() => {
@@ -35,18 +35,11 @@ const WorkspaceTab: React.FC<WorkspaceTabProps> = ({
     }
   }, [dealId]);
 
-  useEffect(() => {
-    // Simulate agent greeting when deal is loaded and only has the system message
-    if (dealId && messages.length === 1) {
-      setTimeout(() => {
-        sendMessage(
-          "Olá! Sou o assistente deste negócio. Como posso ajudar você hoje?", 
-          'agent', 
-          'Assistente'
-        );
-      }, 1000);
-    }
-  }, [dealId, messages.length, sendMessage]);
+  // Simplified placeholder function for sending messages
+  const handleSendMessage = (content: string) => {
+    console.log("Message sent (disabled):", content);
+    // This functionality is disabled for now
+  };
 
   const handleCreateAction = (actionType: string) => {
     switch (actionType) {
@@ -64,12 +57,6 @@ const WorkspaceTab: React.FC<WorkspaceTabProps> = ({
         break;
       default:
         break;
-    }
-  };
-
-  const handleSendMessage = (content: string) => {
-    if (sendMessage) {
-      sendMessage(content);
     }
   };
 
