@@ -56,7 +56,7 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({ deal, onCreateAsset
   ];
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col overflow-hidden">
       <div className="flex justify-between items-center mb-4">
         <Tabs defaultValue="chat" className="w-full" onValueChange={setActiveTab} value={activeTab}>
           <TabsList>

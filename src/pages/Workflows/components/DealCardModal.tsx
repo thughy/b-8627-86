@@ -86,17 +86,19 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
         <div className="flex-1 overflow-hidden p-6 pt-0">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
             {/* Coluna de Parâmetros */}
-            <div className="h-full flex flex-col">
+            <div className="h-full flex flex-col overflow-hidden">
               <h3 className="text-lg font-medium mb-3">Parâmetros</h3>
-              <ScrollArea className="flex-1 pr-2">
-                <DealParametersTab deal={deal} onEditDeal={onEditDeal} />
+              <ScrollArea className="flex-1">
+                <div className="pr-4">
+                  <DealParametersTab deal={deal} onEditDeal={onEditDeal} />
+                </div>
               </ScrollArea>
             </div>
             
             {/* Coluna de Workspace */}
-            <div className="h-full flex flex-col border-l border-border">
+            <div className="h-full flex flex-col border-l border-border overflow-hidden">
               <h3 className="text-lg font-medium mb-3 pl-4">Workspace</h3>
-              <div className="pl-4 flex-1">
+              <div className="pl-4 flex-1 overflow-hidden">
                 <DealWorkspaceTab 
                   deal={deal} 
                   onCreateAsset={onCreateAsset}
