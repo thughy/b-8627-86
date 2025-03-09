@@ -30,7 +30,7 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
   const [activeTab, setActiveTab] = useState('chat');
   const { messages, sendMessage } = useChatMessages(deal.id);
 
-  // Exemplos de ativos para este negócio (em um cenário real, seriam carregados da API)
+  // Example assets for this deal (in a real scenario, would be loaded from API)
   const assets: Asset[] = [
     {
       id: 'asset-1',

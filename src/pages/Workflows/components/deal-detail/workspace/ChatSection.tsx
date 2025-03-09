@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from "@/components/ui/input";
 import { Send } from 'lucide-react';
@@ -19,6 +19,14 @@ interface ChatSectionProps {
 
 const ChatSection: React.FC<ChatSectionProps> = ({ dealId, messages, onSendMessage }) => {
   const [messageText, setMessageText] = useState('');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
 
   const handleSendMessage = () => {
     if (messageText.trim() === '') return;
@@ -69,6 +77,7 @@ const ChatSection: React.FC<ChatSectionProps> = ({ dealId, messages, onSendMessa
                 </div>
               </div>
             ))}
+            <div ref={messagesEndRef} />
           </div>
         )}
       </div>

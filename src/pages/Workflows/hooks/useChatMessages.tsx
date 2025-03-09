@@ -1,6 +1,14 @@
 
 import { useState, useEffect } from 'react';
-import { ChatMessage } from '@/components/workflows/deal-detail/workspace/hooks/useChatState';
+
+export interface ChatMessage {
+  id: string;
+  sender: 'user' | 'agent' | 'system';
+  senderName?: string;
+  text: string;
+  content?: string;
+  timestamp: Date;
+}
 
 // Map to store messages by deal ID
 const chatMessagesStore: Record<string, ChatMessage[]> = {};
@@ -15,8 +23,8 @@ export const useChatMessages = (dealId?: string) => {
         id: `initial-${dealId}`,
         sender: 'system',
         senderName: 'Sistema',
-        content: `Negócio #${dealId.slice(0, 8)} criado com sucesso. Você pode interagir com os participantes neste chat.`,
         text: `Negócio #${dealId.slice(0, 8)} criado com sucesso. Você pode interagir com os participantes neste chat.`,
+        content: `Negócio #${dealId.slice(0, 8)} criado com sucesso. Você pode interagir com os participantes neste chat.`,
         timestamp: new Date()
       };
       
@@ -42,8 +50,8 @@ export const useChatMessages = (dealId?: string) => {
       id: `msg-${Date.now()}`,
       sender,
       senderName,
-      content,
       text: content,
+      content,
       timestamp: new Date()
     };
 
