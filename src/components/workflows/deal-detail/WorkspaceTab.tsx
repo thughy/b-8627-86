@@ -46,7 +46,7 @@ const WorkspaceTab: React.FC<WorkspaceTabProps> = ({
         );
       }, 1000);
     }
-  }, [dealId, messages.length]);
+  }, [dealId, messages.length, sendMessage]);
 
   const handleCreateAction = (actionType: string) => {
     switch (actionType) {

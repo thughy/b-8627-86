@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 export interface ChatMessage {
   id: string;
-  sender: 'user' | 'system' | 'agent'; // Updated to include 'system'
+  sender: 'user' | 'system' | 'agent';
   senderName: string;
   content: string;
   text: string;

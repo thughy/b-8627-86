@@ -7,8 +7,9 @@ import { Send } from 'lucide-react';
 interface Message {
   id: string;
   text: string;
-  sender: 'user' | 'agent' | 'system'; // Added 'system' as a valid type
-  senderName?: string; // Added senderName property
+  content: string; // Made required to match ChatMessage
+  sender: 'user' | 'agent' | 'system';
+  senderName?: string;
   timestamp: Date;
 }
 

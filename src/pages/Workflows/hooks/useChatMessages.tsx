@@ -4,9 +4,9 @@ import { useState, useEffect } from 'react';
 export interface ChatMessage {
   id: string;
   sender: 'user' | 'agent' | 'system';
-  senderName: string; // Changed from optional to required
+  senderName: string;
   text: string;
-  content?: string;
+  content: string; // Changed from optional to required
   timestamp: Date;
 }
 
@@ -51,7 +51,7 @@ export const useChatMessages = (dealId?: string) => {
       sender,
       senderName,
       text: content,
-      content,
+      content: content,
       timestamp: new Date()
     };
 
