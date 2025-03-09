@@ -46,3 +46,86 @@ export interface Deal {
   customerOrganization?: string;
   createdAt: Date;
 }
+
+export interface Asset {
+  id: string;
+  dealId: string;
+  title: string;
+  description?: string;
+  type: string;
+  amount?: number;
+  status: 'open' | 'processing' | 'completed' | 'canceled';
+  startDate?: Date;
+  endDate?: Date;
+  files?: string[];
+  parameters?: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Agent {
+  id: string;
+  stageId: string;
+  profile: {
+    name: string;
+    role: string;
+    goal: string;
+  };
+  workEnvironment: {
+    workflowTitle?: string;
+    workflowDescription?: string;
+    departmentTitle?: string;
+    stageTitle?: string;
+  };
+  businessRules: {
+    rules?: string[];
+    restrictions?: string[];
+    conversationStyle?: string;
+  };
+  expertise: {
+    knowledge?: string[];
+    skills?: string[];
+    examples?: string[];
+    tasks?: string[];
+  };
+  ragDocuments?: string[];
+  tools?: string[];
+  llmModel?: string;
+  status: 'active' | 'paused' | 'blocked';
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Template {
+  id: string;
+  type: 'workflow' | 'department' | 'pipeline' | 'stage' | 'agent' | 'asset';
+  name: string;
+  version: string;
+  data: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Integration {
+  id: string;
+  name: string;
+  type: 'message' | 'payment' | 'llm' | 'call' | 'email' | 'custom';
+  provider: string;
+  credentials: Record<string, any>;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Collaborator {
+  id: string;
+  name: string;
+  role: string;
+  email: string;
+  phone?: string;
+  hierarchyLevel?: string;
+  type: 'subscriber' | 'collaborator' | 'developer' | 'master';
+  status: 'active' | 'inactive';
+  createdAt: Date;
+  updatedAt: Date;
+}

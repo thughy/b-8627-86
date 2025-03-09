@@ -12,6 +12,7 @@ import Payment from "./pages/Auth/Payment";
 import OnboardingIndex from "./pages/Onboarding/Index";
 import Dashboard from "./pages/Dashboard/Index";
 import WorkflowsPage from "./pages/Workflows/Index";
+import SettingsPage from "./pages/Settings/Index";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ const App = () => (
           {/* Dashboard Routes */}
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/workflows" element={<WorkflowsPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
