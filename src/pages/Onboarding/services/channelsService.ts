@@ -8,7 +8,7 @@ export const getChannelsData = (): ChannelProps[] => {
     {
       id: "whatsapp",
       name: "WhatsApp",
-      icon: <BrandWhatsapp className="h-5 w-5 text-green-500" />,
+      icon: React.createElement(BrandWhatsapp, { className: "h-5 w-5 text-green-500" }),
       configFields: [
         {
           id: "phoneNumber",
@@ -27,7 +27,7 @@ export const getChannelsData = (): ChannelProps[] => {
     {
       id: "email",
       name: "Email",
-      icon: <Mail className="h-5 w-5 text-blue-500" />,
+      icon: React.createElement(Mail, { className: "h-5 w-5 text-blue-500" }),
       configFields: [
         {
           id: "emailAddress",
@@ -46,7 +46,7 @@ export const getChannelsData = (): ChannelProps[] => {
     {
       id: "sms",
       name: "SMS",
-      icon: <MessageSquare className="h-5 w-5 text-purple-500" />,
+      icon: React.createElement(MessageSquare, { className: "h-5 w-5 text-purple-500" }),
       configFields: [
         {
           id: "smsProvider",
