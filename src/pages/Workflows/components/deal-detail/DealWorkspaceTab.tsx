@@ -62,77 +62,73 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
 
   return (
     <div className="p-4">
-      {/* First row: Tabs */}
-      <div className="mb-4">
-        <TabsList className="w-full">
-          <TabsTrigger 
-            value="chat" 
-            className="flex items-center gap-1"
-            onClick={() => setActiveTab('chat')}
-            data-state={activeTab === 'chat' ? 'active' : ''}
-          >
-            <MessageCircle className="h-4 w-4" />
-            Chat
-          </TabsTrigger>
-          <TabsTrigger 
-            value="focus" 
-            className="flex items-center gap-1"
-            onClick={() => setActiveTab('focus')}
-            data-state={activeTab === 'focus' ? 'active' : ''}
-          >
-            <FileText className="h-4 w-4" />
-            Focus
-          </TabsTrigger>
-          <TabsTrigger 
-            value="history" 
-            className="flex items-center gap-1"
-            onClick={() => setActiveTab('history')}
-            data-state={activeTab === 'history' ? 'active' : ''}
-          >
-            <History className="h-4 w-4" />
-            Histórico
-          </TabsTrigger>
-        </TabsList>
-      </div>
-      
-      {/* Second row: Action buttons */}
-      <div className="mb-4">
-        <WorkspaceActionButtons 
-          dealId={deal.id}
-          onCreateAsset={onCreateAsset}
-          onCreateTask={onCreateTask}
-          onCreateNote={onCreateNote}
-          onCreateDocument={onCreateDocument}
-          onCreateEmail={onCreateEmail}
-        />
-      </div>
-
-      {/* Tab content area */}
-      <div className="mt-4 h-[400px]">
-        {activeTab === 'chat' && (
-          <ChatSection 
-            dealId={deal.id} 
-            messages={messages} 
-            onSendMessage={handleSendMessage}
+      <Tabs defaultValue="chat" value={activeTab} onValueChange={setActiveTab}>
+        {/* First row: Tabs */}
+        <div className="mb-4">
+          <TabsList className="w-full">
+            <TabsTrigger 
+              value="chat" 
+              className="flex items-center gap-1"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Chat
+            </TabsTrigger>
+            <TabsTrigger 
+              value="focus" 
+              className="flex items-center gap-1"
+            >
+              <FileText className="h-4 w-4" />
+              Focus
+            </TabsTrigger>
+            <TabsTrigger 
+              value="history" 
+              className="flex items-center gap-1"
+            >
+              <History className="h-4 w-4" />
+              Histórico
+            </TabsTrigger>
+          </TabsList>
+        </div>
+        
+        {/* Second row: Action buttons */}
+        <div className="mb-4">
+          <WorkspaceActionButtons 
+            dealId={deal.id}
+            onCreateAsset={onCreateAsset}
+            onCreateTask={onCreateTask}
+            onCreateNote={onCreateNote}
+            onCreateDocument={onCreateDocument}
+            onCreateEmail={onCreateEmail}
           />
-        )}
-        
-        {activeTab === 'focus' && (
-          <ScrollArea className="h-full">
-            <FocusTabContent 
-              deal={deal}
-              assets={assets}
-              onCreateAsset={onCreateAsset}
+        </div>
+
+        {/* Tab content area */}
+        <div className="mt-4 h-[400px]">
+          <TabsContent value="chat">
+            <ChatSection 
+              dealId={deal.id} 
+              messages={messages} 
+              onSendMessage={handleSendMessage}
             />
-          </ScrollArea>
-        )}
-        
-        {activeTab === 'history' && (
-          <ScrollArea className="h-full">
-            <HistoryTabContent />
-          </ScrollArea>
-        )}
-      </div>
+          </TabsContent>
+          
+          <TabsContent value="focus">
+            <ScrollArea className="h-full">
+              <FocusTabContent 
+                deal={deal}
+                assets={assets}
+                onCreateAsset={onCreateAsset}
+              />
+            </ScrollArea>
+          </TabsContent>
+          
+          <TabsContent value="history">
+            <ScrollArea className="h-full">
+              <HistoryTabContent />
+            </ScrollArea>
+          </TabsContent>
+        </div>
+      </Tabs>
     </div>
   );
 };
