@@ -1,27 +1,14 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowRight, MessageSquare, AlertCircle } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import ChannelCard from "./components/ChannelCard";
+import NoChannelsWarning from "./components/NoChannelsWarning";
+import { getChannelsData } from "./services/channelsService";
 
 interface OnboardingChannelsProps {
   onComplete: () => void;
-}
-
-interface ChannelProps {
-  id: string;
-  name: string;
-  icon: React.ReactNode;
-  configFields: {
-    id: string;
-    label: string;
-    placeholder: string;
-    type: string;
-  }[];
 }
 
 const OnboardingChannels = ({ onComplete }: OnboardingChannelsProps) => {
@@ -29,71 +16,7 @@ const OnboardingChannels = ({ onComplete }: OnboardingChannelsProps) => {
   const [enabledChannels, setEnabledChannels] = useState<string[]>([]);
   const [channelConfigs, setChannelConfigs] = useState<Record<string, Record<string, string>>>({});
 
-  const channels: ChannelProps[] = [
-    {
-      id: "whatsapp",
-      name: "WhatsApp",
-      icon: <MessageSquare className="h-5 w-5 text-green-500" />,
-      configFields: [
-        {
-          id: "apiKey",
-          label: "API Key",
-          placeholder: "Insira sua API Key do WhatsApp Business",
-          type: "text",
-        },
-        {
-          id: "phoneNumber",
-          label: "Número de telefone",
-          placeholder: "+55 (11) 99999-9999",
-          type: "tel",
-        },
-      ],
-    },
-    {
-      id: "telegram",
-      name: "Telegram",
-      icon: <MessageSquare className="h-5 w-5 text-blue-500" />,
-      configFields: [
-        {
-          id: "botToken",
-          label: "Bot Token",
-          placeholder: "Insira o token do seu bot",
-          type: "text",
-        },
-      ],
-    },
-    {
-      id: "email",
-      name: "Email",
-      icon: <MessageSquare className="h-5 w-5 text-yellow-500" />,
-      configFields: [
-        {
-          id: "smtpServer",
-          label: "Servidor SMTP",
-          placeholder: "smtp.example.com",
-          type: "text",
-        },
-        {
-          id: "smtpPort",
-          label: "Porta SMTP",
-          placeholder: "587",
-          type: "number",
-        },
-        {
-          id: "emailUser",
-          label: "Email",
-          placeholder: "seu@email.com",
-          type: "email",
-        },
-        {
-          id: "emailPassword",
-          label: "Senha",
-          placeholder: "******",
-          type: "password",
-        },
-      ],
-    },
-  ];
+  const channels = getChannelsData();
 
   const toggleChannel = (channelId: string) => {
     if (enabledChannels.includes(channelId)) {
@@ -158,55 +81,20 @@ const OnboardingChannels = ({ onComplete }: OnboardingChannelsProps) => {
 
       <div className="space-y-4">
         {channels.map((channel) => (
-          <Card key={channel.id} className="overflow-hidden">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  {channel.icon}
-                  <Label htmlFor={`enable-${channel.id}`} className="font-medium">
-                    {channel.name}
-                  </Label>
-                </div>
-                <Switch
-                  id={`enable-${channel.id}`}
-                  checked={enabledChannels.includes(channel.id)}
-                  onCheckedChange={() => toggleChannel(channel.id)}
-                />
-              </div>
-
-              {enabledChannels.includes(channel.id) && (
-                <div className="space-y-3 pt-2 border-t border-border">
-                  {channel.configFields.map((field) => (
-                    <div key={field.id} className="space-y-1.5">
-                      <Label htmlFor={`${channel.id}-${field.id}`} className="text-sm">
-                        {field.label}
-                      </Label>
-                      <Input
-                        id={`${channel.id}-${field.id}`}
-                        type={field.type}
-                        placeholder={field.placeholder}
-                        value={(channelConfigs[channel.id]?.[field.id] || "")}
-                        onChange={(e) => 
-                          handleInputChange(channel.id, field.id, e.target.value)
-                        }
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <ChannelCard
+            key={channel.id}
+            channel={channel}
+            enabled={enabledChannels.includes(channel.id)}
+            toggleChannel={toggleChannel}
+            config={channelConfigs[channel.id] || {}}
+            onConfigChange={(fieldId, value) => 
+              handleInputChange(channel.id, fieldId, value)
+            }
+          />
         ))}
       </div>
 
-      {enabledChannels.length === 0 && (
-        <div className="flex items-center gap-2 p-3 bg-muted/30 rounded-md text-sm text-muted-foreground">
-          <AlertCircle className="h-4 w-4 text-yellow-500" />
-          <p>
-            Recomendamos configurar pelo menos um canal para comunicação com seus clientes.
-          </p>
-        </div>
-      )}
+      {enabledChannels.length === 0 && <NoChannelsWarning />}
 
       <div className="flex justify-end">
         <Button onClick={handleContinue} className="flex items-center">
