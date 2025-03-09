@@ -1,244 +1,334 @@
 
-import { 
-  Workflow, 
-  Agent, 
-  Asset, 
-  Template, 
-  Integration, 
-  Collaborator 
-} from "@/pages/Workflows/models/WorkflowModels";
+import { Template, Integration, Collaborator, Agent, Asset } from "@/pages/Workflows/models/WorkflowModels";
 
-// Mock data for workflow settings
-export const getWorkflows = (): Workflow[] => {
+// Função para obter templates da biblioteca
+export const getTemplates = (): Template[] => {
   return [
     {
-      id: "workflow-1",
-      title: "Workflow de Vendas",
-      description: "Processo de vendas completo da empresa",
-      status: "active",
-      departmentId: "dept-1",
-      createdAt: new Date("2023-10-01"),
-      updatedAt: new Date("2023-11-15")
+      id: "template-1",
+      type: "workflow",
+      name: "Workflow de Vendas B2B",
+      version: "1.0",
+      data: {
+        workflowTitle: "Processo de Vendas B2B",
+        departmentTitle: "Comercial",
+        pipelineTitle: "Pipeline de Vendas",
+        stages: ["Prospecção", "Qualificação", "Proposta", "Negociação", "Fechamento"]
+      },
+      createdAt: new Date('2023-10-15'),
+      updatedAt: new Date('2023-12-22')
     },
     {
-      id: "workflow-2",
-      title: "Workflow de Atendimento",
-      description: "Processo de atendimento ao cliente",
-      status: "active",
-      departmentId: "dept-2",
-      createdAt: new Date("2023-09-15"),
-      updatedAt: new Date("2023-11-10")
+      id: "template-2",
+      type: "agent",
+      name: "Agente de Qualificação de Leads",
+      version: "1.2",
+      data: {
+        agentName: "LeadQualifier",
+        agentRole: "Qualificador de Leads",
+        agentGoal: "Qualificar leads conforme critérios BANT"
+      },
+      createdAt: new Date('2023-11-10'),
+      updatedAt: new Date('2024-01-05')
     },
     {
-      id: "workflow-3",
-      title: "Workflow de Marketing",
-      description: "Processo de campanhas de marketing",
-      status: "draft",
-      departmentId: "dept-3",
-      createdAt: new Date("2023-11-01"),
-      updatedAt: new Date("2023-11-05")
+      id: "template-3",
+      type: "department",
+      name: "Departamento de Marketing",
+      version: "1.0",
+      data: {
+        departmentTitle: "Marketing",
+        description: "Gestão de campanhas e leads"
+      },
+      createdAt: new Date('2023-09-28'),
+      updatedAt: new Date('2023-09-28')
+    },
+    {
+      id: "template-4",
+      type: "pipeline",
+      name: "Pipeline de Atendimento",
+      version: "1.1",
+      data: {
+        pipelineTitle: "Fluxo de Atendimento ao Cliente",
+        stages: ["Abertura", "Análise", "Resolução", "Feedback"]
+      },
+      createdAt: new Date('2023-08-12'),
+      updatedAt: new Date('2023-11-18')
+    },
+    {
+      id: "template-5",
+      type: "stage",
+      name: "Estágio de Demonstração",
+      version: "1.0",
+      data: {
+        stageTitle: "Demonstração do Produto",
+        description: "Etapa para demonstração do produto ao cliente"
+      },
+      createdAt: new Date('2023-12-03'),
+      updatedAt: new Date('2023-12-03')
+    },
+    {
+      id: "template-6",
+      type: "asset",
+      name: "Lead Qualificado",
+      version: "1.0",
+      data: {
+        assetTitle: "Lead Qualificado",
+        description: "Template para leads qualificados",
+        parameters: ["Nome", "Empresa", "Cargo", "Telefone", "Email", "Origem", "Interesse"]
+      },
+      createdAt: new Date('2023-11-25'),
+      updatedAt: new Date('2024-01-10')
     }
   ];
 };
 
-// Mock data for agent settings
+// Função para obter integrações
+export const getIntegrations = (): Integration[] => {
+  return [
+    {
+      id: "integration-1",
+      name: "WhatsApp Business API",
+      type: "message",
+      provider: "Meta",
+      credentials: {
+        apiKey: "********",
+        phoneNumberId: "123456789"
+      },
+      isActive: true,
+      createdAt: new Date('2023-09-10'),
+      updatedAt: new Date('2023-12-05')
+    },
+    {
+      id: "integration-2",
+      name: "Stripe Pagamentos",
+      type: "payment",
+      provider: "Stripe",
+      credentials: {
+        secretKey: "********",
+        publicKey: "pk_test_******"
+      },
+      isActive: true,
+      createdAt: new Date('2023-10-15'),
+      updatedAt: new Date('2023-10-15')
+    },
+    {
+      id: "integration-3",
+      name: "OpenAI GPT-4",
+      type: "llm",
+      provider: "OpenAI",
+      credentials: {
+        apiKey: "********"
+      },
+      isActive: true,
+      createdAt: new Date('2023-11-22'),
+      updatedAt: new Date('2024-01-10')
+    },
+    {
+      id: "integration-4",
+      name: "Gmail",
+      type: "email",
+      provider: "Google",
+      credentials: {
+        clientId: "********",
+        clientSecret: "********",
+        refreshToken: "********"
+      },
+      isActive: false,
+      createdAt: new Date('2023-08-17'),
+      updatedAt: new Date('2023-08-17')
+    },
+    {
+      id: "integration-5",
+      name: "Twilio SMS",
+      type: "call",
+      provider: "Twilio",
+      credentials: {
+        accountSid: "********",
+        authToken: "********",
+        phoneNumber: "+1234567890"
+      },
+      isActive: true,
+      createdAt: new Date('2023-12-01'),
+      updatedAt: new Date('2023-12-01')
+    }
+  ];
+};
+
+// Função para obter colaboradores
+export const getCollaborators = (): Collaborator[] => {
+  return [
+    {
+      id: "collab-1",
+      name: "João Silva",
+      role: "Gerente de Vendas",
+      email: "joao.silva@exemplo.com",
+      phone: "+55 11 99999-8888",
+      hierarchyLevel: "Gerência",
+      type: "master",
+      status: "active",
+      createdAt: new Date('2023-08-10'),
+      updatedAt: new Date('2023-08-10')
+    },
+    {
+      id: "collab-2",
+      name: "Maria Santos",
+      role: "Analista de Marketing",
+      email: "maria.santos@exemplo.com",
+      phone: "+55 11 99999-7777",
+      hierarchyLevel: "Operacional",
+      type: "collaborator",
+      status: "active",
+      createdAt: new Date('2023-09-15'),
+      updatedAt: new Date('2023-09-15')
+    },
+    {
+      id: "collab-3",
+      name: "Carlos Oliveira",
+      role: "Desenvolvedor",
+      email: "carlos.oliveira@exemplo.com",
+      phone: "+55 11 99999-6666",
+      hierarchyLevel: "Técnico",
+      type: "developer",
+      status: "active",
+      createdAt: new Date('2023-10-20'),
+      updatedAt: new Date('2023-10-20')
+    },
+    {
+      id: "collab-4",
+      name: "Ana Pereira",
+      role: "CEO",
+      email: "ana.pereira@exemplo.com",
+      phone: "+55 11 99999-5555",
+      hierarchyLevel: "Direção",
+      type: "subscriber",
+      status: "active",
+      createdAt: new Date('2023-07-05'),
+      updatedAt: new Date('2023-07-05')
+    },
+    {
+      id: "collab-5",
+      name: "Roberto Almeida",
+      role: "Atendente",
+      email: "roberto.almeida@exemplo.com",
+      phone: "+55 11 99999-4444",
+      hierarchyLevel: "Operacional",
+      type: "collaborator",
+      status: "inactive",
+      createdAt: new Date('2023-11-12'),
+      updatedAt: new Date('2023-12-05')
+    }
+  ];
+};
+
+// Função para obter agentes
 export const getAgents = (): Agent[] => {
   return [
     {
       id: "agent-1",
       stageId: "stage-1",
       profile: {
-        name: "Assistente de Vendas",
-        role: "Vendedor",
-        goal: "Auxiliar no processo de vendas, qualificar leads e agendar demonstrações"
+        name: "Lead Qualifier",
+        role: "Agente de Qualificação",
+        goal: "Qualificar leads com base em critérios BANT"
       },
       workEnvironment: {
-        workflowTitle: "Workflow de Vendas",
+        workflowTitle: "Processo de Vendas",
         departmentTitle: "Comercial",
-        stageTitle: "Prospecção"
+        stageTitle: "Qualificação"
       },
       businessRules: {
-        rules: ["Não negociar preços", "Encaminhar casos complexos para gerente"],
-        conversationStyle: "Profissional e amigável"
+        rules: ["Verificar orçamento mínimo de R$ 10.000", "Confirmar poder de decisão", "Identificar prazo de compra"],
+        restrictions: ["Não negociar valores", "Não fazer promessas"],
+        conversationStyle: "Profissional"
       },
       expertise: {
-        knowledge: ["Produtos", "Preços", "Processos de vendas"],
-        skills: ["Persuasão", "Negociação", "Comunicação clara"]
+        knowledge: ["Produtos", "Soluções", "Mercado"],
+        skills: ["Análise BANT", "Comunicação", "Persuasão"],
+        examples: ["Como identificar decisores", "Como qualificar orçamento"],
+        tasks: ["Agendar reunião com qualificados", "Registrar informações no CRM"]
       },
-      ragDocuments: ["catalogo_produtos.pdf", "manual_vendas.pdf"],
-      tools: ["Chat", "Email", "Agenda"],
-      llmModel: "GPT-4",
+      ragDocuments: ["produtos.pdf", "precos.pdf"],
+      tools: ["Chat", "Email"],
+      llmModel: "gpt-4",
       status: "active",
-      createdAt: new Date("2023-10-10"),
-      updatedAt: new Date("2023-11-15")
+      createdAt: new Date('2023-10-15'),
+      updatedAt: new Date('2024-01-05')
     },
     {
       id: "agent-2",
-      stageId: "stage-6",
+      stageId: "stage-2",
       profile: {
-        name: "Assistente de Suporte",
-        role: "Atendente",
-        goal: "Resolver problemas de clientes e encaminhar casos complexos"
+        name: "Proposal Creator",
+        role: "Agente de Propostas",
+        goal: "Criar propostas personalizadas"
       },
       workEnvironment: {
-        workflowTitle: "Workflow de Atendimento",
-        departmentTitle: "Suporte",
-        stageTitle: "Aberto"
+        workflowTitle: "Processo de Vendas",
+        departmentTitle: "Comercial",
+        stageTitle: "Proposta"
       },
       businessRules: {
-        restrictions: ["Não conceder descontos", "Seguir protocolo de escalação"],
-        conversationStyle: "Empático e resolutivo"
+        rules: ["Aplicar descontos conforme tabela", "Incluir termos de serviço", "Estabelecer prazo de validade"],
+        restrictions: ["Limite de desconto de 15%", "Não alterar condições padrão"],
+        conversationStyle: "Formal"
       },
       expertise: {
-        knowledge: ["FAQ", "Problemas comuns", "Soluções técnicas"],
-        tasks: ["Responder dúvidas", "Resolver problemas técnicos"]
+        knowledge: ["Produtos", "Preços", "Condições comerciais"],
+        skills: ["Redação", "Cálculo de valores", "Customização"],
+        examples: ["Propostas anteriores bem-sucedidas"],
+        tasks: ["Enviar proposta", "Registrar data de envio", "Agendar follow-up"]
       },
-      tools: ["Chat", "Telefone", "Base de conhecimento"],
-      llmModel: "Claude",
+      ragDocuments: ["modelo_proposta.pdf", "tabela_precos.pdf"],
+      tools: ["Email", "PDF"],
+      llmModel: "gpt-4",
       status: "active",
-      createdAt: new Date("2023-09-20"),
-      updatedAt: new Date("2023-11-10")
+      createdAt: new Date('2023-11-10'),
+      updatedAt: new Date('2023-12-20')
     }
   ];
 };
 
-// Mock data for asset settings
+// Função para obter assets
 export const getAssets = (): Asset[] => {
   return [
     {
       id: "asset-1",
       dealId: "deal-1",
-      title: "Contrato Premium",
-      description: "Modelo de contrato para plano premium",
-      type: "Contrato",
-      status: "completed",
-      createdAt: new Date("2023-10-15"),
-      updatedAt: new Date("2023-11-01")
+      title: "Proposta Comercial - Empresa ABC",
+      description: "Proposta para implementação de sistema",
+      type: "Proposta",
+      amount: 25000,
+      status: "open",
+      startDate: new Date('2024-01-15'),
+      endDate: new Date('2024-02-15'),
+      files: ["proposta_abc.pdf", "anexo_tecnico.pdf"],
+      parameters: {
+        version: "1.2",
+        discount: "10%",
+        paymentTerms: "30/60/90 dias"
+      },
+      createdAt: new Date('2024-01-10'),
+      updatedAt: new Date('2024-01-10')
     },
     {
       id: "asset-2",
       dealId: "deal-2",
-      title: "Imóvel Comercial",
-      description: "Dados do imóvel comercial para locação",
-      type: "Imóvel",
-      amount: 450000,
-      status: "open",
-      files: ["planta_baixa.pdf", "fotos_imovel.zip"],
-      createdAt: new Date("2023-11-05"),
-      updatedAt: new Date("2023-11-10")
-    }
-  ];
-};
-
-// Mock data for templates
-export const getTemplates = (): Template[] => {
-  return [
-    {
-      id: "template-1",
-      type: "workflow",
-      name: "Workflow de Vendas Imobiliárias",
-      version: "1.2",
-      data: {
-        workflowTitle: "Vendas Imobiliárias",
-        stages: ["Prospecção", "Visita", "Proposta", "Contrato", "Fechamento"]
+      title: "Contrato de Serviço - Empresa XYZ",
+      description: "Contrato para prestação de serviços contínuos",
+      type: "Contrato",
+      amount: 5000,
+      status: "processing",
+      startDate: new Date('2024-01-01'),
+      endDate: new Date('2024-12-31'),
+      files: ["contrato_xyz.pdf", "anexo_sla.pdf"],
+      parameters: {
+        renewalType: "Automática",
+        servicePeriod: "12 meses",
+        supportLevel: "Premium"
       },
-      createdAt: new Date("2023-08-15"),
-      updatedAt: new Date("2023-10-20")
-    },
-    {
-      id: "template-2",
-      type: "agent",
-      name: "Agente de Vendas Automotivas",
-      version: "1.0",
-      data: {
-        profile: {
-          name: "Vendedor Auto",
-          role: "Especialista em Vendas de Veículos",
-          goal: "Conduzir o processo de venda de veículos"
-        },
-        expertise: {
-          knowledge: ["Modelos", "Especificações técnicas", "Financiamento"]
-        }
-      },
-      createdAt: new Date("2023-09-10"),
-      updatedAt: new Date("2023-10-25")
-    }
-  ];
-};
-
-// Mock data for integrations
-export const getIntegrations = (): Integration[] => {
-  return [
-    {
-      id: "integration-1",
-      name: "WhatsApp Business",
-      type: "message",
-      provider: "Meta",
-      credentials: { apiKey: "********", phoneNumber: "+5511999999999" },
-      isActive: true,
-      createdAt: new Date("2023-07-20"),
-      updatedAt: new Date("2023-10-15")
-    },
-    {
-      id: "integration-2",
-      name: "Stripe",
-      type: "payment",
-      provider: "Stripe",
-      credentials: { apiKey: "********", webhookSecret: "********" },
-      isActive: true,
-      createdAt: new Date("2023-08-05"),
-      updatedAt: new Date("2023-09-30")
-    },
-    {
-      id: "integration-3",
-      name: "OpenAI",
-      type: "llm",
-      provider: "OpenAI",
-      credentials: { apiKey: "********" },
-      isActive: true,
-      createdAt: new Date("2023-06-10"),
-      updatedAt: new Date("2023-10-01")
-    }
-  ];
-};
-
-// Mock data for collaborators
-export const getCollaborators = (): Collaborator[] => {
-  return [
-    {
-      id: "collab-1",
-      name: "Ana Silva",
-      role: "Gerente de Vendas",
-      email: "ana.silva@exemplo.com",
-      phone: "+5511999888777",
-      hierarchyLevel: "Gerência",
-      type: "collaborator",
-      status: "active",
-      createdAt: new Date("2023-05-15"),
-      updatedAt: new Date("2023-09-20")
-    },
-    {
-      id: "collab-2",
-      name: "Carlos Oliveira",
-      role: "Desenvolvedor",
-      email: "carlos.oliveira@exemplo.com",
-      hierarchyLevel: "Técnico",
-      type: "developer",
-      status: "active",
-      createdAt: new Date("2023-06-10"),
-      updatedAt: new Date("2023-08-15")
-    },
-    {
-      id: "collab-3",
-      name: "Maria Santos",
-      role: "Administradora",
-      email: "maria.santos@exemplo.com",
-      phone: "+5511999777666",
-      hierarchyLevel: "Diretoria",
-      type: "master",
-      status: "active",
-      createdAt: new Date("2023-04-20"),
-      updatedAt: new Date("2023-10-05")
+      createdAt: new Date('2023-12-20'),
+      updatedAt: new Date('2024-01-05')
     }
   ];
 };

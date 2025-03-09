@@ -10,17 +10,19 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Search, Filter, Edit, Trash, UserCog, Mail, Phone } from "lucide-react";
+import { Plus, Search, Filter, UserCog } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
-import { getCollaborators } from "../services/settingsService";
 import { Collaborator } from "@/pages/Workflows/models/WorkflowModels";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import CollaboratorConfigModal from "./modals/CollaboratorConfigModal";
+import { getCollaborators } from "../services/settingsService";
 
 const CollaboratorsSettings = () => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [collaborators, setCollaborators] = useState<Collaborator[]>(getCollaborators());
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentCollaborator, setCurrentCollaborator] = useState<Collaborator | null>(null);
 
   const filteredCollaborators = collaborators.filter((collaborator) => 
     collaborator.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -29,163 +31,163 @@ const CollaboratorsSettings = () => {
   );
 
   const handleAddCollaborator = () => {
-    toast({
-      title: "Adicionar Colaborador",
-      description: "Funcionalidade em desenvolvimento",
-    });
+    setCurrentCollaborator(null);
+    setIsModalOpen(true);
   };
 
   const handleEditCollaborator = (collaborator: Collaborator) => {
-    toast({
-      title: "Editar Colaborador",
-      description: `Editar colaborador: ${collaborator.name}`,
-    });
+    setCurrentCollaborator(collaborator);
+    setIsModalOpen(true);
   };
 
-  const handleDeleteCollaborator = (collaborator: Collaborator) => {
-    toast({
-      title: "Remover Colaborador",
-      description: `Remover colaborador: ${collaborator.name}`,
-      variant: "destructive",
-    });
-  };
-
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .slice(0, 2)
-      .join('')
-      .toUpperCase();
-  };
-
-  const getTypeColor = (type: Collaborator['type']) => {
-    switch (type) {
-      case 'subscriber':
-        return 'bg-blue-500';
-      case 'collaborator':
-        return 'bg-green-500';
-      case 'developer':
-        return 'bg-purple-500';
-      case 'master':
-        return 'bg-amber-500';
-      default:
-        return 'bg-gray-500';
+  const handleSaveCollaborator = (savedCollaborator: Collaborator) => {
+    if (currentCollaborator) {
+      // Editar colaborador existente
+      setCollaborators(collaborators.map(c => 
+        c.id === savedCollaborator.id ? savedCollaborator : c
+      ));
+      toast({
+        title: "Colaborador atualizado",
+        description: `${savedCollaborator.name} foi atualizado com sucesso.`,
+      });
+    } else {
+      // Adicionar novo colaborador
+      setCollaborators([...collaborators, savedCollaborator]);
+      toast({
+        title: "Colaborador adicionado",
+        description: `${savedCollaborator.name} foi adicionado com sucesso.`,
+      });
     }
+    setIsModalOpen(false);
   };
 
-  const getTypeLabel = (type: Collaborator['type']) => {
-    switch (type) {
+  const handleDeleteCollaborator = (id: string) => {
+    setCollaborators(collaborators.filter(c => c.id !== id));
+    toast({
+      title: "Colaborador removido",
+      description: "O colaborador foi removido com sucesso.",
+    });
+    setIsModalOpen(false);
+  };
+
+  const getRoleBadge = (role: string) => {
+    switch (role.toLowerCase()) {
       case 'subscriber':
+      case 'assinante':
         return <Badge className="bg-blue-500 hover:bg-blue-600">Assinante</Badge>;
       case 'collaborator':
+      case 'colaborador':
         return <Badge className="bg-green-500 hover:bg-green-600">Colaborador</Badge>;
       case 'developer':
+      case 'desenvolvedor':
         return <Badge className="bg-purple-500 hover:bg-purple-600">Desenvolvedor</Badge>;
       case 'master':
-        return <Badge className="bg-amber-500 hover:bg-amber-600">Master</Badge>;
+        return <Badge className="bg-red-500 hover:bg-red-600">Master</Badge>;
       default:
-        return null;
+        return <Badge>{role}</Badge>;
     }
   };
 
-  const getStatusBadge = (status: Collaborator['status']) => {
-    return status === 'active' 
-      ? <Badge className="bg-green-500 hover:bg-green-600">Ativo</Badge>
-      : <Badge className="bg-red-500 hover:bg-red-600">Inativo</Badge>;
+  const getStatusBadge = (status: string) => {
+    return status.toLowerCase() === 'active' || status.toLowerCase() === 'ativo' ? 
+      <Badge variant="outline" className="bg-green-100 text-green-800 hover:bg-green-200 border-green-200">Ativo</Badge> : 
+      <Badge variant="outline" className="bg-gray-100 text-gray-800 hover:bg-gray-200 border-gray-200">Inativo</Badge>;
   };
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <CardTitle>Colaboradores</CardTitle>
-            <CardDescription>
-              Gerencie membros da equipe e suas permissões
-            </CardDescription>
+    <>
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <CardTitle>Colaboradores</CardTitle>
+              <CardDescription>
+                Gerencie usuários e permissões de acesso
+              </CardDescription>
+            </div>
+            <Button onClick={handleAddCollaborator} className="flex-shrink-0">
+              <Plus className="h-4 w-4 mr-2" />
+              Adicionar Colaborador
+            </Button>
           </div>
-          <Button onClick={handleAddCollaborator} className="flex-shrink-0">
-            <Plus className="h-4 w-4 mr-2" />
-            Adicionar Colaborador
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-          <div className="relative w-full sm:w-96">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar colaboradores..."
-              className="pl-8"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div className="relative w-full sm:w-96">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar colaboradores..."
+                className="pl-8"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <Button variant="outline" size="icon" className="flex-shrink-0">
+              <Filter className="h-4 w-4" />
+            </Button>
           </div>
-          <Button variant="outline" size="icon" className="flex-shrink-0">
-            <Filter className="h-4 w-4" />
-          </Button>
-        </div>
 
-        <div className="space-y-4">
-          {filteredCollaborators.length > 0 ? (
-            filteredCollaborators.map((collaborator) => (
-              <Card key={collaborator.id} className="overflow-hidden">
-                <div className="p-4 flex items-center">
-                  <Avatar className={`h-12 w-12 mr-4 ${getTypeColor(collaborator.type)}`}>
-                    <AvatarFallback>{getInitials(collaborator.name)}</AvatarFallback>
-                  </Avatar>
-                  
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-medium">{collaborator.name}</h3>
-                      {getStatusBadge(collaborator.status)}
-                      {getTypeLabel(collaborator.type)}
-                    </div>
-                    
-                    <div className="text-sm text-muted-foreground">{collaborator.role}</div>
-                    
-                    <div className="flex items-center gap-4 mt-2">
-                      <div className="flex items-center text-xs text-muted-foreground">
-                        <Mail className="h-3 w-3 mr-1" />
+          <div className="border rounded-md">
+            <div className="grid grid-cols-12 gap-4 p-4 font-medium border-b">
+              <div className="col-span-4 md:col-span-3">Nome</div>
+              <div className="col-span-3 hidden md:block">E-mail</div>
+              <div className="col-span-3 md:col-span-2">Função</div>
+              <div className="col-span-3 md:col-span-2">Tipo</div>
+              <div className="col-span-2 hidden md:block">Status</div>
+              <div className="col-span-2 text-right">Ações</div>
+            </div>
+
+            <div className="divide-y">
+              {filteredCollaborators.length > 0 ? (
+                filteredCollaborators.map((collaborator) => (
+                  <div key={collaborator.id} className="grid grid-cols-12 gap-4 p-4 items-center">
+                    <div className="col-span-4 md:col-span-3">
+                      <div className="font-medium">{collaborator.name}</div>
+                      <div className="text-sm text-muted-foreground md:hidden">
                         {collaborator.email}
                       </div>
-                      {collaborator.phone && (
-                        <div className="flex items-center text-xs text-muted-foreground">
-                          <Phone className="h-3 w-3 mr-1" />
-                          {collaborator.phone}
-                        </div>
-                      )}
+                    </div>
+                    <div className="col-span-3 hidden md:block text-muted-foreground">
+                      {collaborator.email}
+                    </div>
+                    <div className="col-span-3 md:col-span-2 text-muted-foreground">
+                      {collaborator.role}
+                    </div>
+                    <div className="col-span-3 md:col-span-2">
+                      {getRoleBadge(collaborator.type)}
+                    </div>
+                    <div className="col-span-2 hidden md:block">
+                      {getStatusBadge(collaborator.status)}
+                    </div>
+                    <div className="col-span-2 flex justify-end">
+                      <Button 
+                        variant="ghost" 
+                        size="icon"
+                        onClick={() => handleEditCollaborator(collaborator)}
+                      >
+                        <UserCog className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <Button 
-                      variant="ghost" 
-                      size="icon"
-                      onClick={() => handleEditCollaborator(collaborator)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="icon"
-                      onClick={() => handleDeleteCollaborator(collaborator)}
-                    >
-                      <Trash className="h-4 w-4" />
-                    </Button>
-                  </div>
+                ))
+              ) : (
+                <div className="p-4 text-center text-muted-foreground">
+                  Nenhum colaborador encontrado
                 </div>
-              </Card>
-            ))
-          ) : (
-            <div className="p-4 text-center text-muted-foreground">
-              Nenhum colaborador encontrado
+              )}
             </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+          </div>
+        </CardContent>
+      </Card>
+
+      <CollaboratorConfigModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSaveCollaborator}
+        onDelete={handleDeleteCollaborator}
+        collaborator={currentCollaborator}
+      />
+    </>
   );
 };
 
