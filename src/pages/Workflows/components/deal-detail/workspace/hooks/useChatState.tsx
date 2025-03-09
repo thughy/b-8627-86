@@ -64,6 +64,7 @@ export const useChatState = (dealId: string) => {
     };
     
     setMessages(prev => [...prev, userMessage]);
+    setMessageText('');
     setAttachments([]);
     
     // Show typing indicator
