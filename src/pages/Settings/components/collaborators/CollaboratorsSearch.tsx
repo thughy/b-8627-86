@@ -31,4 +31,4 @@ const CollaboratorsSearch: React.FC<CollaboratorsSearchProps> = ({
   );
 };
 
-export default CollaboratorsSearch;
+export default React.memo(CollaboratorsSearch);

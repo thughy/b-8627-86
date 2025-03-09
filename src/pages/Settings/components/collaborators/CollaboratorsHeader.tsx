@@ -27,4 +27,4 @@ const CollaboratorsHeader: React.FC<CollaboratorsHeaderProps> = ({
   );
 };
 
-export default CollaboratorsHeader;
+export default React.memo(CollaboratorsHeader);
