@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Deal, Asset } from '@/pages/Workflows/models/WorkflowModels';
 import {
   Dialog,
@@ -7,7 +7,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -36,8 +35,6 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
   onCancelDeal,
   onCreateAsset
 }) => {
-  const [activeTab, setActiveTab] = useState('parameters');
-
   if (!deal) return null;
 
   const getStatusColor = (status: Deal['status']) => {
@@ -82,7 +79,7 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-4xl max-h-[90vh] p-0 overflow-hidden flex flex-col">
+      <DialogContent className="max-w-6xl max-h-[90vh] p-0 overflow-hidden flex flex-col">
         <DialogHeader className="p-6 pb-2">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl font-bold">{deal.title}</DialogTitle>
@@ -201,24 +198,26 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
           </div>
         </div>
 
-        <div className="flex-1 overflow-hidden">
-          <Tabs defaultValue="parameters" className="flex flex-col h-full" onValueChange={setActiveTab} value={activeTab}>
-            <TabsList className="mx-6 mb-2">
-              <TabsTrigger value="parameters">Parâmetros</TabsTrigger>
-              <TabsTrigger value="workspace">Workspace</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="parameters" className="flex-1 overflow-auto p-6 pt-0">
+        {/* Conteúdo principal em colunas */}
+        <div className="flex-1 overflow-hidden p-6 pt-0">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
+            {/* Coluna de Parâmetros */}
+            <div className="overflow-y-auto pr-2">
+              <h3 className="text-lg font-medium mb-3">Parâmetros</h3>
               <DealParametersTab deal={deal} onEditDeal={onEditDeal} />
-            </TabsContent>
+            </div>
             
-            <TabsContent value="workspace" className="flex-1 overflow-auto p-6 pt-0">
-              <DealWorkspaceTab 
-                deal={deal} 
-                onCreateAsset={onCreateAsset}
-              />
-            </TabsContent>
-          </Tabs>
+            {/* Coluna de Workspace */}
+            <div className="overflow-y-auto pl-2 border-l border-border">
+              <h3 className="text-lg font-medium mb-3 pl-4">Workspace</h3>
+              <div className="pl-4">
+                <DealWorkspaceTab 
+                  deal={deal} 
+                  onCreateAsset={onCreateAsset}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
