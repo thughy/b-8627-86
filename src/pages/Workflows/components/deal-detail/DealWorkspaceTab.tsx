@@ -29,13 +29,6 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
   const [activeTab, setActiveTab] = useState('chat');
   const [messages, setMessages] = useState<any[]>([]); // Just a placeholder until we implement hooks
 
-  // Simplified handler that will be replaced later
-  const handleSendMessage = (message: string) => {
-    console.log("Message sent:", message);
-    // This function is just a placeholder and doesn't actually add messages
-    // Will be replaced with the real implementation later
-  };
-
   // Example assets for this deal (in a real scenario, would be loaded from API)
   const assets: Asset[] = [
     {
@@ -108,7 +101,6 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
             <ChatSection 
               dealId={deal.id} 
               messages={messages} 
-              onSendMessage={handleSendMessage}
             />
           </TabsContent>
           

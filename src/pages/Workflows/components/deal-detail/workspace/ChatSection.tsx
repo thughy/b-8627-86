@@ -16,10 +16,9 @@ interface Message {
 interface ChatSectionProps {
   dealId: string;
   messages: Message[];
-  onSendMessage: (message: string) => void;
 }
 
-const ChatSection: React.FC<ChatSectionProps> = ({ dealId, messages, onSendMessage }) => {
+const ChatSection: React.FC<ChatSectionProps> = ({ dealId, messages }) => {
   const [messageText, setMessageText] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
@@ -33,7 +32,8 @@ const ChatSection: React.FC<ChatSectionProps> = ({ dealId, messages, onSendMessa
   const handleSendMessage = () => {
     if (messageText.trim() === '') return;
     
-    onSendMessage(messageText);
+    console.log("Message sent:", messageText);
+    // In the future, this will use a proper hook or API call
     setMessageText('');
   };
 
