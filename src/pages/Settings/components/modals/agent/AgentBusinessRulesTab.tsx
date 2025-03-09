@@ -25,14 +25,30 @@ const CONVERSATION_STYLES: ConversationStyle[] = [
 ];
 
 const AgentBusinessRulesTab = ({ businessRules, onBusinessRulesChange }: AgentBusinessRulesTabProps) => {
+  // Convert string arrays to string and back
+  const handleRulesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    onBusinessRulesChange("rules", e.target.value);
+  };
+
+  const handleRestrictionsChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    onBusinessRulesChange("restrictions", e.target.value);
+  };
+
+  // Get textual representation of rules for display
+  const getRulesText = (rules: string | string[]) => {
+    if (typeof rules === 'string') return rules;
+    if (Array.isArray(rules)) return rules.join('\n');
+    return '';
+  };
+
   return (
     <div className="space-y-4">
       <div className="grid gap-2">
         <Label htmlFor="rules">Regras de Negócio</Label>
         <Textarea 
           id="rules"
-          value={businessRules?.rules?.join('\n') || ""}
-          onChange={(e) => onBusinessRulesChange("rules", e.target.value)}
+          value={getRulesText(businessRules?.rules || "")}
+          onChange={handleRulesChange}
           placeholder="Uma regra por linha"
           rows={3}
         />
@@ -42,8 +58,8 @@ const AgentBusinessRulesTab = ({ businessRules, onBusinessRulesChange }: AgentBu
         <Label htmlFor="restrictions">Restrições</Label>
         <Textarea 
           id="restrictions"
-          value={businessRules?.restrictions?.join('\n') || ""}
-          onChange={(e) => onBusinessRulesChange("restrictions", e.target.value)}
+          value={getRulesText(businessRules?.restrictions || "")}
+          onChange={handleRestrictionsChange}
           placeholder="Uma restrição por linha"
           rows={3}
         />

@@ -34,7 +34,7 @@ const AssetList = ({
         return <Badge className="bg-yellow-500 hover:bg-yellow-600">Processando</Badge>;
       case 'completed':
         return <Badge className="bg-green-500 hover:bg-green-600">Concluído</Badge>;
-      case 'canceled':
+      case 'cancelled':
         return <Badge className="bg-red-500 hover:bg-red-600">Cancelado</Badge>;
       default:
         return null;

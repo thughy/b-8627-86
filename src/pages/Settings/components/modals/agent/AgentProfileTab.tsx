@@ -14,31 +14,31 @@ const AgentProfileTab = ({ profile, onProfileChange }: AgentProfileTabProps) => 
   return (
     <div className="space-y-4">
       <div className="grid gap-2">
-        <Label htmlFor="name">Nome do Agente</Label>
+        <Label htmlFor="agentName">Nome do Agente</Label>
         <Input 
-          id="name"
-          value={profile?.name || ""}
-          onChange={(e) => onProfileChange("name", e.target.value)}
+          id="agentName"
+          value={profile?.agentName || ""}
+          onChange={(e) => onProfileChange("agentName", e.target.value)}
           placeholder="Ex: Assistente de Vendas"
         />
       </div>
       
       <div className="grid gap-2">
-        <Label htmlFor="role">Função</Label>
+        <Label htmlFor="agentRole">Função</Label>
         <Input 
-          id="role"
-          value={profile?.role || ""}
-          onChange={(e) => onProfileChange("role", e.target.value)}
+          id="agentRole"
+          value={profile?.agentRole || ""}
+          onChange={(e) => onProfileChange("agentRole", e.target.value)}
           placeholder="Ex: Vendedor, Atendente, Consultor"
         />
       </div>
 
       <div className="grid gap-2">
-        <Label htmlFor="goal">Objetivo</Label>
+        <Label htmlFor="agentGoal">Objetivo</Label>
         <Textarea 
-          id="goal"
-          value={profile?.goal || ""}
-          onChange={(e) => onProfileChange("goal", e.target.value)}
+          id="agentGoal"
+          value={profile?.agentGoal || ""}
+          onChange={(e) => onProfileChange("agentGoal", e.target.value)}
           placeholder="Descreva o objetivo principal deste agente"
           rows={4}
         />

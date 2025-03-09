@@ -53,6 +53,30 @@ const AgentTabs = ({
     { id: "stage4", pipelineId: "pipe2", title: "Resolução", order: 2 }
   ];
 
+  // Ensure default values for nested objects
+  const profile = formData.profile || {
+    agentName: "",
+    agentRole: "",
+    agentGoal: ""
+  };
+
+  const workEnvironment = formData.workEnvironment || {};
+
+  const businessRules = formData.businessRules || {
+    rules: "",
+    restrictions: "",
+    conversationStyle: "professional" as const
+  };
+
+  const expertise = formData.expertise || {
+    knowledge: "",
+    skills: "",
+    examples: "",
+    tasks: ""
+  };
+
+  const rag = formData.rag || [];
+
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-5">
       <TabsList className="grid w-full grid-cols-7">
@@ -67,14 +91,14 @@ const AgentTabs = ({
 
       <TabsContent value="profile" className="space-y-4 mt-4">
         <AgentProfileTab 
-          profile={formData.profile || { name: "", role: "", goal: "" }} 
+          profile={profile} 
           onProfileChange={handleProfileChange} 
         />
       </TabsContent>
 
       <TabsContent value="environment" className="space-y-4 mt-4">
         <AgentEnvironmentTab 
-          workEnvironment={formData.workEnvironment || {}} 
+          workEnvironment={workEnvironment} 
           onWorkEnvironmentChange={handleWorkEnvironmentChange}
           departments={departments}
           pipelines={pipelines}
@@ -84,36 +108,36 @@ const AgentTabs = ({
 
       <TabsContent value="rules" className="space-y-4 mt-4">
         <AgentBusinessRulesTab 
-          businessRules={formData.businessRules || { rules: [], restrictions: [], conversationStyle: "professional" }} 
+          businessRules={businessRules} 
           onBusinessRulesChange={handleBusinessRulesChange} 
         />
       </TabsContent>
 
       <TabsContent value="expertise" className="space-y-4 mt-4">
         <AgentExpertiseTab 
-          expertise={formData.expertise || { knowledge: [], skills: [], examples: [], tasks: [] }} 
+          expertise={expertise} 
           onExpertiseChange={handleExpertiseChange} 
         />
       </TabsContent>
 
       <TabsContent value="rag" className="space-y-4 mt-4">
         <AgentRagTab 
-          ragDocuments={formData.ragDocuments || []} 
+          ragDocuments={rag} 
           onRagDocumentsChange={handleRagChange} 
         />
       </TabsContent>
 
       <TabsContent value="tools" className="space-y-4 mt-4">
         <AgentToolsTab 
-          tools={formData.tools || []} 
+          tools={formData.tools || {}} 
           onToolToggle={handleToolsChange} 
         />
       </TabsContent>
 
       <TabsContent value="configuration" className="space-y-4 mt-4">
         <AgentConfigTab 
-          llmModel={formData.llmModel}
-          status={formData.status}
+          llmModel={formData.llmModel || ""}
+          status={formData.status || "active"}
           onLLMModelChange={(value) => handleProfileChange("llmModel", value)}
           onStatusChange={handleStatusChange}
         />

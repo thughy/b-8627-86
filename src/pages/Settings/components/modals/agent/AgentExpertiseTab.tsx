@@ -10,14 +10,26 @@ interface AgentExpertiseTabProps {
 }
 
 const AgentExpertiseTab = ({ expertise, onExpertiseChange }: AgentExpertiseTabProps) => {
+  // Helper to get textual representation of fields
+  const getFieldText = (field: string | string[]) => {
+    if (typeof field === 'string') return field;
+    if (Array.isArray(field)) return field.join('\n');
+    return '';
+  };
+
+  // Handle text area changes
+  const handleTextChange = (field: string, value: string) => {
+    onExpertiseChange(field, value);
+  };
+
   return (
     <div className="space-y-4">
       <div className="grid gap-2">
         <Label htmlFor="knowledge">Conhecimentos</Label>
         <Textarea 
           id="knowledge"
-          value={expertise?.knowledge?.join('\n') || ""}
-          onChange={(e) => onExpertiseChange("knowledge", e.target.value)}
+          value={getFieldText(expertise?.knowledge || "")}
+          onChange={(e) => handleTextChange("knowledge", e.target.value)}
           placeholder="Um conhecimento por linha"
           rows={3}
         />
@@ -27,8 +39,8 @@ const AgentExpertiseTab = ({ expertise, onExpertiseChange }: AgentExpertiseTabPr
         <Label htmlFor="skills">Habilidades</Label>
         <Textarea 
           id="skills"
-          value={expertise?.skills?.join('\n') || ""}
-          onChange={(e) => onExpertiseChange("skills", e.target.value)}
+          value={getFieldText(expertise?.skills || "")}
+          onChange={(e) => handleTextChange("skills", e.target.value)}
           placeholder="Uma habilidade por linha"
           rows={3}
         />
@@ -38,8 +50,8 @@ const AgentExpertiseTab = ({ expertise, onExpertiseChange }: AgentExpertiseTabPr
         <Label htmlFor="examples">Exemplos</Label>
         <Textarea 
           id="examples"
-          value={expertise?.examples?.join('\n') || ""}
-          onChange={(e) => onExpertiseChange("examples", e.target.value)}
+          value={getFieldText(expertise?.examples || "")}
+          onChange={(e) => handleTextChange("examples", e.target.value)}
           placeholder="Um exemplo por linha"
           rows={3}
         />
@@ -49,8 +61,8 @@ const AgentExpertiseTab = ({ expertise, onExpertiseChange }: AgentExpertiseTabPr
         <Label htmlFor="tasks">Tarefas</Label>
         <Textarea 
           id="tasks"
-          value={expertise?.tasks?.join('\n') || ""}
-          onChange={(e) => onExpertiseChange("tasks", e.target.value)}
+          value={getFieldText(expertise?.tasks || "")}
+          onChange={(e) => handleTextChange("tasks", e.target.value)}
           placeholder="Uma tarefa por linha"
           rows={3}
         />

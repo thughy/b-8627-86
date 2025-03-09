@@ -38,12 +38,12 @@ const AgentList = ({
     <div className="space-y-4">
       <div className="flex items-center space-x-2">
         <Input
-          value={newAgent.profile?.name || ""}
+          value={newAgent.profile?.agentName || ""}
           onChange={(e) => setNewAgent(prev => ({
             ...prev,
             profile: {
               ...prev.profile!,
-              name: e.target.value
+              agentName: e.target.value
             }
           }))}
           placeholder="Nome do novo agente"
@@ -73,7 +73,7 @@ const AgentList = ({
                     agent.status === 'active' ? 'bg-green-500' :
                     agent.status === 'paused' ? 'bg-yellow-500' : 'bg-red-500'
                   }`} />
-                  <span>{agent.profile.name}</span>
+                  <span>{agent.profile.agentName}</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <Button 

@@ -63,8 +63,8 @@ const AgentList = ({ agents, onEditAgent, onDeleteAgent, onEdit, onDelete }: Age
           agents.map((agent) => (
             <div key={agent.id} className="grid grid-cols-6 gap-4 p-4 items-center">
               <div className="col-span-2">
-                <div className="font-medium">{agent.profile.name}</div>
-                <div className="text-sm text-muted-foreground">{agent.profile.role}</div>
+                <div className="font-medium">{agent.profile.agentName}</div>
+                <div className="text-sm text-muted-foreground">{agent.profile.agentRole}</div>
               </div>
               <div className="col-span-2 hidden md:block">
                 <div className="text-sm">

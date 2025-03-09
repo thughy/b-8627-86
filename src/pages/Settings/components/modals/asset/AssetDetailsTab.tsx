@@ -2,88 +2,63 @@
 import React from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Asset } from "@/pages/Workflows/models/WorkflowModels";
 
 interface AssetDetailsTabProps {
-  formData: Partial<Asset>;
-  onChange: (key: string, value: any) => void;
+  asset: Partial<Asset>;
+  onAssetChange: (field: string, value: any) => void;
 }
 
-const AssetDetailsTab = ({ formData, onChange }: AssetDetailsTabProps) => {
-  const handleStatusChange = (status: 'open' | 'processing' | 'completed' | 'canceled') => {
-    onChange("status", status);
-  };
-
+const AssetDetailsTab: React.FC<AssetDetailsTabProps> = ({ asset, onAssetChange }) => {
   return (
     <div className="space-y-4">
       <div className="grid gap-2">
-        <Label>Status</Label>
-        <div className="grid grid-cols-2 gap-2 md:flex md:space-x-2">
-          <Button 
-            type="button" 
-            variant={formData.status === 'open' ? "default" : "outline"}
-            onClick={() => handleStatusChange('open')}
-            className="flex-1"
-          >
-            Aberto
-          </Button>
-          <Button 
-            type="button" 
-            variant={formData.status === 'processing' ? "default" : "outline"}
-            onClick={() => handleStatusChange('processing')}
-            className="flex-1"
-          >
-            Processando
-          </Button>
-          <Button 
-            type="button" 
-            variant={formData.status === 'completed' ? "default" : "outline"}
-            onClick={() => handleStatusChange('completed')}
-            className="flex-1"
-          >
-            Concluído
-          </Button>
-          <Button 
-            type="button" 
-            variant={formData.status === 'canceled' ? "default" : "outline"}
-            onClick={() => handleStatusChange('canceled')}
-            className="flex-1"
-          >
-            Cancelado
-          </Button>
-        </div>
+        <Label htmlFor="status">Status</Label>
+        <Select 
+          value={asset.status || "open"} 
+          onValueChange={(value) => onAssetChange("status", value)}
+        >
+          <SelectTrigger id="status">
+            <SelectValue placeholder="Selecione o status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="open">Aberto</SelectItem>
+            <SelectItem value="processing">Processando</SelectItem>
+            <SelectItem value="completed">Concluído</SelectItem>
+            <SelectItem value="cancelled">Cancelado</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="grid gap-2">
         <Label htmlFor="amount">Valor</Label>
-        <Input 
+        <Input
           id="amount"
           type="number"
+          value={asset.amount || ""}
+          onChange={(e) => onAssetChange("amount", parseFloat(e.target.value))}
           placeholder="Valor do asset"
-          value={formData.amount || ""}
-          onChange={(e) => onChange("amount", parseFloat(e.target.value))}
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="grid gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
           <Label htmlFor="startDate">Data de Início</Label>
-          <Input 
-            id="startDate"
-            type="date"
-            value={formData.startDate ? new Date(formData.startDate).toISOString().split('T')[0] : ""}
-            onChange={(e) => onChange("startDate", new Date(e.target.value))}
+          <DatePicker 
+            date={asset.startDate} 
+            onSelect={(date) => onAssetChange("startDate", date)} 
+            placeholder="Selecione a data de início"
           />
         </div>
-        
-        <div className="grid gap-2">
+
+        <div className="space-y-2">
           <Label htmlFor="endDate">Data de Conclusão</Label>
-          <Input 
-            id="endDate"
-            type="date"
-            value={formData.endDate ? new Date(formData.endDate).toISOString().split('T')[0] : ""}
-            onChange={(e) => onChange("endDate", new Date(e.target.value))}
+          <DatePicker 
+            date={asset.endDate} 
+            onSelect={(date) => onAssetChange("endDate", date)} 
+            placeholder="Selecione a data de conclusão"
           />
         </div>
       </div>

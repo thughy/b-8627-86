@@ -15,6 +15,7 @@ export interface Department {
   id: string;
   title: string;
   description: string;
+  color?: string; // Adding color property
 }
 
 // Define types for pipelines
@@ -31,6 +32,7 @@ export interface Stage {
   id: string;
   pipelineId: string;
   title: string;
+  description?: string; // Adding description property
   order: number;
 }
 
@@ -41,6 +43,7 @@ export interface Deal {
   description?: string;
   stageId: string;
   status: 'open' | 'won' | 'lost' | 'completed';
+  type?: string; // Adding type property
   amount?: number;
   startDate?: Date;
   endDate?: Date;
@@ -57,7 +60,7 @@ export interface Asset {
   description?: string;
   type: string;
   amount?: number;
-  status: 'open' | 'processing' | 'completed' | 'cancelled';
+  status: 'open' | 'processing' | 'completed' | 'cancelled'; // Fixed spelling ('cancelled' instead of 'canceled')
   startDate?: Date;
   endDate?: Date;
   workEnvironment?: {
@@ -122,7 +125,34 @@ export interface Agent {
     chat?: boolean;
     webSearch?: boolean;
   };
+  llmModel?: string; // Adding llmModel property
   status: 'active' | 'paused' | 'blocked';
   createdAt: Date;
   updatedAt: Date;
+}
+
+// Add missing interface for Collaborator
+export interface Collaborator {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  type: string;
+  status: string;
+  phone?: string;
+  hierarchyLevel?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+// Add missing interface for Integration
+export interface Integration {
+  id: string;
+  name: string;
+  type: string;
+  provider: string;
+  status: string;
+  config: Record<string, any>;
+  createdAt: Date;
+  updatedAt?: Date;
 }

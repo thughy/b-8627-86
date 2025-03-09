@@ -15,7 +15,7 @@ export const useStageLogic = (
   setExpandedStages: React.Dispatch<React.SetStateAction<Record<string, boolean>>>
 ) => {
   const { toast } = useToast();
-  const [newStage, setNewStage] = useState<Partial<Stage>>({ title: "", description: "", order: 0 });
+  const [newStage, setNewStage] = useState<Partial<Stage>>({ title: "" });
 
   const toggleStageExpand = (stageId: string) => {
     setExpandedStages(prev => ({
@@ -49,7 +49,7 @@ export const useStageLogic = (
 
     setStages(prev => [...prev, stage]);
     setSelectedStage(stage);
-    setNewStage({ title: "", description: "", order: 0 });
+    setNewStage({ title: "" });
     
     setExpandedStages(prev => ({
       ...prev,

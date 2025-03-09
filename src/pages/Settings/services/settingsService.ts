@@ -1,5 +1,5 @@
 
-import { Template } from "@/pages/Workflows/models/WorkflowModels";
+import { Template, Asset, Collaborator, Integration, Workflow } from "@/pages/Workflows/models/WorkflowModels";
 
 // Mock data for templates
 const mockTemplates: Template[] = [
@@ -123,6 +123,142 @@ const mockTemplates: Template[] = [
   }
 ];
 
+// Mock data for assets
+const mockAssets: Asset[] = [
+  {
+    id: "asset-1",
+    dealId: "deal-1",
+    title: "Proposta Comercial",
+    description: "Proposta para cliente XYZ",
+    type: "proposal",
+    status: "open",
+    amount: 5000,
+    workEnvironment: {
+      workflowTitle: "Workflow Comercial",
+      departmentTitle: "Vendas",
+      stageTitle: "Proposta"
+    },
+    createdAt: new Date(2023, 10, 15),
+    updatedAt: new Date(2023, 10, 15)
+  },
+  {
+    id: "asset-2",
+    dealId: "deal-2",
+    title: "Contrato de Serviço",
+    description: "Contrato para cliente ABC",
+    type: "contract",
+    status: "completed",
+    amount: 10000,
+    workEnvironment: {
+      workflowTitle: "Workflow Comercial",
+      departmentTitle: "Vendas",
+      stageTitle: "Fechamento"
+    },
+    createdAt: new Date(2023, 11, 5),
+    updatedAt: new Date(2023, 11, 5)
+  }
+];
+
+// Mock data for collaborators
+const mockCollaborators: Collaborator[] = [
+  {
+    id: "collab-1",
+    name: "João Silva",
+    email: "joao@exemplo.com",
+    role: "Gerente de Vendas",
+    type: "collaborator",
+    status: "active",
+    phone: "(11) 98765-4321",
+    hierarchyLevel: "Gerência",
+    createdAt: new Date(2023, 9, 10),
+    updatedAt: new Date(2023, 9, 10)
+  },
+  {
+    id: "collab-2",
+    name: "Maria Santos",
+    email: "maria@exemplo.com",
+    role: "Analista de Marketing",
+    type: "collaborator",
+    status: "active",
+    phone: "(11) 91234-5678",
+    hierarchyLevel: "Operacional",
+    createdAt: new Date(2023, 10, 5),
+    updatedAt: new Date(2023, 10, 5)
+  },
+  {
+    id: "collab-3",
+    name: "Carlos Oliveira",
+    email: "carlos@exemplo.com",
+    role: "Desenvolvedor",
+    type: "developer",
+    status: "pending",
+    createdAt: new Date(2023, 11, 15),
+    updatedAt: new Date(2023, 11, 15)
+  }
+];
+
+// Mock data for integrations
+const mockIntegrations: Integration[] = [
+  {
+    id: "integration-1",
+    name: "WhatsApp Business",
+    type: "messages",
+    provider: "Meta",
+    status: "active",
+    config: {
+      apiKey: "xxxxx",
+      phoneNumber: "+5511999999999"
+    },
+    createdAt: new Date(2023, 10, 1)
+  },
+  {
+    id: "integration-2",
+    name: "Stripe Payments",
+    type: "payments",
+    provider: "Stripe",
+    status: "active",
+    config: {
+      apiKey: "sk_test_xxxxx",
+      webhookUrl: "https://api.example.com/webhooks/stripe"
+    },
+    createdAt: new Date(2023, 11, 10)
+  },
+  {
+    id: "integration-3",
+    name: "Gmail",
+    type: "email",
+    provider: "Google",
+    status: "inactive",
+    config: {
+      clientId: "xxxxx.apps.googleusercontent.com",
+      clientSecret: "xxxxx"
+    },
+    createdAt: new Date(2023, 9, 15)
+  }
+];
+
+// Mock data for workflows
+const mockWorkflows: Workflow[] = [
+  {
+    id: "workflow-1",
+    title: "Workflow Comercial",
+    description: "Processo de vendas completo",
+    status: "active",
+    departmentId: "dept-1",
+    createdAt: new Date(2023, 10, 1),
+    updatedAt: new Date(2023, 10, 1)
+  },
+  {
+    id: "workflow-2",
+    title: "Workflow de Marketing",
+    description: "Processo de campanhas de marketing",
+    status: "draft",
+    departmentId: "dept-2",
+    createdAt: new Date(2023, 11, 5),
+    updatedAt: new Date(2023, 11, 5)
+  }
+];
+
 // Function to get all templates
 export const getTemplates = (): Template[] => {
   return mockTemplates;
@@ -136,6 +272,26 @@ export const getTemplatesByType = (type: Template['type']): Template[] => {
 // Function to get a template by ID
 export const getTemplateById = (id: string): Template | undefined => {
   return mockTemplates.find(template => template.id === id);
+};
+
+// Function to get all assets
+export const getAssets = (): Asset[] => {
+  return mockAssets;
+};
+
+// Function to get all collaborators
+export const getCollaborators = (): Collaborator[] => {
+  return mockCollaborators;
+};
+
+// Function to get all integrations
+export const getIntegrations = (): Integration[] => {
+  return mockIntegrations;
+};
+
+// Function to get all workflows
+export const getWorkflows = (): Workflow[] => {
+  return mockWorkflows;
 };
 
 // Function to install a template

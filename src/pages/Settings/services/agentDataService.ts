@@ -6,9 +6,9 @@ export const getMockAgents = (): Agent[] => [
     id: "agent1",
     stageId: "stage1",
     profile: {
-      name: "Assistente de Vendas",
-      role: "Vendedor",
-      goal: "Auxiliar clientes a encontrar o produto ideal."
+      agentName: "Assistente de Vendas",
+      agentRole: "Vendedor",
+      agentGoal: "Auxiliar clientes a encontrar o produto ideal."
     },
     workEnvironment: {
       workflowTitle: "Workflow de Vendas",
@@ -19,18 +19,22 @@ export const getMockAgents = (): Agent[] => [
       stageDescription: "Etapa de qualificação de potenciais clientes"
     },
     businessRules: {
-      rules: ["Sempre ser educado", "Nunca falar mal da concorrência"],
-      restrictions: ["Não oferecer descontos sem aprovação"],
+      rules: "Sempre ser educado\nNunca falar mal da concorrência",
+      restrictions: "Não oferecer descontos sem aprovação",
       conversationStyle: "professional"
     },
     expertise: {
-      knowledge: ["Produtos da empresa", "Técnicas de vendas"],
-      skills: ["Comunicação efetiva", "Negociação"],
-      examples: ["Como lidar com objeções do cliente"],
-      tasks: ["Qualificação de leads", "Agendamento de demonstrações"]
+      knowledge: "Produtos da empresa\nTécnicas de vendas",
+      skills: "Comunicação efetiva\nNegociação",
+      examples: "Como lidar com objeções do cliente",
+      tasks: "Qualificação de leads\nAgendamento de demonstrações"
     },
-    ragDocuments: ["catalogo_produtos.pdf", "politica_precos.pdf"],
-    tools: ["chat", "email", "calendar"],
+    rag: ["catalogo_produtos.pdf", "politica_precos.pdf"],
+    tools: {
+      chat: true,
+      email: true,
+      calendar: true
+    },
     llmModel: "GPT-4",
     status: "active",
     createdAt: new Date("2023-01-15"),
@@ -40,9 +44,9 @@ export const getMockAgents = (): Agent[] => [
     id: "agent2",
     stageId: "stage2",
     profile: {
-      name: "Assistente de Suporte",
-      role: "Atendente",
-      goal: "Resolver problemas técnicos dos clientes."
+      agentName: "Assistente de Suporte",
+      agentRole: "Atendente",
+      agentGoal: "Resolver problemas técnicos dos clientes."
     },
     workEnvironment: {
       workflowTitle: "Workflow de Suporte",
@@ -53,18 +57,22 @@ export const getMockAgents = (): Agent[] => [
       stageDescription: "Primeira interação com o cliente"
     },
     businessRules: {
-      rules: ["Resolver problemas em até 24h", "Seguir o script de atendimento"],
-      restrictions: ["Não culpar outros departamentos por falhas"],
+      rules: "Resolver problemas em até 24h\nSeguir o script de atendimento",
+      restrictions: "Não culpar outros departamentos por falhas",
       conversationStyle: "friendly"
     },
     expertise: {
-      knowledge: ["Produtos da empresa", "Soluções para problemas comuns"],
-      skills: ["Comunicação técnica", "Empatia"],
-      examples: ["Como resolver problemas de conexão"],
-      tasks: ["Registro de tickets", "Escalonamento de problemas"]
+      knowledge: "Produtos da empresa\nSoluções para problemas comuns",
+      skills: "Comunicação técnica\nEmpatia",
+      examples: "Como resolver problemas de conexão",
+      tasks: "Registro de tickets\nEscalonamento de problemas"
     },
-    ragDocuments: ["manual_tecnico.pdf", "procedimentos_suporte.pdf"],
-    tools: ["chat", "email", "call"],
+    rag: ["manual_tecnico.pdf", "procedimentos_suporte.pdf"],
+    tools: {
+      chat: true,
+      email: true,
+      telephony: true
+    },
     llmModel: "GPT-3.5",
     status: "active",
     createdAt: new Date("2023-02-10"),

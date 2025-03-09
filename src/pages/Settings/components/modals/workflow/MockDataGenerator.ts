@@ -63,16 +63,26 @@ export const getDemoData = (workflowId: string) => {
       id: "agent-401",
       stageId: "stage-301",
       profile: {
-        name: "Agente de Prospecção",
-        role: "Vendedor",
-        goal: "Encontrar novos leads qualificados"
+        agentName: "Agente de Prospecção",
+        agentRole: "Vendedor",
+        agentGoal: "Encontrar novos leads qualificados"
       },
       workEnvironment: {
         workflowTitle: "Processo de Vendas B2B",
         stageTitle: "Prospecção"
       },
-      businessRules: {},
-      expertise: {},
+      businessRules: {
+        rules: "Sempre ser cordial",
+        restrictions: "Não oferecer descontos",
+        conversationStyle: "professional"
+      },
+      expertise: {
+        knowledge: "Produtos e serviços",
+        skills: "Comunicação efetiva",
+        examples: "Exemplos de abordagem",
+        tasks: "Qualificação de leads"
+      },
+      tools: {},
       status: "active",
       createdAt: new Date(),
       updatedAt: new Date()
