@@ -182,6 +182,10 @@ export const useWorkflowConfig = (
     handleDeleteAsset: assetLogic.handleDeleteAsset,
     // Form logic
     handleChange,
-    handleStatusChange
+    handleStatusChange,
+    // Fix for the missing properties
+    expandedDepartments,
+    expandedPipelines,
+    expandedStages
   };
 };
