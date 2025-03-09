@@ -18,7 +18,7 @@ const AssetParamsTab = ({ formData, onChange }: AssetParamsTabProps) => {
             typeof value === 'boolean' ? 'switch' : 
             value instanceof Date ? 'date' : 
             Array.isArray(value) ? 'dropdown' :
-            /^https?:\/\//.test(String(value)) ? 'url' : 'text',
+            typeof value === 'object' && value !== null ? 'file' : 'text',
       value
     }))
   );
@@ -63,27 +63,15 @@ const AssetParamsTab = ({ formData, onChange }: AssetParamsTabProps) => {
     updateParamsInAsset(updatedParams);
   };
 
-  const handleParamChange = (index: number, key: string, value: any) => {
+  const handleUpdateParameter = (index: number, updatedParameter: Parameter) => {
     const updatedParams = [...parameters];
-    
-    if (key === "type") {
-      updatedParams[index] = {
-        ...updatedParams[index],
-        type: value as ParameterType,
-        value: getDefaultValueForType(value as ParameterType)
-      };
-    } else {
-      updatedParams[index] = {
-        ...updatedParams[index],
-        [key]: value
-      };
-    }
+    updatedParams[index] = updatedParameter;
     
     setParameters(updatedParams);
     updateParamsInAsset(updatedParams);
   };
 
-  const handleRemoveParameter = (index: number) => {
+  const handleDeleteParameter = (index: number) => {
     const updatedParams = parameters.filter((_, idx) => idx !== index);
     setParameters(updatedParams);
     updateParamsInAsset(updatedParams);
@@ -104,13 +92,12 @@ const AssetParamsTab = ({ formData, onChange }: AssetParamsTabProps) => {
       
       <div className="space-y-4">
         {parameters.length > 0 ? (
-          parameters.map((param, index) => (
+          parameters.map((parameter, index) => (
             <ParameterItem
               key={index}
-              param={param}
-              index={index}
-              onParamChange={handleParamChange}
-              onRemoveParameter={handleRemoveParameter}
+              parameter={parameter}
+              onDelete={() => handleDeleteParameter(index)}
+              onUpdate={(updatedParam) => handleUpdateParameter(index, updatedParam)}
             />
           ))
         ) : (
