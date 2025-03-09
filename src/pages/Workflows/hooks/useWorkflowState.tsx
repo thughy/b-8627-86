@@ -41,6 +41,41 @@ export const useWorkflowState = () => {
     });
   };
 
+  const handleEditDeal = (deal: Deal) => {
+    console.log('Editing deal:', deal);
+    toast({
+      title: "Editar negócio",
+      description: "Funcionalidade em desenvolvimento.",
+    });
+  };
+
+  const handleDeleteDeal = (dealId: string) => {
+    console.log('Deleting deal:', dealId);
+    // Aqui você poderia implementar a lógica para excluir o negócio
+    setDeals(deals.filter(deal => deal.id !== dealId));
+    setIsDealModalOpen(false);
+    
+    toast({
+      title: "Negócio excluído",
+      description: "O negócio foi excluído com sucesso.",
+    });
+  };
+
+  const handleCancelDeal = (dealId: string) => {
+    console.log('Canceling deal:', dealId);
+    // Alterar o status do deal para cancelled ou similar
+    setDeals(deals.map(deal => 
+      deal.id === dealId 
+        ? { ...deal, status: 'lost', reasonForLoss: 'Cancelado pelo usuário' } 
+        : deal
+    ));
+    
+    toast({
+      title: "Negócio cancelado",
+      description: "O negócio foi cancelado com sucesso.",
+    });
+  };
+
   const handleDragEnd = (result: DropResult) => {
     const { source, destination, draggableId } = result;
     
@@ -104,6 +139,9 @@ export const useWorkflowState = () => {
     setSelectedPipeline,
     handleDealClick,
     handleCreateAsset,
+    handleEditDeal,
+    handleDeleteDeal,
+    handleCancelDeal,
     handleDragEnd,
     handleCreateDeal
   };
