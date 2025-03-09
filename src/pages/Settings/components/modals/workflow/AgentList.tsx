@@ -49,13 +49,26 @@ const AgentList = ({
 
     const agentToAdd = allAgents.find(agent => agent.id === selectedAgentId);
     if (agentToAdd) {
+      // Create a copy of the agent with the new stageId
+      const newAgent = {
+        ...agentToAdd,
+        stageId: stageId,
+        // Update workEnvironment to reflect the stage
+        workEnvironment: {
+          ...agentToAdd.workEnvironment,
+          stageTitle: "Novo estágio" // This would ideally be the actual stage title
+        }
+      };
+      
+      // This would add the agent to the list
+      // In a real implementation, this would be handled by the parent component
+      
       toast({
         title: "Agente adicionado",
         description: `${agentToAdd.profile.name} foi adicionado a este estágio.`,
       });
       
-      // This would need to be implemented in the parent component
-      // For now, just clear the selection
+      // Clear the selection
       setSelectedAgentId("");
     }
   };

@@ -2,9 +2,7 @@
 import React from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Trash, ChevronRight, ChevronDown } from "lucide-react";
 import AgentList from "./AgentList";
 import AssetList from "./AssetList";
@@ -45,10 +43,6 @@ const StageList = ({
   setSelectedAgent,
   selectedAsset,
   setSelectedAsset,
-  newAgent,
-  setNewAgent,
-  newAsset,
-  setNewAsset,
   expandedStages,
   toggleStageExpand,
   handleAddAgent,
@@ -101,39 +95,6 @@ const StageList = ({
             <div className="p-2 pl-6 border-t bg-background/20 space-y-3">
               <div>
                 <div className="mb-2 text-sm font-medium">Agentes</div>
-                <div className="grid grid-cols-12 gap-2 mb-3">
-                  <div className="col-span-5">
-                    <Input 
-                      placeholder="Nome do agente"
-                      value={newAgent.profile?.name || ""}
-                      onChange={(e) => setNewAgent(prev => ({ 
-                        ...prev, 
-                        profile: { ...prev.profile!, name: e.target.value } 
-                      }))}
-                    />
-                  </div>
-                  <div className="col-span-5">
-                    <Input 
-                      placeholder="Função (opcional)"
-                      value={newAgent.profile?.role || ""}
-                      onChange={(e) => setNewAgent(prev => ({ 
-                        ...prev, 
-                        profile: { ...prev.profile!, role: e.target.value } 
-                      }))}
-                    />
-                  </div>
-                  <div className="col-span-2">
-                    <Button 
-                      className="w-full"
-                      size="sm"
-                      onClick={() => handleAddAgent(stage.id)}
-                    >
-                      <Plus className="h-4 w-4 mr-1" />
-                      Adicionar
-                    </Button>
-                  </div>
-                </div>
-
                 <AgentList
                   stageId={stage.id}
                   agents={agents}
@@ -145,43 +106,6 @@ const StageList = ({
 
               <div>
                 <div className="mb-2 text-sm font-medium">Assets</div>
-                <div className="grid grid-cols-12 gap-2 mb-3">
-                  <div className="col-span-5">
-                    <Input 
-                      placeholder="Título do asset"
-                      value={newAsset.title}
-                      onChange={(e) => setNewAsset(prev => ({ ...prev, title: e.target.value }))}
-                    />
-                  </div>
-                  <div className="col-span-5">
-                    <Select
-                      value={newAsset.type}
-                      onValueChange={(value) => setNewAsset(prev => ({ ...prev, type: value }))}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Tipo de asset" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Documento">Documento</SelectItem>
-                        <SelectItem value="Contrato">Contrato</SelectItem>
-                        <SelectItem value="Lead">Lead</SelectItem>
-                        <SelectItem value="Produto">Produto</SelectItem>
-                        <SelectItem value="Serviço">Serviço</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="col-span-2">
-                    <Button 
-                      className="w-full"
-                      size="sm"
-                      onClick={() => handleAddAsset(stage.id)}
-                    >
-                      <Plus className="h-4 w-4 mr-1" />
-                      Adicionar
-                    </Button>
-                  </div>
-                </div>
-
                 <AssetList
                   stageId={stage.id}
                   assets={assets}

@@ -49,13 +49,22 @@ const AssetList = ({
 
     const assetToAdd = allAssets.find(asset => asset.id === selectedAssetId);
     if (assetToAdd) {
+      // Create a copy of the asset with the new stageId
+      const newAsset = {
+        ...assetToAdd,
+        dealId: stageId, // Use dealId to associate with the stage
+        updatedAt: new Date()
+      };
+      
+      // This would add the asset to the list
+      // In a real implementation, this would be handled by the parent component
+      
       toast({
         title: "Asset adicionado",
         description: `${assetToAdd.title} foi adicionado a este estágio.`,
       });
       
-      // This would need to be implemented in the parent component
-      // For now, just clear the selection
+      // Clear the selection
       setSelectedAssetId("");
     }
   };
