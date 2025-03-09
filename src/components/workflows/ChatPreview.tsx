@@ -1,4 +1,3 @@
-
 import React from "react";
 import { MessageSquare, User, Bot, AlertCircle } from "lucide-react";
 import { ChatMessage } from "@/components/workflows/deal-detail/workspace/hooks/useChatState";
