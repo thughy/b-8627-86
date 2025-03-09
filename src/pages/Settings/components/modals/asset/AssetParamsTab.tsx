@@ -1,7 +1,9 @@
+
 import React, { useState } from "react";
 import { Asset } from "@/pages/Workflows/models/WorkflowModels";
 import ParameterItem, { Parameter, ParameterType } from "./components/ParameterItem";
 import AddParameterForm from "./components/AddParameterForm";
+import { Info } from "lucide-react";
 
 interface AssetParamsTabProps {
   formData: Partial<Asset>;
@@ -15,6 +17,7 @@ const AssetParamsTab = ({ formData, onChange }: AssetParamsTabProps) => {
       type: typeof value === 'number' ? 'number' : 
             typeof value === 'boolean' ? 'switch' : 
             value instanceof Date ? 'date' : 
+            Array.isArray(value) ? 'dropdown' :
             /^https?:\/\//.test(String(value)) ? 'url' : 'text',
       value
     }))
@@ -28,8 +31,8 @@ const AssetParamsTab = ({ formData, onChange }: AssetParamsTabProps) => {
         return new Date();
       case 'switch':
         return false;
-      case 'url':
-        return 'https://';
+      case 'dropdown':
+        return ['Opção 1'];
       case 'file':
         return null;
       default:
@@ -88,16 +91,33 @@ const AssetParamsTab = ({ formData, onChange }: AssetParamsTabProps) => {
 
   return (
     <div className="space-y-6">
+      <div className="p-3 bg-muted rounded-md flex items-start gap-3">
+        <Info className="h-5 w-5 mt-0.5 flex-shrink-0 text-blue-500" />
+        <div className="text-sm">
+          <p className="font-medium">Parâmetros de configuração</p>
+          <p className="text-muted-foreground">
+            Defina os parâmetros que os usuários poderão configurar para este asset. 
+            Os valores serão preenchidos pelo usuário em sua instância.
+          </p>
+        </div>
+      </div>
+      
       <div className="space-y-4">
-        {parameters.map((param, index) => (
-          <ParameterItem
-            key={index}
-            param={param}
-            index={index}
-            onParamChange={handleParamChange}
-            onRemoveParameter={handleRemoveParameter}
-          />
-        ))}
+        {parameters.length > 0 ? (
+          parameters.map((param, index) => (
+            <ParameterItem
+              key={index}
+              param={param}
+              index={index}
+              onParamChange={handleParamChange}
+              onRemoveParameter={handleRemoveParameter}
+            />
+          ))
+        ) : (
+          <div className="text-center py-6 text-muted-foreground">
+            Nenhum parâmetro configurado. Adicione um novo parâmetro abaixo.
+          </div>
+        )}
       </div>
 
       <AddParameterForm onAddParameter={handleAddParameter} />

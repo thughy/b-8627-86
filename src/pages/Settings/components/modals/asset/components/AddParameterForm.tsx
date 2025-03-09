@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus } from "lucide-react";
+import { Plus, Type, Calendar, Hash, ToggleLeft, ListFilter } from "lucide-react";
 import { ParameterType } from "./ParameterItem";
 
 interface AddParameterFormProps {
@@ -45,12 +45,30 @@ const AddParameterForm = ({ onAddParameter }: AddParameterFormProps) => {
               <SelectValue placeholder="Tipo do parâmetro" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="text">Texto</SelectItem>
-              <SelectItem value="number">Número</SelectItem>
-              <SelectItem value="date">Data</SelectItem>
-              <SelectItem value="switch">Switch</SelectItem>
-              <SelectItem value="url">URL</SelectItem>
-              <SelectItem value="file">Arquivo</SelectItem>
+              <SelectItem value="text" className="flex items-center gap-2">
+                <Type className="h-4 w-4" />
+                <span>Texto</span>
+              </SelectItem>
+              <SelectItem value="number" className="flex items-center gap-2">
+                <Hash className="h-4 w-4" />
+                <span>Número</span>
+              </SelectItem>
+              <SelectItem value="date" className="flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                <span>Data</span>
+              </SelectItem>
+              <SelectItem value="switch" className="flex items-center gap-2">
+                <ToggleLeft className="h-4 w-4" />
+                <span>Switch</span>
+              </SelectItem>
+              <SelectItem value="dropdown" className="flex items-center gap-2">
+                <ListFilter className="h-4 w-4" />
+                <span>Lista</span>
+              </SelectItem>
+              <SelectItem value="file" className="flex items-center gap-2">
+                <Type className="h-4 w-4" />
+                <span>Arquivo</span>
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>

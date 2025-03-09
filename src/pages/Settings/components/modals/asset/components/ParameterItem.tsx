@@ -3,11 +3,11 @@ import React from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Trash, Edit } from "lucide-react";
+import { Trash, Edit, Type, Calendar, Hash, ToggleLeft, ListFilter } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-export type ParameterType = 'text' | 'number' | 'date' | 'switch' | 'url' | 'file';
+export type ParameterType = 'text' | 'number' | 'date' | 'switch' | 'dropdown' | 'file';
 
 export interface Parameter {
   name: string;
@@ -24,6 +24,44 @@ interface ParameterItemProps {
 
 const ParameterItem = ({ param, index, onParamChange, onRemoveParameter }: ParameterItemProps) => {
   const [isEditing, setIsEditing] = React.useState(false);
+  
+  const getTypeIcon = (type: ParameterType) => {
+    switch(type) {
+      case 'text':
+        return <Type className="h-4 w-4 mr-2" />;
+      case 'number':
+        return <Hash className="h-4 w-4 mr-2" />;
+      case 'date':
+        return <Calendar className="h-4 w-4 mr-2" />;
+      case 'switch':
+        return <ToggleLeft className="h-4 w-4 mr-2" />;
+      case 'dropdown':
+        return <ListFilter className="h-4 w-4 mr-2" />;
+      case 'file':
+        return <Type className="h-4 w-4 mr-2" />;
+      default:
+        return <Type className="h-4 w-4 mr-2" />;
+    }
+  };
+  
+  const getTypeLabel = (type: ParameterType) => {
+    switch(type) {
+      case 'text':
+        return 'Texto';
+      case 'number':
+        return 'Número';
+      case 'date':
+        return 'Data';
+      case 'switch':
+        return 'Switch';
+      case 'dropdown':
+        return 'Lista';
+      case 'file':
+        return 'Arquivo';
+      default:
+        return 'Texto';
+    }
+  };
   
   return (
     <div className="flex items-center gap-2 p-3 border rounded-md">
@@ -53,7 +91,7 @@ const ParameterItem = ({ param, index, onParamChange, onRemoveParameter }: Param
                   <SelectItem value="number">Número</SelectItem>
                   <SelectItem value="date">Data</SelectItem>
                   <SelectItem value="switch">Switch</SelectItem>
-                  <SelectItem value="url">URL</SelectItem>
+                  <SelectItem value="dropdown">Lista</SelectItem>
                   <SelectItem value="file">Arquivo</SelectItem>
                 </SelectContent>
               </Select>
@@ -64,9 +102,14 @@ const ParameterItem = ({ param, index, onParamChange, onRemoveParameter }: Param
           </div>
         ) : (
           <div className="flex justify-between items-center">
-            <div>
-              <div className="font-medium">{param.name}</div>
-              <div className="text-xs text-muted-foreground">Tipo: {param.type}</div>
+            <div className="flex items-center">
+              {getTypeIcon(param.type)}
+              <div>
+                <div className="font-medium">{param.name}</div>
+                <div className="text-xs text-muted-foreground">
+                  Tipo: {getTypeLabel(param.type)}
+                </div>
+              </div>
             </div>
             <Button
               variant="ghost"
