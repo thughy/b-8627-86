@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { 
   Card, 
@@ -46,12 +45,16 @@ const CollaboratorsSettings = () => {
     setIsModalOpen(true);
   };
 
-  const handleDeleteCollaborator = (collaborator: Collaborator) => {
-    if (collaborator.id) {
-      setCollaborators(prev => prev.filter(c => c.id !== collaborator.id));
+  const handleDeleteCollaborator = (collaboratorToDelete: Collaborator | string) => {
+    const id = typeof collaboratorToDelete === 'string' 
+      ? collaboratorToDelete 
+      : collaboratorToDelete.id;
+    
+    if (id) {
+      setCollaborators(prev => prev.filter(c => c.id !== id));
       toast({
         title: "Colaborador removido",
-        description: `O colaborador ${collaborator.name} foi removido com sucesso.`,
+        description: `O colaborador foi removido com sucesso.`,
       });
     }
   };
