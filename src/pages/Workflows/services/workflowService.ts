@@ -1,5 +1,5 @@
 
-import { Department, Pipeline, Stage, Deal, Workflow } from "../models/WorkflowModels";
+import { Department, Pipeline, Stage, Deal, Workflow, Asset } from "../models/WorkflowModels";
 
 // Mock data para workflow
 const mockWorkflows: Workflow[] = [
@@ -231,6 +231,9 @@ const mockDeals: Deal[] = [
   }
 ];
 
+// Mock data para assets
+const mockAssets: Asset[] = [];
+
 // Funções para acessar os dados
 export const getWorkflows = (): Workflow[] => {
   return mockWorkflows;
@@ -273,4 +276,52 @@ export const getDealsByWorkflow = (workflowId: string): Deal[] => {
   if (!workflow) return [];
   
   return getDealsByDepartment(workflow.departmentId);
+};
+
+// Função para criar um novo deal
+export const createDeal = (dealData: Partial<Deal>): Deal => {
+  const newDeal: Deal = {
+    id: `deal-${mockDeals.length + 1}`,
+    title: dealData.title || "Novo Deal",
+    description: dealData.description,
+    stageId: dealData.stageId || "",
+    status: dealData.status || "open",
+    amount: dealData.amount,
+    startDate: dealData.startDate,
+    endDate: dealData.endDate,
+    customerName: dealData.customerName,
+    customerOrganization: dealData.customerOrganization,
+    createdAt: new Date()
+  };
+
+  mockDeals.push(newDeal);
+  return newDeal;
+};
+
+// Função para criar um novo asset
+export const createAsset = (assetData: Partial<Asset>): Asset => {
+  const newAsset: Asset = {
+    id: `asset-${mockAssets.length + 1}`,
+    dealId: assetData.dealId || "",
+    title: assetData.title || "Novo Asset",
+    description: assetData.description,
+    type: assetData.type || "",
+    amount: assetData.amount,
+    status: assetData.status || "open",
+    startDate: assetData.startDate,
+    endDate: assetData.endDate,
+    workEnvironment: assetData.workEnvironment,
+    files: assetData.files || [],
+    parameters: assetData.parameters || {},
+    createdAt: new Date(),
+    updatedAt: new Date()
+  };
+
+  mockAssets.push(newAsset);
+  return newAsset;
+};
+
+// Função para obter assets de um deal
+export const getAssetsByDeal = (dealId: string): Asset[] => {
+  return mockAssets.filter(asset => asset.dealId === dealId);
 };

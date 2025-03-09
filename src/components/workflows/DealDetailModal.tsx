@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -67,6 +66,7 @@ const DealDetailModal = ({ isOpen, onClose, deal, onAction }: DealDetailModalPro
       amount: 1500,
       status: "completed",
       createdAt: new Date(),
+      updatedAt: new Date(),
       workEnvironment: {
         workflowTitle: "Comercial",
         departmentTitle: "Vendas",
@@ -80,7 +80,8 @@ const DealDetailModal = ({ isOpen, onClose, deal, onAction }: DealDetailModalPro
       description: "Proposta detalhada com valores e condições",
       type: "proposal",
       status: "open",
-      createdAt: new Date()
+      createdAt: new Date(),
+      updatedAt: new Date()
     }
   ];
 

@@ -85,9 +85,9 @@ const WorkflowsPage = () => {
         setCurrentWorkflow(data);
         // Idealmente mudaríamos para a visualização Kanban e filtraríamos os deals desse workflow
         setViewMode("kanban");
-        if (data.departments && data.departments.length > 0) {
+        if (data.departmentId) {
           // Encontrar o departamento associado a este workflow
-          const relatedDepartment = departments.find(d => d.id === data.departments[0].id);
+          const relatedDepartment = departments.find(d => d.id === data.departmentId);
           if (relatedDepartment) {
             setSelectedDepartment(relatedDepartment);
           }
@@ -205,9 +205,7 @@ const WorkflowsPage = () => {
                       key={pipeline.id} 
                       pipeline={pipeline} 
                       onAction={handleAction}
-                      isActive={currentWorkflow?.departments?.some(d => 
-                        departments.find(dept => dept.id === d.id)?.pipelines?.some(p => p.id === pipeline.id)
-                      )}
+                      isActive={currentWorkflow?.departmentId === selectedDepartment?.id}
                     />
                   ))}
                   
