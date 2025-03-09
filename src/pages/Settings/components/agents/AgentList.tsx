@@ -13,11 +13,13 @@ import {
 
 interface AgentListProps {
   agents: Agent[];
-  onEditAgent: (agent: Agent) => void;
-  onDeleteAgent: (agent: Agent) => void;
+  onEditAgent?: (agent: Agent) => void;
+  onDeleteAgent?: (agent: Agent) => void;
+  onEdit?: (agent: Agent) => void;
+  onDelete?: (agentId: string) => void;
 }
 
-const AgentList = ({ agents, onEditAgent, onDeleteAgent }: AgentListProps) => {
+const AgentList = ({ agents, onEditAgent, onDeleteAgent, onEdit, onDelete }: AgentListProps) => {
   const getStatusBadge = (status: Agent['status']) => {
     switch (status) {
       case 'active':
@@ -28,6 +30,22 @@ const AgentList = ({ agents, onEditAgent, onDeleteAgent }: AgentListProps) => {
         return <Badge className="bg-red-500 hover:bg-red-600">Bloqueado</Badge>;
       default:
         return null;
+    }
+  };
+
+  const handleEdit = (agent: Agent) => {
+    if (onEditAgent) {
+      onEditAgent(agent);
+    } else if (onEdit) {
+      onEdit(agent);
+    }
+  };
+
+  const handleDelete = (agent: Agent) => {
+    if (onDeleteAgent) {
+      onDeleteAgent(agent);
+    } else if (onDelete) {
+      onDelete(agent.id);
     }
   };
 
@@ -70,11 +88,11 @@ const AgentList = ({ agents, onEditAgent, onDeleteAgent }: AgentListProps) => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => onEditAgent(agent)}>
+                    <DropdownMenuItem onClick={() => handleEdit(agent)}>
                       Editar
                     </DropdownMenuItem>
                     <DropdownMenuItem 
-                      onClick={() => onDeleteAgent(agent)}
+                      onClick={() => handleDelete(agent)}
                       className="text-red-500 focus:text-red-500"
                     >
                       Remover
