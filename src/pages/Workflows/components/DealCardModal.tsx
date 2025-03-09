@@ -23,7 +23,7 @@ interface DealCardModalProps {
   onEditDeal?: (deal: Deal) => void;
   onDeleteDeal?: (dealId: string) => void;
   onCancelDeal?: (dealId: string) => void;
-  onCreateAsset?: (dealId: string, asset: Partial<Asset>) => void;
+  onCreateAsset?: (dealId: string, asset?: Partial<Asset>) => void;
   onCreateTask?: (dealId: string) => void;
   onCreateNote?: (dealId: string) => void;
   onCreateDocument?: (dealId: string) => void;
@@ -112,11 +112,11 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
                 <ScrollArea className="h-full w-full">
                   <DealWorkspaceTab 
                     deal={deal} 
-                    onCreateAsset={(asset) => onCreateAsset?.(deal.id, asset)}
-                    onCreateTask={() => onCreateTask?.(deal.id)}
-                    onCreateNote={() => onCreateNote?.(deal.id)}
-                    onCreateDocument={() => onCreateDocument?.(deal.id)}
-                    onCreateEmail={() => onCreateEmail?.(deal.id)}
+                    onCreateAsset={onCreateAsset}
+                    onCreateTask={onCreateTask}
+                    onCreateNote={onCreateNote}
+                    onCreateDocument={onCreateDocument}
+                    onCreateEmail={onCreateEmail}
                   />
                 </ScrollArea>
               </div>

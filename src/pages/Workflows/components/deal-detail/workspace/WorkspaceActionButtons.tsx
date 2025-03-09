@@ -2,9 +2,10 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, FileText, CheckSquare, Image, Mail, File } from 'lucide-react';
+import { Asset } from '@/pages/Workflows/models/WorkflowModels';
 
 interface WorkspaceActionButtonsProps {
-  onCreateAsset?: (dealId: string) => void;
+  onCreateAsset?: (dealId: string, asset?: Partial<Asset>) => void;
   onCreateTask?: (dealId: string) => void;
   onCreateNote?: (dealId: string) => void;
   onCreateDocument?: (dealId: string) => void;

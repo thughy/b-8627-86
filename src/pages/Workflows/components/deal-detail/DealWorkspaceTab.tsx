@@ -11,24 +11,23 @@ import WorkspaceActionButtons from './workspace/WorkspaceActionButtons';
 
 interface DealWorkspaceTabProps {
   deal: Deal;
-  onCreateAsset?: (dealId: string, asset: Partial<Asset>) => void;
+  onCreateAsset?: (dealId: string, asset?: Partial<Asset>) => void;
+  onCreateTask?: (dealId: string) => void;
+  onCreateNote?: (dealId: string) => void;
+  onCreateDocument?: (dealId: string) => void;
+  onCreateEmail?: (dealId: string) => void;
 }
 
-const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({ deal, onCreateAsset }) => {
+const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({ 
+  deal, 
+  onCreateAsset,
+  onCreateTask,
+  onCreateNote,
+  onCreateDocument,
+  onCreateEmail
+}) => {
   const [activeTab, setActiveTab] = useState('chat');
   const { messages, sendMessage } = useChatMessages(deal.id);
-
-  const handleCreateAsset = () => {
-    if (onCreateAsset) {
-      const newAsset: Partial<Asset> = {
-        title: 'Novo Asset',
-        description: 'Descrição do novo asset',
-        type: 'document',
-        status: 'open'
-      };
-      onCreateAsset(deal.id, newAsset);
-    }
-  };
 
   // Exemplos de ativos para este negócio (em um cenário real, seriam carregados da API)
   const assets: Asset[] = [
@@ -75,7 +74,14 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({ deal, onCreateAsset
             </TabsList>
           
             <div className="ml-auto">
-              <WorkspaceActionButtons onCreateAsset={handleCreateAsset} />
+              <WorkspaceActionButtons 
+                dealId={deal.id}
+                onCreateAsset={onCreateAsset}
+                onCreateTask={onCreateTask}
+                onCreateNote={onCreateNote}
+                onCreateDocument={onCreateDocument}
+                onCreateEmail={onCreateEmail}
+              />
             </div>
           </div>
         </Tabs>

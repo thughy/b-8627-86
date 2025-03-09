@@ -17,8 +17,8 @@ export const useDealActions = () => {
     });
   };
 
-  const handleCreateAsset = (dealId: string, asset: Partial<Asset>) => {
-    console.log(`Criando asset para deal ${dealId}:`, asset);
+  const handleCreateAsset = (dealId: string, asset?: Partial<Asset>) => {
+    console.log(`Criando asset para deal ${dealId}:`, asset || {});
     toast({
       title: "Asset adicionado",
       description: `O asset foi adicionado ao negócio com sucesso.`,
