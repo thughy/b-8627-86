@@ -1,13 +1,12 @@
 
-import React, { useState } from 'react';
-import { Deal, Asset } from '@/pages/Workflows/models/WorkflowModels';
+import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { MessageCircle, FileText, History } from 'lucide-react';
+import { Asset, Deal } from '@/pages/Workflows/models/WorkflowModels';
+import { useChatMessages } from '../../hooks/useChatMessages';
 import ChatSection from './workspace/ChatSection';
 import FocusTabContent from './workspace/FocusTabContent';
 import HistoryTabContent from './workspace/HistoryTabContent';
 import WorkspaceActionButtons from './workspace/WorkspaceActionButtons';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface DealWorkspaceTabProps {
   deal: Deal;
@@ -18,108 +17,49 @@ interface DealWorkspaceTabProps {
   onCreateEmail?: (dealId: string) => void;
 }
 
-const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({ 
-  deal, 
+const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
+  deal,
   onCreateAsset,
   onCreateTask,
   onCreateNote,
   onCreateDocument,
   onCreateEmail
 }) => {
-  const [activeTab, setActiveTab] = useState('chat');
-  const [messages, setMessages] = useState<any[]>([]); // Just a placeholder until we implement hooks
-
-  // Example assets for this deal (in a real scenario, would be loaded from API)
-  const assets: Asset[] = [
-    {
-      id: 'asset-1',
-      dealId: deal.id,
-      title: 'Proposta Comercial',
-      description: 'Documento com detalhes da proposta',
-      type: 'document',
-      status: 'completed',
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
-    {
-      id: 'asset-2',
-      dealId: deal.id,
-      title: 'Contrato de Serviço',
-      description: 'Contrato para assinatura',
-      type: 'contract',
-      status: 'processing',
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }
-  ];
+  const { messages, sendMessage } = useChatMessages(deal.id);
+  const [activeTab, setActiveTab] = React.useState('chat');
 
   return (
     <div className="p-4">
-      <Tabs defaultValue="chat" value={activeTab} onValueChange={setActiveTab}>
-        {/* First row: Tabs */}
-        <div className="mb-4">
-          <TabsList className="w-full">
-            <TabsTrigger 
-              value="chat" 
-              className="flex items-center gap-1"
-            >
-              <MessageCircle className="h-4 w-4" />
-              Chat
-            </TabsTrigger>
-            <TabsTrigger 
-              value="focus" 
-              className="flex items-center gap-1"
-            >
-              <FileText className="h-4 w-4" />
-              Focus
-            </TabsTrigger>
-            <TabsTrigger 
-              value="history" 
-              className="flex items-center gap-1"
-            >
-              <History className="h-4 w-4" />
-              Histórico
-            </TabsTrigger>
-          </TabsList>
-        </div>
+      <WorkspaceActionButtons 
+        onCreateNote={() => onCreateNote?.(deal.id)}
+        onCreateTask={() => onCreateTask?.(deal.id)}
+        onCreateAsset={() => onCreateAsset?.(deal.id)}
+        onCreateDocument={() => onCreateDocument?.(deal.id)}
+        onCreateEmail={() => onCreateEmail?.(deal.id)}
+      />
+      
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mt-4">
+        <TabsList className="mb-4">
+          <TabsTrigger value="chat">Chat</TabsTrigger>
+          <TabsTrigger value="focus">Foco</TabsTrigger>
+          <TabsTrigger value="history">Histórico</TabsTrigger>
+        </TabsList>
         
-        {/* Second row: Action buttons */}
-        <div className="mb-4">
-          <WorkspaceActionButtons 
-            dealId={deal.id}
-            onCreateAsset={onCreateAsset}
-            onCreateTask={onCreateTask}
-            onCreateNote={onCreateNote}
-            onCreateDocument={onCreateDocument}
-            onCreateEmail={onCreateEmail}
+        <TabsContent value="chat" className="border-none p-0">
+          <ChatSection 
+            dealId={deal.id} 
+            messages={messages}
+            sendMessage={sendMessage}
           />
-        </div>
-
-        {/* Tab content area */}
-        <div className="mt-4 h-[400px]">
-          <TabsContent value="chat">
-            <ChatSection 
-              dealId={deal.id} 
-              messages={messages} 
-            />
-          </TabsContent>
-          
-          <TabsContent value="focus">
-            <ScrollArea className="h-full">
-              <FocusTabContent 
-                deal={deal}
-                assets={assets}
-                onCreateAsset={onCreateAsset}
-              />
-            </ScrollArea>
-          </TabsContent>
-          
-          <TabsContent value="history">
-            <ScrollArea className="h-full">
-              <HistoryTabContent />
-            </ScrollArea>
-          </TabsContent>
-        </div>
+        </TabsContent>
+        
+        <TabsContent value="focus" className="border-none p-0">
+          <FocusTabContent deal={deal} />
+        </TabsContent>
+        
+        <TabsContent value="history" className="border-none p-0">
+          <HistoryTabContent deal={deal} />
+        </TabsContent>
       </Tabs>
     </div>
   );
