@@ -8,19 +8,19 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { MoreHorizontal } from 'lucide-react';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import DealParametersTab from './deal-detail/DealParametersTab';
 import DealWorkspaceTab from './deal-detail/DealWorkspaceTab';
 import DealStatusBadge from './deal-detail/DealStatusBadge';
 import DealSummaryCards from './deal-detail/DealSummaryCards';
 import DealCounters from './deal-detail/DealCounters';
+import { MoreHorizontal } from 'lucide-react';
 
 interface DealCardModalProps {
   isOpen: boolean;
@@ -75,22 +75,27 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm">
-                    <MoreHorizontal className="h-4 w-4" />
-                    Ações
+                    <MoreHorizontal className="h-4 w-4 mr-2" />
+                    Status
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  {deal.status === 'open' && onWinDeal && (
+                  {deal.status !== 'open' && (
+                    <DropdownMenuItem onClick={() => onEditDeal?.({ ...deal, status: 'open' })}>
+                      Marcar como Aberto
+                    </DropdownMenuItem>
+                  )}
+                  {deal.status !== 'won' && onWinDeal && (
                     <DropdownMenuItem onClick={() => onWinDeal(deal.id)}>
                       Marcar como Ganho
                     </DropdownMenuItem>
                   )}
-                  {deal.status === 'open' && onLoseDeal && (
+                  {deal.status !== 'lost' && onLoseDeal && (
                     <DropdownMenuItem onClick={() => onLoseDeal(deal.id)}>
                       Marcar como Perdido
                     </DropdownMenuItem>
                   )}
-                  {deal.status === 'open' && onCancelDeal && (
+                  {deal.status !== 'lost' && deal.status !== 'won' && onCancelDeal && (
                     <DropdownMenuItem onClick={() => onCancelDeal(deal.id)}>
                       Cancelar
                     </DropdownMenuItem>

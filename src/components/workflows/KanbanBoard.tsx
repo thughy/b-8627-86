@@ -110,7 +110,7 @@ const KanbanBoard = ({
                             <div className="mt-1 text-xs">
                               <span className="text-muted-foreground">Status: </span>
                               <Badge variant={
-                                deal.status === 'won' ? "success" : 
+                                deal.status === 'won' ? "default" : 
                                 deal.status === 'lost' ? "destructive" : 
                                 "outline"
                               } className="text-xs">
@@ -125,7 +125,7 @@ const KanbanBoard = ({
                             </div>
                             
                             {/* Chat preview */}
-                            {chatPreview.length > 0 && (
+                            {chatPreview && chatPreview.length > 0 && (
                               <div className="mt-2 border-t pt-2">
                                 <div className="text-xs font-medium mb-1">Últimas mensagens:</div>
                                 {chatPreview.map((msg, idx) => (
