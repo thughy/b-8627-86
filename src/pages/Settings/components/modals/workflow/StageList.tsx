@@ -3,7 +3,7 @@ import React from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Trash, ChevronRight, ChevronDown } from "lucide-react";
+import { Trash, ChevronRight, ChevronDown } from "lucide-react";
 import AgentList from "./AgentList";
 import AssetList from "./AssetList";
 import { Stage, Agent, Asset } from "@/pages/Workflows/models/WorkflowModels";
@@ -92,27 +92,32 @@ const StageList = ({
             </div>
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <div className="p-2 pl-6 border-t bg-background/20 space-y-3">
-              <div>
-                <div className="mb-2 text-sm font-medium">Agentes</div>
-                <AgentList
-                  stageId={stage.id}
-                  agents={agents}
-                  selectedAgent={selectedAgent}
-                  setSelectedAgent={setSelectedAgent}
-                  handleDeleteAgent={handleDeleteAgent}
-                />
-              </div>
-
-              <div>
-                <div className="mb-2 text-sm font-medium">Assets</div>
-                <AssetList
-                  stageId={stage.id}
-                  assets={assets}
-                  selectedAsset={selectedAsset}
-                  setSelectedAsset={setSelectedAsset}
-                  handleDeleteAsset={handleDeleteAsset}
-                />
+            <div className="p-3 pl-6 border-t bg-background/20">
+              <div className="flex flex-col space-y-4">
+                <div className="flex items-center space-x-2">
+                  <div className="grid grid-cols-2 gap-4 w-full">
+                    <div>
+                      <div className="mb-1 text-sm font-medium">Agente</div>
+                      <AgentList
+                        stageId={stage.id}
+                        agents={agents}
+                        selectedAgent={selectedAgent}
+                        setSelectedAgent={setSelectedAgent}
+                        handleDeleteAgent={handleDeleteAgent}
+                      />
+                    </div>
+                    <div>
+                      <div className="mb-1 text-sm font-medium">Asset</div>
+                      <AssetList
+                        stageId={stage.id}
+                        assets={assets}
+                        selectedAsset={selectedAsset}
+                        setSelectedAsset={setSelectedAsset}
+                        handleDeleteAsset={handleDeleteAsset}
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </CollapsibleContent>

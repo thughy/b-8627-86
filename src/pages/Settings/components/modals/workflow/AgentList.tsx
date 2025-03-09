@@ -1,11 +1,7 @@
 
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Trash, Plus, Search } from "lucide-react";
 import { Agent } from "@/pages/Workflows/models/WorkflowModels";
-import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
 import { getAgents } from "@/pages/Settings/services/settingsService";
 
 interface AgentListProps {
@@ -23,126 +19,66 @@ const AgentList = ({
   setSelectedAgent,
   handleDeleteAgent
 }: AgentListProps) => {
-  const { toast } = useToast();
-  const [searchTerm, setSearchTerm] = useState("");
   const [allAgents] = useState<Agent[]>(getAgents());
-  const [selectedAgentId, setSelectedAgentId] = useState<string>("");
   
   // Filter existing agents by stage
-  const stageAgents = agents.filter(a => a.stageId === stageId);
+  const stageAgentIds = agents
+    .filter(a => a.stageId === stageId)
+    .map(a => a.id);
+  
+  // Get the current agent for this stage (should be only one)
+  const currentStageAgent = agents.find(a => a.stageId === stageId);
   
   // Filter available agents (not already assigned to this stage)
   const availableAgents = allAgents.filter(agent => 
-    !stageAgents.some(a => a.id === agent.id) && 
-    agent.profile.name.toLowerCase().includes(searchTerm.toLowerCase())
+    !stageAgentIds.includes(agent.id)
   );
+  
+  // Combined list for dropdown (current agent + available agents)
+  const dropdownAgents = [
+    ...(currentStageAgent ? [currentStageAgent] : []),
+    ...availableAgents
+  ];
 
-  const handleAddExistingAgent = () => {
-    if (!selectedAgentId) {
-      toast({
-        title: "Selecione um agente",
-        description: "Por favor, selecione um agente para adicionar a este estágio.",
-        variant: "destructive"
-      });
-      return;
+  const handleAgentChange = (agentId: string) => {
+    // If we already have an agent assigned to this stage, remove it
+    if (currentStageAgent) {
+      handleDeleteAgent(currentStageAgent.id);
     }
-
-    const agentToAdd = allAgents.find(agent => agent.id === selectedAgentId);
-    if (agentToAdd) {
-      // Create a copy of the agent with the new stageId
-      const newAgent = {
-        ...agentToAdd,
-        stageId: stageId,
-        // Update workEnvironment to reflect the stage
-        workEnvironment: {
-          ...agentToAdd.workEnvironment,
-          stageTitle: "Novo estágio" // This would ideally be the actual stage title
-        }
-      };
+    
+    // Find the new agent and set it as selected
+    const newAgent = allAgents.find(agent => agent.id === agentId);
+    if (newAgent) {
+      setSelectedAgent(newAgent);
       
-      // This would add the agent to the list
-      // In a real implementation, this would be handled by the parent component
-      
-      toast({
-        title: "Agente adicionado",
-        description: `${agentToAdd.profile.name} foi adicionado a este estágio.`,
-      });
-      
-      // Clear the selection
-      setSelectedAgentId("");
+      // In a real implementation, this would add the agent to the stage
+      // The parent component would handle this with the handleAddAgent function
     }
   };
-  
-  return (
-    <div className="space-y-4">
-      <div className="flex flex-col space-y-2">
-        <h4 className="text-sm font-medium">Adicionar Agente Existente</h4>
-        <div className="flex space-x-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar agentes..."
-              className="pl-8"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <Select value={selectedAgentId} onValueChange={setSelectedAgentId}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Selecionar agente" />
-            </SelectTrigger>
-            <SelectContent>
-              {availableAgents.length > 0 ? (
-                availableAgents.map(agent => (
-                  <SelectItem key={agent.id} value={agent.id}>
-                    {agent.profile.name}
-                  </SelectItem>
-                ))
-              ) : (
-                <SelectItem value="none" disabled>
-                  Nenhum agente disponível
-                </SelectItem>
-              )}
-            </SelectContent>
-          </Select>
-          <Button size="sm" onClick={handleAddExistingAgent}>
-            <Plus className="h-4 w-4 mr-1" />
-            Adicionar
-          </Button>
-        </div>
-      </div>
 
-      <div className="space-y-2 pl-2">
-        <h4 className="text-sm font-medium">Agentes neste estágio</h4>
-        {stageAgents.length > 0 ? (
-          stageAgents.map(agent => (
-            <div 
-              key={agent.id}
-              className={`p-2 border rounded-md flex justify-between items-center hover:bg-accent/30 cursor-pointer transition-colors ${selectedAgent?.id === agent.id ? 'border-l-4 border-primary' : ''}`}
-              onClick={() => setSelectedAgent(agent)}
-            >
-              <div>
-                <div className="font-medium">{agent.profile.name}</div>
-                <div className="text-xs text-muted-foreground">{agent.profile.role}</div>
-              </div>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeleteAgent(agent.id);
-                }}
-              >
-                <Trash className="h-4 w-4" />
-              </Button>
-            </div>
-          ))
-        ) : (
-          <div className="text-sm text-muted-foreground p-2">
-            Nenhum agente adicionado
-          </div>
-        )}
-      </div>
+  return (
+    <div>
+      <Select 
+        value={currentStageAgent?.id || ""} 
+        onValueChange={handleAgentChange}
+      >
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder="Selecionar agente" />
+        </SelectTrigger>
+        <SelectContent>
+          {dropdownAgents.length > 0 ? (
+            dropdownAgents.map(agent => (
+              <SelectItem key={agent.id} value={agent.id}>
+                {agent.profile.name} - {agent.profile.role}
+              </SelectItem>
+            ))
+          ) : (
+            <SelectItem value="none" disabled>
+              Nenhum agente disponível
+            </SelectItem>
+          )}
+        </SelectContent>
+      </Select>
     </div>
   );
 };
