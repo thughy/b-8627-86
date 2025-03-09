@@ -5,10 +5,15 @@ import { Textarea } from "@/components/ui/textarea";
 
 interface AgentRagTabProps {
   ragDocuments: string[];
-  onRagDocumentsChange: (value: string) => void;
+  onRagDocumentsChange: (documents: string[]) => void;
 }
 
 const AgentRagTab = ({ ragDocuments, onRagDocumentsChange }: AgentRagTabProps) => {
+  const handleDocumentsChange = (value: string) => {
+    const documents = value.split('\n').filter(doc => doc.trim() !== '');
+    onRagDocumentsChange(documents);
+  };
+
   return (
     <div className="space-y-4">
       <div className="grid gap-2">
@@ -16,7 +21,7 @@ const AgentRagTab = ({ ragDocuments, onRagDocumentsChange }: AgentRagTabProps) =
         <Textarea 
           id="ragDocuments"
           value={ragDocuments?.join('\n') || ""}
-          onChange={(e) => onRagDocumentsChange(e.target.value)}
+          onChange={(e) => handleDocumentsChange(e.target.value)}
           placeholder="Um documento por linha (ex: Produtos.pdf, Serviços.pdf)"
           rows={6}
         />

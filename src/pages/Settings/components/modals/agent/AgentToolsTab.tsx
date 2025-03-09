@@ -12,7 +12,7 @@ interface Tool {
 
 interface AgentToolsTabProps {
   tools: string[];
-  onToolToggle: (toolId: string) => void;
+  onToolToggle: (toolId: string, enabled: boolean) => void;
 }
 
 const AVAILABLE_TOOLS: Tool[] = [
@@ -45,7 +45,7 @@ const AgentToolsTab = ({ tools, onToolToggle }: AgentToolsTabProps) => {
                 </div>
                 <Switch 
                   checked={isActive}
-                  onCheckedChange={() => onToolToggle(tool.id)}
+                  onCheckedChange={(checked) => onToolToggle(tool.id, checked)}
                 />
               </div>
             </div>

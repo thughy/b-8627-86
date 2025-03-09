@@ -8,17 +8,17 @@ import { Department, Pipeline, Stage, Agent } from "@/pages/Workflows/models/Wor
 interface AgentEnvironmentTabProps {
   workEnvironment: Agent['workEnvironment'];
   onWorkEnvironmentChange: (field: string, value: string) => void;
-  departments: Department[];
-  pipelines: Pipeline[];
-  stages: Stage[];
+  departments?: Department[];
+  pipelines?: Pipeline[];
+  stages?: Stage[];
 }
 
 const AgentEnvironmentTab = ({ 
   workEnvironment, 
   onWorkEnvironmentChange,
-  departments,
-  pipelines,
-  stages
+  departments = [],
+  pipelines = [],
+  stages = []
 }: AgentEnvironmentTabProps) => {
   const filteredPipelines = pipelines.filter(pipeline => 
     !workEnvironment?.departmentTitle || 

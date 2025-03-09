@@ -1,3 +1,4 @@
+
 export interface Workflow {
   id: string;
   title: string;
@@ -80,7 +81,9 @@ export interface Agent {
     workflowTitle?: string;
     workflowDescription?: string;
     departmentTitle?: string;
+    departmentDescription?: string;
     stageTitle?: string;
+    stageDescription?: string;
   };
   businessRules: {
     rules?: string[];

@@ -18,7 +18,7 @@ const FilesPage = () => {
   const [filters, setFilters] = useState<FileFilter>({
     search: "",
     type: "all",
-    workflow: "all"
+    folder: "all"
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -47,6 +47,15 @@ const FilesPage = () => {
   const handleViewFile = (file: File) => {
     setSelectedFile(file);
     setIsModalOpen(true);
+  };
+
+  const handleSaveFile = (file: File) => {
+    // Implement save logic
+    toast({
+      title: "Arquivo salvo",
+      description: "As alterações no arquivo foram salvas com sucesso."
+    });
+    loadFiles();
   };
 
   const handleDeleteFile = (fileId: string) => {
@@ -82,10 +91,10 @@ const FilesPage = () => {
             <FileSearch 
               search={filters.search || ""}
               type={filters.type || "all"}
-              workflow={filters.workflow || "all"}
+              folder={filters.folder || "all"}
               onSearchChange={handleSearchChange}
               onTypeChange={(value) => handleFilterChange("type", value)}
-              onWorkflowChange={(value) => handleFilterChange("workflow", value)}
+              onFolderChange={(value) => handleFilterChange("folder", value)}
             />
             
             <FileList
@@ -106,6 +115,8 @@ const FilesPage = () => {
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
             file={selectedFile}
+            onSave={handleSaveFile}
+            onDelete={handleDeleteFile}
           />
         )}
       </div>

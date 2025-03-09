@@ -8,7 +8,7 @@ import AgentExpertiseTab from "./AgentExpertiseTab";
 import AgentRagTab from "./AgentRagTab";
 import AgentToolsTab from "./AgentToolsTab";
 import AgentConfigTab from "./AgentConfigTab";
-import { Agent } from "@/pages/Workflows/models/WorkflowModels";
+import { Agent, Department, Pipeline, Stage } from "@/pages/Workflows/models/WorkflowModels";
 
 interface AgentTabsProps {
   activeTab: string;
@@ -35,6 +35,24 @@ const AgentTabs = ({
   handleToolsChange,
   handleStatusChange
 }: AgentTabsProps) => {
+  // Mock data for departments, pipelines, and stages
+  const departments: Department[] = [
+    { id: "dept1", title: "Comercial", description: "Departamento comercial" },
+    { id: "dept2", title: "Suporte", description: "Departamento de suporte" }
+  ];
+  
+  const pipelines: Pipeline[] = [
+    { id: "pipe1", departmentId: "dept1", title: "Pipeline de Vendas", description: "Pipeline principal de vendas", stages: [] },
+    { id: "pipe2", departmentId: "dept2", title: "Pipeline de Atendimento", description: "Pipeline de atendimento ao cliente", stages: [] }
+  ];
+  
+  const stages: Stage[] = [
+    { id: "stage1", pipelineId: "pipe1", title: "Prospecção", order: 1 },
+    { id: "stage2", pipelineId: "pipe1", title: "Qualificação", order: 2 },
+    { id: "stage3", pipelineId: "pipe2", title: "Triagem", order: 1 },
+    { id: "stage4", pipelineId: "pipe2", title: "Resolução", order: 2 }
+  ];
+
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-5">
       <TabsList className="grid w-full grid-cols-7">
@@ -58,6 +76,9 @@ const AgentTabs = ({
         <AgentEnvironmentTab 
           workEnvironment={formData.workEnvironment || {}} 
           onWorkEnvironmentChange={handleWorkEnvironmentChange}
+          departments={departments}
+          pipelines={pipelines}
+          stages={stages}
         />
       </TabsContent>
 
