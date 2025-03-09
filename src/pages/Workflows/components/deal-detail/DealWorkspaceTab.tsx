@@ -31,6 +31,7 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
   return (
     <div className="p-4">
       <WorkspaceActionButtons 
+        dealId={deal.id}
         onCreateNote={() => onCreateNote?.(deal.id)}
         onCreateTask={() => onCreateTask?.(deal.id)}
         onCreateAsset={() => onCreateAsset?.(deal.id)}
