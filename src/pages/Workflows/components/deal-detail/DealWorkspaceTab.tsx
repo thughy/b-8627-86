@@ -56,7 +56,7 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({ deal, onCreateAsset
   ];
 
   return (
-    <div className="h-full flex flex-col overflow-hidden">
+    <div className="h-full flex flex-col p-4">
       <div className="flex justify-between items-center mb-4">
         <Tabs defaultValue="chat" className="w-full" onValueChange={setActiveTab} value={activeTab}>
           <TabsList>
@@ -80,28 +80,22 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({ deal, onCreateAsset
         </Tabs>
       </div>
 
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1">
         <Tabs defaultValue="chat" value={activeTab} className="h-full">
-          <TabsContent value="chat" className="h-full overflow-hidden mt-0">
-            <ScrollArea className="h-full">
-              <ChatSection dealId={deal.id} messages={messages} />
-            </ScrollArea>
+          <TabsContent value="chat" className="h-full mt-0">
+            <ChatSection dealId={deal.id} messages={messages} />
           </TabsContent>
           
-          <TabsContent value="focus" className="h-full overflow-hidden mt-0">
-            <ScrollArea className="h-full">
-              <FocusTabContent 
-                deal={deal}
-                assets={assets}
-                onCreateAsset={onCreateAsset}
-              />
-            </ScrollArea>
+          <TabsContent value="focus" className="h-full mt-0">
+            <FocusTabContent 
+              deal={deal}
+              assets={assets}
+              onCreateAsset={onCreateAsset}
+            />
           </TabsContent>
           
-          <TabsContent value="history" className="h-full overflow-hidden mt-0">
-            <ScrollArea className="h-full">
-              <HistoryTabContent />
-            </ScrollArea>
+          <TabsContent value="history" className="h-full mt-0">
+            <HistoryTabContent />
           </TabsContent>
         </Tabs>
       </div>
