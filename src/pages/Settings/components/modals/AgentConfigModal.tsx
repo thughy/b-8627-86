@@ -11,6 +11,8 @@ interface AgentConfigModalProps {
 }
 
 const AgentConfigModal = (props: AgentConfigModalProps) => {
+  if (!props.isOpen) return null;
+  
   return <AgentModalContainer {...props} />;
 };
 
