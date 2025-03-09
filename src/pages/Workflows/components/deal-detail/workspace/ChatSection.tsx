@@ -7,7 +7,7 @@ import { Send } from 'lucide-react';
 interface Message {
   id: string;
   text: string;
-  content: string; // Made required to match ChatMessage
+  content: string; // Required to match ChatMessage
   sender: 'user' | 'agent' | 'system';
   senderName?: string;
   timestamp: Date;
@@ -16,7 +16,7 @@ interface Message {
 interface ChatSectionProps {
   dealId: string;
   messages: Message[];
-  onSendMessage?: (message: string) => void;
+  onSendMessage?: (message: string) => void; // This is the current prop name
 }
 
 const ChatSection: React.FC<ChatSectionProps> = ({ dealId, messages, onSendMessage }) => {
