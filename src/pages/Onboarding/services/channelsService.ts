@@ -1,6 +1,6 @@
 
 import React from "react";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, BrandWhatsapp, Mail, Phone } from "lucide-react";
 import { ChannelProps } from "../models/ChannelModel";
 
 export const getChannelsData = (): ChannelProps[] => {
@@ -8,63 +8,57 @@ export const getChannelsData = (): ChannelProps[] => {
     {
       id: "whatsapp",
       name: "WhatsApp",
-      icon: <MessageSquare className="h-5 w-5 text-green-500" />,
+      icon: <BrandWhatsapp className="h-5 w-5 text-green-500" />,
       configFields: [
-        {
-          id: "apiKey",
-          label: "API Key",
-          placeholder: "Insira sua API Key do WhatsApp Business",
-          type: "text",
-        },
         {
           id: "phoneNumber",
           label: "Número de telefone",
-          placeholder: "+55 (11) 99999-9999",
-          type: "tel",
-        },
-      ],
-    },
-    {
-      id: "telegram",
-      name: "Telegram",
-      icon: <MessageSquare className="h-5 w-5 text-blue-500" />,
-      configFields: [
-        {
-          id: "botToken",
-          label: "Bot Token",
-          placeholder: "Insira o token do seu bot",
           type: "text",
+          placeholder: "+55 11 99999-9999",
+        },
+        {
+          id: "apiKey",
+          label: "Chave API",
+          type: "password",
+          placeholder: "Chave de API do WhatsApp Business",
         },
       ],
     },
     {
       id: "email",
       name: "Email",
-      icon: <MessageSquare className="h-5 w-5 text-yellow-500" />,
+      icon: <Mail className="h-5 w-5 text-blue-500" />,
       configFields: [
+        {
+          id: "emailAddress",
+          label: "Endereço de email",
+          type: "email",
+          placeholder: "seu@email.com",
+        },
         {
           id: "smtpServer",
           label: "Servidor SMTP",
-          placeholder: "smtp.example.com",
           type: "text",
+          placeholder: "smtp.seuservidor.com",
+        },
+      ],
+    },
+    {
+      id: "sms",
+      name: "SMS",
+      icon: <MessageSquare className="h-5 w-5 text-purple-500" />,
+      configFields: [
+        {
+          id: "smsProvider",
+          label: "Provedor de SMS",
+          type: "text",
+          placeholder: "Ex: Twilio, Zenvia",
         },
         {
-          id: "smtpPort",
-          label: "Porta SMTP",
-          placeholder: "587",
-          type: "number",
-        },
-        {
-          id: "emailUser",
-          label: "Email",
-          placeholder: "seu@email.com",
-          type: "email",
-        },
-        {
-          id: "emailPassword",
-          label: "Senha",
-          placeholder: "******",
+          id: "apiKey",
+          label: "Chave API",
           type: "password",
+          placeholder: "Chave de API do provedor",
         },
       ],
     },
