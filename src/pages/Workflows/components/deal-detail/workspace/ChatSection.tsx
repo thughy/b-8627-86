@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from "@/components/ui/input";
 import { Send } from 'lucide-react';
 
-interface Message {
+// Updated Message type to match what's used in useChatMessages
+export interface Message {
   id: string;
   text: string;
   content: string; 

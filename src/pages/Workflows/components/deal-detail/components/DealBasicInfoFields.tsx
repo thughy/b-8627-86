@@ -4,6 +4,7 @@ import { Deal } from '@/pages/Workflows/models/WorkflowModels';
 import { Input } from '@/components/ui/input';
 import SelectField from '@/components/ui/select-field';
 import FormField from '@/components/ui/form-field';
+import CustomerSearch from './CustomerSearch';
 
 interface DealBasicInfoFieldsProps {
   formState: Partial<Deal>;
@@ -18,6 +19,17 @@ const DealBasicInfoFields: React.FC<DealBasicInfoFieldsProps> = ({
   typeOptions,
   customerTypeOptions
 }) => {
+  const handleCustomerSelect = (customerName: string, customerType: 'person' | 'organization') => {
+    handleChange('customerName', customerName);
+    handleChange('customerType', customerType);
+    
+    // If it's an organization, we set the customerOrganization to the same name
+    // If it's a person, we leave the organization field as is
+    if (customerType === 'organization') {
+      handleChange('customerOrganization', customerName);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <FormField id="title" label="Título" required>
@@ -39,22 +51,10 @@ const DealBasicInfoFields: React.FC<DealBasicInfoFieldsProps> = ({
         />
       </FormField>
 
-      <FormField id="customerType" label="Tipo de Cliente">
-        <SelectField
-          id="customerType"
-          label=""
-          value={formState.customerType || ''}
-          onChange={(value) => handleChange('customerType', value)}
-          options={customerTypeOptions}
-          placeholder="Selecione o tipo de cliente"
-        />
-      </FormField>
-
-      <FormField id="customerName" label="Cliente">
-        <Input 
-          id="customerName"
-          value={formState.customerName || ''} 
-          onChange={(e) => handleChange('customerName', e.target.value)} 
+      <FormField id="customer" label="Cliente">
+        <CustomerSearch
+          value={formState.customerName}
+          onChange={handleCustomerSelect}
         />
       </FormField>
 
@@ -63,6 +63,7 @@ const DealBasicInfoFields: React.FC<DealBasicInfoFieldsProps> = ({
           id="customerOrganization"
           value={formState.customerOrganization || ''} 
           onChange={(e) => handleChange('customerOrganization', e.target.value)} 
+          disabled={formState.customerType === 'organization'}
         />
       </FormField>
     </div>

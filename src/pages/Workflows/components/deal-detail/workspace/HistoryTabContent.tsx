@@ -1,8 +1,13 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Deal } from '@/pages/Workflows/models/WorkflowModels';
 
-const HistoryTabContent = () => {
+interface HistoryTabContentProps {
+  deal?: Deal;
+}
+
+const HistoryTabContent: React.FC<HistoryTabContentProps> = ({ deal }) => {
   const [filter, setFilter] = useState('all');
 
   const historyFilters = [
