@@ -12,18 +12,21 @@ import WorkflowFilters from "@/components/workflows/WorkflowFilters";
 import DepartmentDropdown from "@/components/workflows/DepartmentDropdown";
 import PipelineCard from "@/components/workflows/PipelineCard";
 import ListView from "@/components/workflows/ListView";
+import WorkflowConfigModal from "@/pages/Settings/components/modals/WorkflowConfigModal";
 
 // Import services and models
 import { 
   getDepartments, 
   getPipelinesByDepartment 
 } from "./services/workflowService";
-import { Department, Pipeline } from "./models/WorkflowModels";
+import { Department, Pipeline, Workflow } from "./models/WorkflowModels";
 
 const WorkflowsPage = () => {
   const { toast } = useToast();
   const [viewMode, setViewMode] = useState<"kanban" | "list">("kanban");
   const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
+  const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
+  const [currentWorkflow, setCurrentWorkflow] = useState<Workflow | undefined>(undefined);
   
   // Obter dados
   const departments = getDepartments();
@@ -39,10 +42,8 @@ const WorkflowsPage = () => {
     
     switch (action) {
       case "createWorkflow":
-        toast({
-          title: "Criar novo workflow",
-          description: "Esta funcionalidade está em desenvolvimento",
-        });
+        setCurrentWorkflow(undefined);
+        setIsConfigModalOpen(true);
         break;
       
       case "viewDeal":
@@ -77,6 +78,20 @@ const WorkflowsPage = () => {
   // Definir departamento selecionado
   const handleSelectDepartment = (department: Department | null) => {
     setSelectedDepartment(department);
+  };
+
+  // Fechar modal de configuração
+  const handleCloseConfigModal = () => {
+    setIsConfigModalOpen(false);
+  };
+
+  // Salvar workflow
+  const handleSaveWorkflow = (workflow: Partial<Workflow>) => {
+    console.log("Workflow salvo:", workflow);
+    toast({
+      title: currentWorkflow ? "Workflow atualizado" : "Workflow criado",
+      description: `O workflow "${workflow.title}" foi ${currentWorkflow ? "atualizado" : "criado"} com sucesso.`,
+    });
   };
 
   return (
@@ -141,6 +156,14 @@ const WorkflowsPage = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Modal de configuração de workflow */}
+      <WorkflowConfigModal
+        isOpen={isConfigModalOpen}
+        onClose={handleCloseConfigModal}
+        workflow={currentWorkflow}
+        onSave={handleSaveWorkflow}
+      />
     </DashboardLayout>
   );
 };
