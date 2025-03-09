@@ -1,135 +1,109 @@
 
-import React, { useState } from "react";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { Plus } from "lucide-react";
-import { getAssets } from "../services/settingsService";
-import { Asset } from "@/pages/Workflows/models/WorkflowModels";
-import AssetConfigModal from "./modals/AssetConfigModal";
+import React, { useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import AssetFilters from "./assets/AssetFilters";
 import AssetList from "./assets/AssetList";
+import AssetConfigModal from "./modals/AssetConfigModal";
+import { Asset } from "@/pages/Workflows/models/WorkflowModels";
+import { getAssets } from "../services/settingsService";
 
 const AssetSettings = () => {
-  const { toast } = useToast();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [assets, setAssets] = useState<Asset[]>(getAssets());
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>(undefined);
+  // States for the component
+  const [assets, setAssets] = React.useState<Asset[]>([]);
+  const [filteredAssets, setFilteredAssets] = React.useState<Asset[]>([]);
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const [statusFilter, setStatusFilter] = React.useState("all");
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [currentAsset, setCurrentAsset] = React.useState<Asset | null>(null);
 
-  const filteredAssets = assets.filter((asset) => 
-    asset.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    asset.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (asset.description && asset.description.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  // Fetch assets when component mounts
+  useEffect(() => {
+    const loadAssets = () => {
+      const assetData = getAssets();
+      setAssets(assetData);
+      setFilteredAssets(assetData);
+    };
+    
+    loadAssets();
+  }, []);
 
-  const handleAddAsset = () => {
-    setSelectedAsset(undefined);
-    setIsModalOpen(true);
-  };
-
-  const handleViewAsset = (asset: Asset) => {
-    setSelectedAsset(asset);
-    setIsModalOpen(true);
-  };
-
-  const handleEditAsset = (asset: Asset) => {
-    setSelectedAsset(asset);
-    setIsModalOpen(true);
-  };
-
-  const handleDeleteAsset = (asset: Asset) => {
-    toast({
-      title: "Remover Asset",
-      description: `Tem certeza que deseja remover o asset: ${asset.title}?`,
-      variant: "destructive",
-      action: (
-        <Button 
-          variant="outline" 
-          onClick={() => {
-            setAssets(prev => prev.filter(a => a.id !== asset.id));
-            toast({
-              title: "Asset removido",
-              description: `O asset ${asset.title} foi removido com sucesso.`,
-            });
-          }}
-        >
-          Confirmar
-        </Button>
-      ),
+  // Filter assets based on search term and status
+  useEffect(() => {
+    const filtered = assets.filter(asset => {
+      const matchesSearch = 
+        asset.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        asset.description?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesStatus = statusFilter === "all" || asset.status === statusFilter;
+      
+      return matchesSearch && matchesStatus;
     });
+    
+    setFilteredAssets(filtered);
+  }, [searchTerm, statusFilter, assets]);
+
+  // Handle opening the modal for creating a new asset
+  const handleAddAsset = () => {
+    setCurrentAsset(null);
+    setIsModalOpen(true);
   };
 
-  const handleSaveAsset = (assetData: Partial<Asset>) => {
-    if (selectedAsset) {
+  // Handle opening the modal for editing an existing asset
+  const handleEditAsset = (asset: Asset) => {
+    setCurrentAsset(asset);
+    setIsModalOpen(true);
+  };
+
+  // Handle saving an asset (both create and update)
+  const handleSaveAsset = (asset: Asset) => {
+    if (currentAsset) {
       // Update existing asset
       setAssets(prev => 
-        prev.map(a => 
-          a.id === selectedAsset.id 
-            ? { ...a, ...assetData, updatedAt: new Date() } 
-            : a
-        )
+        prev.map(a => a.id === asset.id ? asset : a)
       );
     } else {
-      // Add new asset
-      const newAsset: Asset = {
-        id: `asset-${Date.now()}`,
-        dealId: "deal-new",
-        title: assetData.title || "Novo Asset",
-        description: assetData.description,
-        type: assetData.type || "Contrato",
-        amount: assetData.amount,
-        status: assetData.status || "open",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      setAssets(prev => [...prev, newAsset]);
+      // Create new asset
+      setAssets(prev => [...prev, asset]);
     }
+    
+    setIsModalOpen(false);
+  };
+
+  // Handle deleting an asset
+  const handleDeleteAsset = (assetId: string) => {
+    setAssets(prev => prev.filter(asset => asset.id !== assetId));
   };
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <CardTitle>Gerenciamento de Assets</CardTitle>
-            <CardDescription>
-              Configure e gerencie seus assets
-            </CardDescription>
-          </div>
-          <Button onClick={handleAddAsset} className="flex-shrink-0">
-            <Plus className="h-4 w-4 mr-2" />
-            Adicionar Asset
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <AssetFilters 
-          searchTerm={searchTerm} 
-          setSearchTerm={setSearchTerm} 
+    <div className="space-y-6">
+      <Card>
+        <CardContent className="p-6">
+          <AssetFilters
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            statusFilter={statusFilter}
+            onStatusChange={setStatusFilter}
+            onAddAsset={handleAddAsset}
+          />
+          
+          <AssetList
+            assets={filteredAssets}
+            onEditAsset={handleEditAsset}
+            onDeleteAsset={handleDeleteAsset}
+          />
+        </CardContent>
+      </Card>
+      
+      {isModalOpen && (
+        <AssetConfigModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          asset={currentAsset}
+          onSave={handleSaveAsset}
+          onDelete={handleDeleteAsset}
         />
-
-        <AssetList 
-          assets={filteredAssets} 
-          onViewAsset={handleViewAsset}
-          onEditAsset={handleEditAsset} 
-          onDeleteAsset={handleDeleteAsset} 
-        />
-      </CardContent>
-
-      <AssetConfigModal 
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        asset={selectedAsset}
-        onSave={handleSaveAsset}
-      />
-    </Card>
+      )}
+    </div>
   );
 };
 

@@ -18,16 +18,15 @@ interface AgentToolsTabProps {
 
 const AVAILABLE_TOOLS: Tool[] = [
   { id: "vision", name: "Visão", icon: Eye },
-  { id: "hearing", name: "Audição", icon: Ear },
+  { id: "audio", name: "Audição", icon: Ear },
   { id: "speech", name: "Fala", icon: Mic },
   { id: "telephony", name: "Telefonia", icon: Phone },
   { id: "meeting", name: "Meeting", icon: Video },
   { id: "calendar", name: "Agenda", icon: Calendar },
   { id: "email", name: "Email", icon: Mail },
   { id: "pdf", name: "PDF", icon: FileText },
-  { id: "rag", name: "RAG", icon: Database },
   { id: "chat", name: "Chat", icon: MessageSquare },
-  { id: "web-search", name: "Pesquisa Web", icon: Search }
+  { id: "webSearch", name: "Pesquisa Web", icon: Search }
 ];
 
 const AgentToolsTab = ({ tools, onToolToggle }: AgentToolsTabProps) => {

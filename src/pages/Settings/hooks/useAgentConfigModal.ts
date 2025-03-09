@@ -15,9 +15,9 @@ export const useAgentConfigModal = ({
 }: UseAgentConfigModalProps) => {
   const defaultAgent: Partial<Agent> = {
     profile: {
-      name: "",
-      role: "",
-      goal: ""
+      agentName: "",
+      agentRole: "",
+      agentGoal: ""
     },
     workEnvironment: {
       workflowTitle: "",
@@ -28,18 +28,29 @@ export const useAgentConfigModal = ({
       stageDescription: ""
     },
     businessRules: {
-      rules: [],
-      restrictions: [],
+      rules: "",
+      restrictions: "",
       conversationStyle: "professional"
     },
     expertise: {
-      knowledge: [],
-      skills: [],
-      examples: [],
-      tasks: []
+      knowledge: "",
+      skills: "",
+      examples: "",
+      tasks: ""
     },
-    ragDocuments: [],
-    tools: [],
+    rag: [],
+    tools: {
+      vision: false,
+      audio: false,
+      speech: false,
+      telephony: false,
+      meeting: false,
+      calendar: false,
+      email: false,
+      pdf: false,
+      chat: false,
+      webSearch: false
+    },
     llmModel: "GPT-4",
     status: "active"
   };
@@ -95,7 +106,7 @@ export const useAgentConfigModal = ({
     }));
   };
 
-  const handleExpertiseChange = (field: string, value: string[]) => {
+  const handleExpertiseChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
       expertise: {
@@ -108,25 +119,17 @@ export const useAgentConfigModal = ({
   const handleRagChange = (documents: string[]) => {
     setFormData(prev => ({
       ...prev,
-      ragDocuments: documents
+      rag: documents
     }));
   };
 
   const handleToolsChange = (tool: string, enabled: boolean) => {
-    const updatedTools = [...(formData.tools || [])];
-    
-    if (enabled && !updatedTools.includes(tool)) {
-      updatedTools.push(tool);
-    } else if (!enabled) {
-      const index = updatedTools.indexOf(tool);
-      if (index !== -1) {
-        updatedTools.splice(index, 1);
-      }
-    }
-    
     setFormData(prev => ({
       ...prev,
-      tools: updatedTools
+      tools: {
+        ...((prev?.tools as any) || {}),
+        [tool]: enabled
+      }
     }));
   };
 

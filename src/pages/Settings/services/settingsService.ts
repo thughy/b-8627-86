@@ -1,3 +1,4 @@
+
 import { Asset, Department, Workflow, Integration, Collaborator, Agent } from '@/pages/Workflows/models/WorkflowModels';
 
 // Mock data - replace with API calls in the future
@@ -19,7 +20,7 @@ const mockCollaborators: Collaborator[] = [
     name: 'João Silva',
     email: 'joao.silva@example.com',
     role: 'admin',
-    department: 'Sales',
+    type: 'internal',
     status: 'active',
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -29,7 +30,7 @@ const mockCollaborators: Collaborator[] = [
     name: 'Maria Oliveira',
     email: 'maria.oliveira@example.com',
     role: 'editor',
-    department: 'Marketing',
+    type: 'external',
     status: 'active',
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -42,6 +43,7 @@ const mockIntegrations: Integration[] = [
     name: 'Salesforce',
     type: 'crm',
     provider: 'Salesforce',
+    status: 'active',
     isActive: true,
     credentials: {},
     createdAt: new Date(),
@@ -52,6 +54,7 @@ const mockIntegrations: Integration[] = [
     name: 'Gmail',
     type: 'email',
     provider: 'Google',
+    status: 'active',
     isActive: true,
     credentials: {},
     createdAt: new Date(),
@@ -79,53 +82,28 @@ const mockTemplates = [
 ];
 
 // Get Assets
-export const getAssets = async (): Promise<Asset[]> => {
-  // Simulate API call
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(mockAssets);
-    }, 500);
-  });
+export const getAssets = (): Asset[] => {
+  return mockAssets;
 };
 
 // Get Collaborators
-export const getCollaborators = async (): Promise<Collaborator[]> => {
-  // Simulate API call
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(mockCollaborators);
-    }, 500);
-  });
+export const getCollaborators = (): Collaborator[] => {
+  return mockCollaborators;
 };
 
 // Get Integrations
-export const getIntegrations = async (): Promise<Integration[]> => {
-  // Simulate API call
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(mockIntegrations);
-    }, 500);
-  });
+export const getIntegrations = (): Integration[] => {
+  return mockIntegrations;
 };
 
 // Get Workflows
-export const getWorkflows = async (): Promise<Workflow[]> => {
-  // Simulate API call
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(mockWorkflows);
-    }, 500);
-  });
+export const getWorkflows = (): Workflow[] => {
+  return mockWorkflows;
 };
 
 // Get Templates
-export const getTemplates = async () => {
-  // Simulate API call
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(mockTemplates);
-    }, 500);
-  });
+export const getTemplates = () => {
+  return mockTemplates;
 };
 
 // Add any other service functions needed

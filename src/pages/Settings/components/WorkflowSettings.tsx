@@ -1,42 +1,64 @@
 
-import React, { useState } from "react";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
+import React, { useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Plus, Search, List, Columns, MoreHorizontal } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
-import { Plus, Search, Filter, MoreHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { formatDate } from "@/lib/utils";
-import { getWorkflows } from "../services/settingsService";
+import { Toggle } from "@/components/ui/toggle";
 import { Workflow } from "@/pages/Workflows/models/WorkflowModels";
+import { getWorkflows } from "../services/settingsService";
 import WorkflowConfigModal from "./modals/WorkflowConfigModal";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useToast } from "@/hooks/use-toast";
 
 const WorkflowSettings = () => {
   const { toast } = useToast();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [workflows, setWorkflows] = useState<Workflow[]>(getWorkflows());
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedWorkflow, setSelectedWorkflow] = useState<Workflow | undefined>(undefined);
+  const [workflows, setWorkflows] = React.useState<Workflow[]>([]);
+  const [filteredWorkflows, setFilteredWorkflows] = React.useState<Workflow[]>([]);
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const [statusFilter, setStatusFilter] = React.useState("all");
+  const [viewMode, setViewMode] = React.useState("grid");
+  const [selectedWorkflow, setSelectedWorkflow] = React.useState<Workflow | null>(null);
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
 
-  const filteredWorkflows = workflows.filter((workflow) => 
-    workflow.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    workflow.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    const loadWorkflows = () => {
+      const workflowData = getWorkflows();
+      setWorkflows(workflowData);
+      setFilteredWorkflows(workflowData);
+    };
+    
+    loadWorkflows();
+  }, []);
+
+  useEffect(() => {
+    const filtered = workflows.filter((workflow) => {
+      const matchesSearch = workflow.title
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const matchesStatus =
+        statusFilter === "all" || workflow.status === statusFilter;
+
+      return matchesSearch && matchesStatus;
+    });
+
+    setFilteredWorkflows(filtered);
+  }, [searchTerm, statusFilter, workflows]);
 
   const handleAddWorkflow = () => {
-    setSelectedWorkflow(undefined);
+    setSelectedWorkflow(null);
     setIsModalOpen(true);
   };
 
@@ -45,158 +67,278 @@ const WorkflowSettings = () => {
     setIsModalOpen(true);
   };
 
-  const handleDeleteWorkflow = (workflow: Workflow) => {
+  const handleDeleteWorkflow = (workflowId: string) => {
+    setWorkflows((prev) => prev.filter((w) => w.id !== workflowId));
     toast({
-      title: "Remover Workflow",
-      description: `Tem certeza que deseja remover o workflow: ${workflow.title}?`,
-      variant: "destructive",
-      action: (
-        <Button 
-          variant="outline" 
-          onClick={() => {
-            setWorkflows(prev => prev.filter(w => w.id !== workflow.id));
-            toast({
-              title: "Workflow removido",
-              description: `O workflow ${workflow.title} foi removido com sucesso.`,
-            });
-          }}
-        >
-          Confirmar
-        </Button>
-      ),
+      title: "Workflow excluído",
+      description: "O workflow foi excluído com sucesso",
     });
   };
 
-  const handleSaveWorkflow = (workflowData: Partial<Workflow>) => {
+  const handleSaveWorkflow = (workflow: Workflow) => {
     if (selectedWorkflow) {
-      setWorkflows(prev => 
-        prev.map(w => 
-          w.id === selectedWorkflow.id 
-            ? { ...w, ...workflowData, updatedAt: new Date() } 
-            : w
-        )
+      // Update existing workflow
+      setWorkflows((prev) =>
+        prev.map((w) => (w.id === workflow.id ? workflow : w))
       );
+      toast({
+        title: "Workflow atualizado",
+        description: `O workflow "${workflow.title}" foi atualizado com sucesso`,
+      });
     } else {
-      const newWorkflow: Workflow = {
-        id: `workflow-${Date.now()}`,
-        title: workflowData.title || "Novo Workflow",
-        description: workflowData.description || "",
-        status: workflowData.status || "draft",
-        departmentId: `dept-${Date.now()}`,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      setWorkflows(prev => [...prev, newWorkflow]);
+      // Create new workflow
+      setWorkflows((prev) => [...prev, workflow]);
+      toast({
+        title: "Workflow criado",
+        description: `O workflow "${workflow.title}" foi criado com sucesso`,
+      });
     }
-  };
-
-  const getStatusBadge = (status: Workflow['status']) => {
-    switch (status) {
-      case 'active':
-        return <Badge className="bg-green-500 hover:bg-green-600">Ativo</Badge>;
-      case 'inactive':
-        return <Badge className="bg-gray-500 hover:bg-gray-600">Inativo</Badge>;
-      case 'draft':
-        return <Badge className="bg-yellow-500 hover:bg-yellow-600">Rascunho</Badge>;
-      default:
-        return null;
-    }
+    setIsModalOpen(false);
   };
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <CardTitle>Gerenciamento de Workflows</CardTitle>
-            <CardDescription>
-              Configure e gerencie todos os seus workflows
-            </CardDescription>
-          </div>
-          <Button onClick={handleAddWorkflow} className="flex-shrink-0">
-            <Plus className="h-4 w-4 mr-2" />
-            Adicionar Workflow
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-          <div className="relative w-full sm:w-96">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar workflows..."
-              className="pl-8"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <Button variant="outline" size="icon" className="flex-shrink-0">
-            <Filter className="h-4 w-4" />
-          </Button>
-        </div>
-
-        <div className="border rounded-md">
-          <div className="grid grid-cols-6 gap-4 p-4 font-medium border-b">
-            <div className="col-span-2">Nome</div>
-            <div className="col-span-2 hidden md:block">Descrição</div>
-            <div className="col-span-1">Status</div>
-            <div className="col-span-1 text-right">Ações</div>
+    <div className="space-y-6">
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Workflows</CardTitle>
+              <CardDescription>
+                Gerencie os fluxos de trabalho da sua plataforma
+              </CardDescription>
+            </div>
+            <Button onClick={handleAddWorkflow}>
+              <Plus className="h-4 w-4 mr-2" />
+              Criar Workflow
+            </Button>
           </div>
 
-          <div className="divide-y">
-            {filteredWorkflows.length > 0 ? (
-              filteredWorkflows.map((workflow) => (
-                <div key={workflow.id} className="grid grid-cols-6 gap-4 p-4 items-center">
-                  <div className="col-span-2">
-                    <div className="font-medium">{workflow.title}</div>
-                    <div className="text-sm text-muted-foreground">
-                      Atualizado em {formatDate(workflow.updatedAt)}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 mt-4">
+            <div className="relative w-full sm:w-96">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar workflows..."
+                className="pl-8"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center space-x-1 border rounded-md">
+                <Toggle
+                  pressed={viewMode === "grid"}
+                  onPressedChange={() => setViewMode("grid")}
+                  size="sm"
+                  className="px-3"
+                >
+                  <Columns className="h-4 w-4" />
+                </Toggle>
+                <Toggle
+                  pressed={viewMode === "list"}
+                  onPressedChange={() => setViewMode("list")}
+                  size="sm"
+                  className="px-3"
+                >
+                  <List className="h-4 w-4" />
+                </Toggle>
+              </div>
+
+              <select
+                className="border rounded-md p-2 text-sm"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+              >
+                <option value="all">Todos</option>
+                <option value="active">Ativos</option>
+                <option value="inactive">Inativos</option>
+                <option value="draft">Rascunhos</option>
+              </select>
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent>
+          {viewMode === "grid" ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+              {filteredWorkflows.map((workflow) => (
+                <Card key={workflow.id} className="overflow-hidden">
+                  <div
+                    className="cursor-pointer p-4"
+                    onClick={() => handleEditWorkflow(workflow)}
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="font-medium">{workflow.title}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {workflow.description}
+                        </div>
+                      </div>
+                      <div className="flex space-x-1">
+                        <Badge
+                          variant={
+                            workflow.status === "active"
+                              ? "default"
+                              : workflow.status === "draft"
+                              ? "outline"
+                              : "secondary"
+                          }
+                        >
+                          {workflow.status === "active"
+                            ? "Ativo"
+                            : workflow.status === "draft"
+                            ? "Rascunho"
+                            : "Inativo"}
+                        </Badge>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditWorkflow(workflow);
+                              }}
+                            >
+                              Editar
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="text-red-500"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteWorkflow(workflow.id);
+                              }}
+                            >
+                              Excluir
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
                     </div>
                   </div>
-                  <div className="col-span-2 hidden md:block truncate text-muted-foreground">
-                    {workflow.description}
+                  <div className="bg-muted p-3">
+                    <div className="text-xs">
+                      Criado em:{" "}
+                      <span className="font-medium">
+                        {workflow.createdAt.toLocaleDateString()}
+                      </span>
+                    </div>
                   </div>
-                  <div className="col-span-1">
-                    {getStatusBadge(workflow.status)}
-                  </div>
-                  <div className="col-span-1 flex justify-end">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleEditWorkflow(workflow)}>
-                          Editar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          onClick={() => handleDeleteWorkflow(workflow)}
-                          className="text-red-500 focus:text-red-500"
-                        >
-                          Remover
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="p-4 text-center text-muted-foreground">
-                Nenhum workflow encontrado
-              </div>
-            )}
-          </div>
-        </div>
-      </CardContent>
+                </Card>
+              ))}
 
-      <WorkflowConfigModal 
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        workflow={selectedWorkflow}
-        onSave={handleSaveWorkflow}
-      />
-    </Card>
+              {filteredWorkflows.length === 0 && (
+                <div className="col-span-full text-center p-8 border rounded-md bg-muted/20">
+                  <p className="text-muted-foreground">
+                    Nenhum workflow encontrado
+                  </p>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="mt-4">
+              <div className="border rounded-md overflow-hidden">
+                <div className="bg-muted p-3 grid grid-cols-12 gap-4 font-medium text-sm">
+                  <div className="col-span-5">Nome</div>
+                  <div className="col-span-4">Descrição</div>
+                  <div className="col-span-2">Status</div>
+                  <div className="col-span-1"></div>
+                </div>
+                {filteredWorkflows.map((workflow) => (
+                  <div
+                    key={workflow.id}
+                    className="p-3 grid grid-cols-12 gap-4 items-center border-t hover:bg-muted/20 cursor-pointer"
+                    onClick={() => handleEditWorkflow(workflow)}
+                  >
+                    <div className="col-span-5 font-medium">
+                      {workflow.title}
+                    </div>
+                    <div className="col-span-4 text-sm text-muted-foreground truncate">
+                      {workflow.description}
+                    </div>
+                    <div className="col-span-2">
+                      <Badge
+                        variant={
+                          workflow.status === "active"
+                            ? "default"
+                            : workflow.status === "draft"
+                            ? "outline"
+                            : "secondary"
+                        }
+                      >
+                        {workflow.status === "active"
+                          ? "Ativo"
+                          : workflow.status === "draft"
+                          ? "Rascunho"
+                          : "Inativo"}
+                      </Badge>
+                    </div>
+                    <div className="col-span-1 text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEditWorkflow(workflow);
+                            }}
+                          >
+                            Editar
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-red-500"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteWorkflow(workflow.id);
+                            }}
+                          >
+                            Excluir
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </div>
+                ))}
+
+                {filteredWorkflows.length === 0 && (
+                  <div className="p-8 text-center border-t">
+                    <p className="text-muted-foreground">
+                      Nenhum workflow encontrado
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {isModalOpen && (
+        <WorkflowConfigModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSave={handleSaveWorkflow}
+          workflow={selectedWorkflow}
+        />
+      )}
+    </div>
   );
 };
 

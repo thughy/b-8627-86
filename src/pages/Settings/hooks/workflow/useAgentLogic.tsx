@@ -13,27 +13,38 @@ export const useAgentLogic = (
 ) => {
   const { toast } = useToast();
   const [newAgent, setNewAgent] = useState<Partial<Agent>>({ 
-    profile: { name: "", role: "", goal: "" },
+    profile: { agentName: "", agentRole: "", agentGoal: "" },
     workEnvironment: {},
     businessRules: {
-      rules: [],
-      restrictions: [],
+      rules: "",
+      restrictions: "",
       conversationStyle: "professional"
     },
     expertise: {
-      knowledge: [],
-      skills: [],
-      examples: [],
-      tasks: []
+      knowledge: "",
+      skills: "",
+      examples: "",
+      tasks: ""
     },
-    ragDocuments: [],
-    tools: [],
+    rag: [],
+    tools: {
+      vision: false,
+      audio: false,
+      speech: false,
+      telephony: false,
+      meeting: false,
+      calendar: false,
+      email: false,
+      pdf: false,
+      chat: false,
+      webSearch: false
+    },
     llmModel: "GPT-4",
     status: "active"
   });
 
   const handleAddAgent = (stageId: string) => {
-    if (!newAgent.profile?.name) {
+    if (!newAgent.profile?.agentName) {
       toast({
         title: "Nome obrigatório",
         description: "Por favor, informe um nome para o agente.",
@@ -47,27 +58,38 @@ export const useAgentLogic = (
       id: `agent-${Date.now()}`,
       stageId: stageId,
       profile: {
-        name: newAgent.profile.name,
-        role: newAgent.profile.role || "Assistente",
-        goal: newAgent.profile.goal || ""
+        agentName: newAgent.profile.agentName,
+        agentRole: newAgent.profile.agentRole || "Assistente",
+        agentGoal: newAgent.profile.agentGoal || ""
       },
       workEnvironment: {
         stageTitle: stages.find(s => s.id === stageId)?.title || "",
         ...newAgent.workEnvironment
       },
       businessRules: newAgent.businessRules || {
-        rules: [],
-        restrictions: [],
+        rules: "",
+        restrictions: "",
         conversationStyle: "professional"
       },
       expertise: newAgent.expertise || {
-        knowledge: [],
-        skills: [],
-        examples: [],
-        tasks: []
+        knowledge: "",
+        skills: "",
+        examples: "",
+        tasks: ""
       },
-      ragDocuments: newAgent.ragDocuments || [],
-      tools: newAgent.tools || [],
+      rag: newAgent.rag || [],
+      tools: newAgent.tools || {
+        vision: false,
+        audio: false,
+        speech: false,
+        telephony: false,
+        meeting: false,
+        calendar: false,
+        email: false,
+        pdf: false,
+        chat: false,
+        webSearch: false
+      },
       llmModel: newAgent.llmModel || "GPT-4",
       status: newAgent.status || "active",
       createdAt: new Date(),
@@ -79,28 +101,39 @@ export const useAgentLogic = (
     
     // Reset the new agent form with default values
     setNewAgent({ 
-      profile: { name: "", role: "", goal: "" },
+      profile: { agentName: "", agentRole: "", agentGoal: "" },
       workEnvironment: {},
       businessRules: {
-        rules: [],
-        restrictions: [],
+        rules: "",
+        restrictions: "",
         conversationStyle: "professional"
       },
       expertise: {
-        knowledge: [],
-        skills: [],
-        examples: [],
-        tasks: []
+        knowledge: "",
+        skills: "",
+        examples: "",
+        tasks: ""
       },
-      ragDocuments: [],
-      tools: [],
+      rag: [],
+      tools: {
+        vision: false,
+        audio: false,
+        speech: false,
+        telephony: false,
+        meeting: false,
+        calendar: false,
+        email: false,
+        pdf: false,
+        chat: false,
+        webSearch: false
+      },
       llmModel: "GPT-4",
       status: "active"
     });
     
     toast({
       title: "Agente adicionado",
-      description: `O agente "${agent.profile.name}" foi adicionado com sucesso.`,
+      description: `O agente "${agent.profile.agentName}" foi adicionado com sucesso.`,
     });
   };
 
