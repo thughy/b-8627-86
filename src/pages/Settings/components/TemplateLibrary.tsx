@@ -10,8 +10,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Search, Filter, Copy, Download, FileText } from "lucide-react";
+import { Plus, Search, Filter, Copy, Download, Upload, FileText, ChevronDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 import { formatDate } from "@/lib/utils";
 import { getTemplates } from "../services/settingsService";
 import { Template } from "@/pages/Workflows/models/WorkflowModels";
@@ -33,17 +39,30 @@ const TemplateLibrary = () => {
     });
   };
 
-  const handleUseTemplate = (template: Template) => {
-    toast({
-      title: "Usar Template",
-      description: `Usar template: ${template.name}`,
-    });
-  };
-
   const handleExportTemplate = (template: Template) => {
     toast({
       title: "Exportar Template",
       description: `Exportar template: ${template.name}`,
+    });
+  };
+
+  const handleGenerateReport = () => {
+    toast({
+      title: "Relatório de Templates",
+      description: "Gerando relatório de templates",
+    });
+  };
+
+  const handleTemplateAction = (template: Template, action: 'install' | 'uninstall' | 'update') => {
+    const actionMessages = {
+      install: `Instalando template: ${template.name}`,
+      uninstall: `Desinstalando template: ${template.name}`,
+      update: `Atualizando template: ${template.name}`
+    };
+    
+    toast({
+      title: `${action.charAt(0).toUpperCase() + action.slice(1)} Template`,
+      description: actionMessages[action],
     });
   };
 
@@ -76,10 +95,16 @@ const TemplateLibrary = () => {
               Gerencie e aplique templates pré-configurados
             </CardDescription>
           </div>
-          <Button onClick={handleImportTemplate} className="flex-shrink-0">
-            <Plus className="h-4 w-4 mr-2" />
-            Importar Template
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={handleGenerateReport} variant="outline" className="flex-shrink-0">
+              <FileText className="h-4 w-4 mr-2" />
+              Relatório
+            </Button>
+            <Button onClick={handleImportTemplate} className="flex-shrink-0">
+              <Upload className="h-4 w-4 mr-2" />
+              Importar Template
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -99,18 +124,18 @@ const TemplateLibrary = () => {
         </div>
 
         <div className="border rounded-md">
-          <div className="grid grid-cols-6 gap-4 p-4 font-medium border-b">
+          <div className="grid grid-cols-7 gap-4 p-4 font-medium border-b">
             <div className="col-span-2">Nome</div>
             <div className="col-span-1">Tipo</div>
             <div className="col-span-1">Versão</div>
             <div className="col-span-1 hidden md:block">Atualizado</div>
-            <div className="col-span-1 text-right">Ações</div>
+            <div className="col-span-2 text-right">Ações</div>
           </div>
 
           <div className="divide-y">
             {filteredTemplates.length > 0 ? (
               filteredTemplates.map((template) => (
-                <div key={template.id} className="grid grid-cols-6 gap-4 p-4 items-center">
+                <div key={template.id} className="grid grid-cols-7 gap-4 p-4 items-center">
                   <div className="col-span-2">
                     <div className="font-medium">{template.name}</div>
                     <div className="text-sm text-muted-foreground truncate">
@@ -127,14 +152,26 @@ const TemplateLibrary = () => {
                   <div className="col-span-1 hidden md:block text-muted-foreground">
                     {formatDate(template.updatedAt)}
                   </div>
-                  <div className="col-span-1 flex justify-end gap-2">
-                    <Button 
-                      variant="ghost" 
-                      size="icon"
-                      onClick={() => handleUseTemplate(template)}
-                    >
-                      <Copy className="h-4 w-4" />
-                    </Button>
+                  <div className="col-span-2 flex justify-end gap-2">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          Ações
+                          <ChevronDown className="ml-2 h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleTemplateAction(template, 'install')}>
+                          Instalar
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleTemplateAction(template, 'update')}>
+                          Atualizar
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleTemplateAction(template, 'uninstall')}>
+                          Desinstalar
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                     <Button 
                       variant="ghost" 
                       size="icon"
