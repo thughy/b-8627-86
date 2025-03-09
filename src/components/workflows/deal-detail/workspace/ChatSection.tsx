@@ -6,38 +6,25 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { MessageSquare, Send, User, Bot, AlertCircle } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
-import { useChatState, ChatMessage } from './hooks/useChatState';
-import { useToast } from '@/hooks/use-toast';
+import { ChatMessage } from './hooks/useChatState';
 
 interface ChatSectionProps {
   dealId?: string;
+  messages: ChatMessage[];
+  sendMessage: (content: string, sender?: 'user' | 'system' | 'agent', senderName?: string) => void;
 }
 
-const ChatSection: React.FC<ChatSectionProps> = ({ dealId }) => {
+const ChatSection: React.FC<ChatSectionProps> = ({ dealId, messages, sendMessage }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { toast } = useToast();
+  const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [useMultiline, setUseMultiline] = useState(false);
   
-  // Initialize with a system message and deal context information
-  const initialMessages: ChatMessage[] = [
-    {
-      id: 'initial',
-      sender: 'system',
-      senderName: 'Sistema',
-      content: dealId 
-        ? `Negócio #${dealId.slice(0, 8)} criado com sucesso. Você pode interagir com os participantes neste chat.`
-        : 'Chat iniciado. Aguardando contexto do negócio.',
-      timestamp: new Date(),
-    }
-  ];
-  
-  const { messages, inputValue, setInputValue, sendMessage, setMessages } = useChatState(initialMessages);
-
   const handleSendMessage = () => {
     if (!inputValue.trim()) return;
     
     sendMessage(inputValue);
+    setInputValue('');
     
     // Simulate agent response
     setIsTyping(true);
@@ -63,33 +50,12 @@ const ChatSection: React.FC<ChatSectionProps> = ({ dealId }) => {
     }
   };
 
-  // Function to handle automated agent chat responses
-  const triggerSystemMessage = (message: string) => {
-    sendMessage(message, 'system', 'Sistema');
-  };
-
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages]);
-
-  // Simulate initial agent greeting when dealId changes
-  useEffect(() => {
-    if (dealId && messages.length === 1) {
-      setIsTyping(true);
-      
-      setTimeout(() => {
-        sendMessage(
-          "Olá! Sou o assistente deste negócio. Como posso ajudar você hoje?", 
-          'agent', 
-          'Assistente'
-        );
-        setIsTyping(false);
-      }, 1000);
-    }
-  }, [dealId]);
 
   return (
     <div className="h-full flex flex-col">

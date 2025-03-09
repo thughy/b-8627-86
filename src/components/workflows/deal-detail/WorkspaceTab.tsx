@@ -6,6 +6,7 @@ import ChatSection from './workspace/ChatSection';
 import FocusSection from './workspace/FocusSection';
 import HistorySection from './workspace/HistorySection';
 import { useToast } from '@/hooks/use-toast';
+import { useChatMessages } from '@/pages/Workflows/hooks/useChatMessages';
 
 interface WorkspaceTabProps {
   assets: Asset[];
@@ -23,6 +24,9 @@ const WorkspaceTab: React.FC<WorkspaceTabProps> = ({
   const [activeSection, setActiveSection] = useState<string>('chat');
   const [activeWorkspaceTab, setActiveWorkspaceTab] = useState<string>('all');
   const { toast } = useToast();
+  
+  // Use our global chat messages store
+  const { messages, sendMessage } = useChatMessages(dealId);
 
   // Set chat as default active section when deal changes
   useEffect(() => {
@@ -30,6 +34,19 @@ const WorkspaceTab: React.FC<WorkspaceTabProps> = ({
       setActiveSection('chat');
     }
   }, [dealId]);
+
+  useEffect(() => {
+    // Simulate agent greeting when deal is loaded and only has the system message
+    if (dealId && messages.length === 1) {
+      setTimeout(() => {
+        sendMessage(
+          "Olá! Sou o assistente deste negócio. Como posso ajudar você hoje?", 
+          'agent', 
+          'Assistente'
+        );
+      }, 1000);
+    }
+  }, [dealId, messages.length]);
 
   const handleCreateAction = (actionType: string) => {
     switch (actionType) {
@@ -59,7 +76,13 @@ const WorkspaceTab: React.FC<WorkspaceTabProps> = ({
       />
       
       <div className="col-span-5 md:col-span-4 flex flex-col overflow-hidden">
-        {activeSection === 'chat' && <ChatSection dealId={dealId} />}
+        {activeSection === 'chat' && (
+          <ChatSection 
+            dealId={dealId} 
+            messages={messages} 
+            sendMessage={sendMessage}
+          />
+        )}
         
         {activeSection === 'focus' && (
           <FocusSection 

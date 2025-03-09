@@ -12,6 +12,7 @@ import DealHeader from './deal-detail/DealHeader';
 import DealSummary from './deal-detail/DealSummary';
 import DealDetailsTab from './deal-detail/DealDetailsTab';
 import WorkspaceTab from './deal-detail/WorkspaceTab';
+import { useChatMessages } from '@/pages/Workflows/hooks/useChatMessages';
 
 interface DealDetailModalProps {
   isOpen: boolean;
@@ -33,6 +34,7 @@ const DealDetailModal: React.FC<DealDetailModalProps> = ({
   onCancelDeal
 }) => {
   const [activeTab, setActiveTab] = useState('workspace');
+  const { messages } = useChatMessages(deal.id);
 
   // Example assets for this deal
   const assets: Asset[] = [
@@ -70,7 +72,7 @@ const DealDetailModal: React.FC<DealDetailModalProps> = ({
 
   // Counters para exibir na cabeçalho
   const counters = {
-    chat: 2,
+    chat: messages.length,
     assets: assets.length,
     tasks: 0,
     notes: 0,

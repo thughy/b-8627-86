@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Clipboard, CreditCard, Calendar, User, Building2 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { format } from "date-fns";
+import ChatPreview from "./ChatPreview";
+import { useChatMessages } from "@/pages/Workflows/hooks/useChatMessages";
 
 interface DealCardProps {
   deal: Deal;
@@ -13,6 +15,8 @@ interface DealCardProps {
 }
 
 const DealCard = ({ deal, onAction }: DealCardProps) => {
+  const { messages } = useChatMessages(deal.id);
+  
   const getStatusColor = (status: string) => {
     switch (status) {
       case "open": return "bg-blue-500/20 text-blue-700";
@@ -92,6 +96,9 @@ const DealCard = ({ deal, onAction }: DealCardProps) => {
             </div>
           )}
         </div>
+        
+        {/* Chat Preview - Show last 3 messages */}
+        <ChatPreview messages={messages} maxMessages={3} />
       </CardContent>
     </Card>
   );
