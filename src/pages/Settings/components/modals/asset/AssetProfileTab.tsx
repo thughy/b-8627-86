@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Asset } from "@/pages/Workflows/models/WorkflowModels";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { getDepartments, getPipelines, getStages } from "@/pages/Settings/services/workflowDataService";
 
 interface AssetProfileTabProps {
   formData: Partial<Asset>;
@@ -19,8 +20,20 @@ const AssetProfileTab = ({ formData, onChange }: AssetProfileTabProps) => {
     "Pedido", "Paciente", "Serviço", "Produto", "Projeto", "Petição"
   ];
 
-  const [newType, setNewType] = React.useState("");
-  const [availableTypes, setAvailableTypes] = React.useState(assetTypes);
+  const [newType, setNewType] = useState("");
+  const [availableTypes, setAvailableTypes] = useState(assetTypes);
+  
+  // Fetch workflow data
+  const departments = getDepartments();
+  const pipelines = getPipelines();
+  const stages = getStages();
+
+  // Get workflows from pipelines (for this example, we'll treat pipelines as workflows)
+  const workflows = pipelines.map(pipeline => ({
+    id: pipeline.id,
+    title: pipeline.title,
+    description: pipeline.description
+  }));
 
   const handleAddNewType = () => {
     if (newType && !availableTypes.includes(newType)) {
@@ -97,46 +110,65 @@ const AssetProfileTab = ({ formData, onChange }: AssetProfileTabProps) => {
       <div className="grid gap-2">
         <Label>Ambiente de Trabalho</Label>
         <div className="grid gap-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="workflowTitle" className="text-xs">Workflow</Label>
-              <Input 
-                id="workflowTitle"
-                placeholder="Título do workflow"
-                value={formData.workEnvironment?.workflowTitle || ""}
-                onChange={(e) => onChange("workEnvironment", {
-                  ...formData.workEnvironment,
-                  workflowTitle: e.target.value
-                })}
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <Label htmlFor="departmentTitle" className="text-xs">Departamento</Label>
-              <Input 
-                id="departmentTitle"
-                placeholder="Título do departamento"
-                value={formData.workEnvironment?.departmentTitle || ""}
-                onChange={(e) => onChange("workEnvironment", {
-                  ...formData.workEnvironment,
-                  departmentTitle: e.target.value
-                })}
-                className="mt-1"
-              />
-            </div>
-          </div>
-          <div>
-            <Label htmlFor="stageTitle" className="text-xs">Estágio</Label>
-            <Input 
-              id="stageTitle"
-              placeholder="Título do estágio"
-              value={formData.workEnvironment?.stageTitle || ""}
-              onChange={(e) => onChange("workEnvironment", {
+          <div className="grid gap-2">
+            <Label htmlFor="workflowTitle" className="text-xs">Workflow</Label>
+            <Select 
+              value={formData.workEnvironment?.workflowTitle || ""} 
+              onValueChange={(value) => onChange("workEnvironment", {
                 ...formData.workEnvironment,
-                stageTitle: e.target.value
+                workflowTitle: value,
+                workflowDescription: workflows.find(w => w.title === value)?.description || ""
               })}
-              className="mt-1"
-            />
+            >
+              <SelectTrigger id="workflowTitle">
+                <SelectValue placeholder="Selecione o workflow" />
+              </SelectTrigger>
+              <SelectContent>
+                {workflows.map((workflow) => (
+                  <SelectItem key={workflow.id} value={workflow.title}>{workflow.title}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="grid gap-2">
+            <Label htmlFor="departmentTitle" className="text-xs">Departamento</Label>
+            <Select 
+              value={formData.workEnvironment?.departmentTitle || ""} 
+              onValueChange={(value) => onChange("workEnvironment", {
+                ...formData.workEnvironment,
+                departmentTitle: value
+              })}
+            >
+              <SelectTrigger id="departmentTitle">
+                <SelectValue placeholder="Selecione o departamento" />
+              </SelectTrigger>
+              <SelectContent>
+                {departments.map((department) => (
+                  <SelectItem key={department.id} value={department.title}>{department.title}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="grid gap-2">
+            <Label htmlFor="stageTitle" className="text-xs">Estágio</Label>
+            <Select 
+              value={formData.workEnvironment?.stageTitle || ""} 
+              onValueChange={(value) => onChange("workEnvironment", {
+                ...formData.workEnvironment,
+                stageTitle: value
+              })}
+            >
+              <SelectTrigger id="stageTitle">
+                <SelectValue placeholder="Selecione o estágio" />
+              </SelectTrigger>
+              <SelectContent>
+                {stages.map((stage) => (
+                  <SelectItem key={stage.id} value={stage.title}>{stage.title}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </div>
