@@ -14,6 +14,7 @@ import Dashboard from "./pages/Dashboard/Index";
 import WorkflowsPage from "./pages/Workflows/Index";
 import SettingsPage from "./pages/Settings/Index";
 import CustomersPage from "./pages/Customers/Index";
+import FilesPage from "./pages/Files/Index";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ const App = () => (
           <Route path="/workflows" element={<WorkflowsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/customers" element={<CustomersPage />} />
+          <Route path="/files" element={<FilesPage />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

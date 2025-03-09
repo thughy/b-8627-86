@@ -44,6 +44,11 @@ const SidebarNav = ({ onCloseSidebar }: SidebarNavProps) => {
       path: "/customers",
     },
     {
+      icon: <FileText className="h-5 w-5" />,
+      label: "Arquivos",
+      path: "/files",
+    },
+    {
       icon: <Calendar className="h-5 w-5" />,
       label: "Agenda",
       path: "/agenda",
@@ -52,11 +57,6 @@ const SidebarNav = ({ onCloseSidebar }: SidebarNavProps) => {
       icon: <Mail className="h-5 w-5" />,
       label: "Email",
       path: "/email",
-    },
-    {
-      icon: <FileText className="h-5 w-5" />,
-      label: "Arquivos",
-      path: "/files",
     },
     {
       icon: <ShoppingBag className="h-5 w-5" />,

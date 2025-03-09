@@ -1,4 +1,3 @@
-
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -29,4 +28,13 @@ export function getPageRange(currentPage: number, totalItems: number, itemsPerPa
   const start = (currentPage - 1) * itemsPerPage + 1;
   const end = Math.min(start + itemsPerPage - 1, totalItems);
   return { start, end };
+}
+
+export function formatFileSize(bytes: number): string {
+  if (bytes === 0) return '0 Bytes';
+  
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  
+  return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + ' ' + sizes[i];
 }
