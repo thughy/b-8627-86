@@ -4,7 +4,6 @@ import { Deal, Asset } from '@/pages/Workflows/models/WorkflowModels';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MessageCircle, FileText, History } from 'lucide-react';
 import { useChatMessages } from '@/pages/Workflows/hooks/useChatMessages';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import ChatSection from './workspace/ChatSection';
 import FocusTabContent from './workspace/FocusTabContent';
 import HistoryTabContent from './workspace/HistoryTabContent';
@@ -83,25 +82,19 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({ deal, onCreateAsset
       <div className="flex-1">
         <Tabs defaultValue="chat" value={activeTab} className="h-full">
           <TabsContent value="chat" className="h-full mt-0">
-            <ScrollArea className="h-full">
-              <ChatSection dealId={deal.id} messages={messages} />
-            </ScrollArea>
+            <ChatSection dealId={deal.id} messages={messages} />
           </TabsContent>
           
           <TabsContent value="focus" className="h-full mt-0">
-            <ScrollArea className="h-full">
-              <FocusTabContent 
-                deal={deal}
-                assets={assets}
-                onCreateAsset={onCreateAsset}
-              />
-            </ScrollArea>
+            <FocusTabContent 
+              deal={deal}
+              assets={assets}
+              onCreateAsset={onCreateAsset}
+            />
           </TabsContent>
           
           <TabsContent value="history" className="h-full mt-0">
-            <ScrollArea className="h-full">
-              <HistoryTabContent />
-            </ScrollArea>
+            <HistoryTabContent />
           </TabsContent>
         </Tabs>
       </div>
