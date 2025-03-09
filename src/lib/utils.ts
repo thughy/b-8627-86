@@ -24,3 +24,9 @@ export function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
   return text.substring(0, maxLength) + "...";
 }
+
+export function getPageRange(currentPage: number, totalItems: number, itemsPerPage: number): { start: number; end: number } {
+  const start = (currentPage - 1) * itemsPerPage + 1;
+  const end = Math.min(start + itemsPerPage - 1, totalItems);
+  return { start, end };
+}
