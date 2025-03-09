@@ -4,16 +4,27 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Edit, Eye, Workflow } from "lucide-react";
+import { Workflow as WorkflowType } from "@/pages/Workflows/models/WorkflowModels";
 
 interface WorkflowListItemProps {
   title: string;
+  description?: string;
+  status: 'active' | 'inactive' | 'draft';
   index: number;
   onAction: (action: string, data?: any) => void;
+  workflow: WorkflowType;
 }
 
-const WorkflowListItem = ({ title, index, onAction }: WorkflowListItemProps) => {
-  const isActive = index % 2 === 0;
-  const dealCount = 10 - index;
+const WorkflowListItem = ({ 
+  title, 
+  description, 
+  status, 
+  index, 
+  onAction, 
+  workflow 
+}: WorkflowListItemProps) => {
+  const isActive = status === 'active';
+  const dealCount = 10 - index; // Mockup for display purposes
   
   return (
     <Card className="hover:bg-muted/20 transition-colors">
@@ -24,9 +35,12 @@ const WorkflowListItem = ({ title, index, onAction }: WorkflowListItemProps) => 
           </div>
           <div>
             <h3 className="font-medium">{title}</h3>
+            {description && (
+              <p className="text-sm text-muted-foreground line-clamp-1">{description}</p>
+            )}
             <div className="flex items-center gap-2 mt-1">
               <Badge variant={isActive ? "default" : "outline"} className="text-xs">
-                {isActive ? "Ativo" : "Em desenvolvimento"}
+                {status === 'active' ? "Ativo" : status === 'draft' ? "Rascunho" : "Inativo"}
               </Badge>
               <span className="text-sm text-muted-foreground">
                 {dealCount} deals
@@ -39,19 +53,10 @@ const WorkflowListItem = ({ title, index, onAction }: WorkflowListItemProps) => 
             variant="ghost" 
             size="sm" 
             className="flex items-center gap-1"
-            onClick={() => onAction(`Editar ${title}`)}
-          >
-            <Edit className="h-4 w-4" />
-            <span className="hidden sm:inline">Editar</span>
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="flex items-center gap-1"
-            onClick={() => onAction(`Visualizar ${title}`)}
+            onClick={() => onAction("viewDeals", workflow)}
           >
             <Eye className="h-4 w-4" />
-            <span className="hidden sm:inline">Visualizar</span>
+            <span className="hidden sm:inline">Operar</span>
           </Button>
         </div>
       </CardContent>

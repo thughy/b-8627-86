@@ -1,10 +1,8 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 
 // Import components
 import WorkflowHeader from "@/components/workflows/WorkflowHeader";
@@ -17,9 +15,10 @@ import WorkflowConfigModal from "@/pages/Settings/components/modals/WorkflowConf
 // Import services and models
 import { 
   getDepartments, 
-  getPipelinesByDepartment 
+  getPipelinesByDepartment,
+  getWorkflows
 } from "./services/workflowService";
-import { Department, Pipeline, Workflow } from "./models/WorkflowModels";
+import { Department, Pipeline, Workflow, Deal } from "./models/WorkflowModels";
 
 const WorkflowsPage = () => {
   const { toast } = useToast();
@@ -27,6 +26,33 @@ const WorkflowsPage = () => {
   const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
   const [currentWorkflow, setCurrentWorkflow] = useState<Workflow | undefined>(undefined);
+  const [workflows, setWorkflows] = useState<Workflow[]>([]);
+  const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Obter workflows no carregamento inicial
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        // Carregar workflows da API (ou mock data)
+        const workflowsData = getWorkflows();
+        setWorkflows(workflowsData);
+        
+      } catch (error) {
+        console.error("Erro ao carregar workflows:", error);
+        toast({
+          title: "Erro ao carregar workflows",
+          description: "Não foi possível carregar os workflows configurados.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, [toast]);
   
   // Obter dados
   const departments = getDepartments();
@@ -36,34 +62,49 @@ const WorkflowsPage = () => {
       ? getPipelinesByDepartment(departments[0].id)
       : [];
   
+  useEffect(() => {
+    if (departments.length > 0 && !selectedDepartment) {
+      setSelectedDepartment(departments[0]);
+    }
+  }, [departments, selectedDepartment]);
+  
   // Manipular ações do usuário
   const handleAction = (action: string, data?: any) => {
     console.log(`Ação: ${action}`, data);
     
     switch (action) {
-      case "createWorkflow":
-        setCurrentWorkflow(undefined);
-        setIsConfigModalOpen(true);
+      case "viewDeals":
+        // Quando o usuário clica para ver os deals de um workflow
+        setCurrentWorkflow(data);
+        // Idealmente mudaríamos para a visualização Kanban e filtraríamos os deals desse workflow
+        setViewMode("kanban");
+        if (data.departments && data.departments.length > 0) {
+          // Encontrar o departamento associado a este workflow
+          const relatedDepartment = departments.find(d => d.id === data.departments[0].id);
+          if (relatedDepartment) {
+            setSelectedDepartment(relatedDepartment);
+          }
+        }
+        toast({
+          title: `Operando workflow: ${data.title}`,
+          description: "Carregando deals e departamentos relacionados."
+        });
         break;
       
       case "viewDeal":
+        // Quando o usuário clica para ver um deal específico
+        setSelectedDeal(data);
         toast({
           title: `Visualizando deal: ${data.title}`,
-          description: "Esta funcionalidade está em desenvolvimento",
+          description: "Carregando detalhes do deal."
         });
         break;
       
       case "createDeal":
+        // Quando o usuário clica para criar um novo deal em um estágio
         toast({
           title: "Adicionar novo deal",
           description: `No estágio ID: ${data.stageId}`,
-        });
-        break;
-      
-      case "editPipeline":
-        toast({
-          title: `Editar pipeline: ${data.title}`,
-          description: "Esta funcionalidade está em desenvolvimento",
         });
         break;
       
@@ -85,19 +126,10 @@ const WorkflowsPage = () => {
     setIsConfigModalOpen(false);
   };
 
-  // Salvar workflow
-  const handleSaveWorkflow = (workflow: Partial<Workflow>) => {
-    console.log("Workflow salvo:", workflow);
-    toast({
-      title: currentWorkflow ? "Workflow atualizado" : "Workflow criado",
-      description: `O workflow "${workflow.title}" foi ${currentWorkflow ? "atualizado" : "criado"} com sucesso.`,
-    });
-  };
-
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <WorkflowHeader onCreateWorkflow={() => handleAction("createWorkflow")} />
+        <WorkflowHeader title="Gestão de Workflows" description="Opere seus workflows e acompanhe seus deals" />
         
         <WorkflowFilters 
           viewMode={viewMode} 
@@ -110,60 +142,56 @@ const WorkflowsPage = () => {
           </TabsList>
           
           <TabsContent value="all" className="space-y-6 mt-0">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <DepartmentDropdown
-                departments={departments}
-                selectedDepartment={selectedDepartment || departments[0]}
-                onSelectDepartment={handleSelectDepartment}
+            {viewMode === "list" ? (
+              // Visualização de lista de workflows
+              <ListView 
+                onAction={handleAction}
+                workflows={workflows}
               />
-              
-              <Button 
-                onClick={() => handleAction("createPipeline")}
-                className="sm:flex-none flex-1"
-                variant="outline"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Novo Pipeline
-              </Button>
-            </div>
-
-            {viewMode === "kanban" ? (
-              <div className="space-y-8">
-                {pipelines.map((pipeline: Pipeline) => (
-                  <PipelineCard 
-                    key={pipeline.id} 
-                    pipeline={pipeline} 
-                    onAction={handleAction}
-                  />
-                ))}
-                
-                {pipelines.length === 0 && (
-                  <div className="flex flex-col items-center justify-center bg-muted/30 rounded-lg p-8 text-center">
-                    <h3 className="text-lg font-medium mb-2">Nenhum pipeline encontrado</h3>
-                    <p className="text-muted-foreground mb-4">
-                      Não existe nenhum pipeline configurado para este departamento.
-                    </p>
-                    <Button onClick={() => handleAction("createPipeline")}>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Criar Novo Pipeline
-                    </Button>
-                  </div>
-                )}
-              </div>
             ) : (
-              <ListView onAction={handleAction} />
+              // Visualização Kanban (exibe pipelines e deals)
+              <>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <DepartmentDropdown
+                    departments={departments}
+                    selectedDepartment={selectedDepartment || departments[0]}
+                    onSelectDepartment={handleSelectDepartment}
+                  />
+                </div>
+
+                <div className="space-y-8">
+                  {pipelines.map((pipeline: Pipeline) => (
+                    <PipelineCard 
+                      key={pipeline.id} 
+                      pipeline={pipeline} 
+                      onAction={handleAction}
+                    />
+                  ))}
+                  
+                  {pipelines.length === 0 && (
+                    <div className="flex flex-col items-center justify-center bg-muted/30 rounded-lg p-8 text-center">
+                      <h3 className="text-lg font-medium mb-2">Nenhum pipeline encontrado</h3>
+                      <p className="text-muted-foreground mb-4">
+                        Não existe nenhum pipeline configurado para este departamento.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </>
             )}
           </TabsContent>
         </Tabs>
       </div>
 
-      {/* Modal de configuração de workflow */}
-      <WorkflowConfigModal
-        isOpen={isConfigModalOpen}
-        onClose={handleCloseConfigModal}
-        workflow={currentWorkflow}
-        onSave={handleSaveWorkflow}
-      />
+      {/* Modal de configuração de workflow - usado apenas para visualização */}
+      {isConfigModalOpen && (
+        <WorkflowConfigModal
+          isOpen={isConfigModalOpen}
+          onClose={handleCloseConfigModal}
+          workflow={currentWorkflow}
+          onSave={() => {}}
+        />
+      )}
     </DashboardLayout>
   );
 };

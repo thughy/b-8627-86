@@ -1,130 +1,276 @@
 
-import { Workflow, Department, Pipeline, Stage, Deal } from "../models/WorkflowModels";
+import { Department, Pipeline, Stage, Deal, Workflow } from "../models/WorkflowModels";
+
+// Mock data para workflow
+const mockWorkflows: Workflow[] = [
+  {
+    id: "workflow-1",
+    title: "Comercial",
+    description: "Workflow de vendas e prospecção",
+    status: "active",
+    departmentId: "dept-1",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "workflow-2",
+    title: "Suporte",
+    description: "Workflow de atendimento ao cliente",
+    status: "active",
+    departmentId: "dept-2",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "workflow-3",
+    title: "Marketing",
+    description: "Workflow de campanhas de marketing",
+    status: "draft",
+    departmentId: "dept-3",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "workflow-4",
+    title: "Financeiro",
+    description: "Workflow de gestão financeira",
+    status: "inactive",
+    departmentId: "dept-4",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
+];
 
 // Mock data para departamentos
-export const getDepartments = (): Department[] => {
-  return [
-    { id: "dept-1", title: "Comercial", description: "Departamento de vendas e negociações", color: "#10b981" },
-    { id: "dept-2", title: "Suporte", description: "Departamento de atendimento ao cliente", color: "#3b82f6" },
-    { id: "dept-3", title: "Marketing", description: "Departamento de marketing e comunicação", color: "#8b5cf6" },
-    { id: "dept-4", title: "Financeiro", description: "Departamento financeiro e contábil", color: "#f59e0b" }
-  ];
-};
+const mockDepartments: Department[] = [
+  {
+    id: "dept-1",
+    title: "Comercial",
+    description: "Departamento de vendas"
+  },
+  {
+    id: "dept-2",
+    title: "Suporte",
+    description: "Departamento de suporte ao cliente"
+  },
+  {
+    id: "dept-3",
+    title: "Marketing",
+    description: "Departamento de marketing"
+  },
+  {
+    id: "dept-4",
+    title: "Financeiro",
+    description: "Departamento financeiro"
+  }
+];
 
 // Mock data para pipelines
-export const getPipelines = (): Pipeline[] => {
-  return [
-    {
-      id: "pipe-1",
-      departmentId: "dept-1",
-      title: "Pipeline de Vendas",
-      description: "Processo de vendas completo",
-      stages: [
-        { id: "stage-1", pipelineId: "pipe-1", title: "Prospecção", order: 1 },
-        { id: "stage-2", pipelineId: "pipe-1", title: "Qualificação", order: 2 },
-        { id: "stage-3", pipelineId: "pipe-1", title: "Proposta", order: 3 },
-        { id: "stage-4", pipelineId: "pipe-1", title: "Negociação", order: 4 },
-        { id: "stage-5", pipelineId: "pipe-1", title: "Fechamento", order: 5 }
-      ]
-    },
-    {
-      id: "pipe-2",
-      departmentId: "dept-2",
-      title: "Atendimento",
-      description: "Fluxo de atendimento ao cliente",
-      stages: [
-        { id: "stage-6", pipelineId: "pipe-2", title: "Aberto", order: 1 },
-        { id: "stage-7", pipelineId: "pipe-2", title: "Em Análise", order: 2 },
-        { id: "stage-8", pipelineId: "pipe-2", title: "Em Resolução", order: 3 },
-        { id: "stage-9", pipelineId: "pipe-2", title: "Concluído", order: 4 }
-      ]
-    },
-    {
-      id: "pipe-3",
-      departmentId: "dept-3",
-      title: "Campanhas",
-      description: "Gestão de campanhas de marketing",
-      stages: [
-        { id: "stage-10", pipelineId: "pipe-3", title: "Planejamento", order: 1 },
-        { id: "stage-11", pipelineId: "pipe-3", title: "Produção", order: 2 },
-        { id: "stage-12", pipelineId: "pipe-3", title: "Revisão", order: 3 },
-        { id: "stage-13", pipelineId: "pipe-3", title: "Execução", order: 4 },
-        { id: "stage-14", pipelineId: "pipe-3", title: "Análise", order: 5 }
-      ]
-    }
-  ];
-};
+const mockPipelines: Pipeline[] = [
+  {
+    id: "pipeline-1",
+    departmentId: "dept-1",
+    title: "Pipeline de Vendas",
+    description: "Fluxo principal de vendas",
+    stages: [
+      {
+        id: "stage-1",
+        pipelineId: "pipeline-1",
+        title: "Prospecção",
+        order: 1
+      },
+      {
+        id: "stage-2",
+        pipelineId: "pipeline-1",
+        title: "Qualificação",
+        order: 2
+      },
+      {
+        id: "stage-3",
+        pipelineId: "pipeline-1",
+        title: "Proposta",
+        order: 3
+      },
+      {
+        id: "stage-4",
+        pipelineId: "pipeline-1",
+        title: "Negociação",
+        order: 4
+      },
+      {
+        id: "stage-5",
+        pipelineId: "pipeline-1",
+        title: "Fechamento",
+        order: 5
+      }
+    ]
+  },
+  {
+    id: "pipeline-2",
+    departmentId: "dept-2",
+    title: "Pipeline de Suporte",
+    description: "Fluxo de atendimento ao cliente",
+    stages: [
+      {
+        id: "stage-6",
+        pipelineId: "pipeline-2",
+        title: "Triagem",
+        order: 1
+      },
+      {
+        id: "stage-7",
+        pipelineId: "pipeline-2",
+        title: "Atendimento",
+        order: 2
+      },
+      {
+        id: "stage-8",
+        pipelineId: "pipeline-2",
+        title: "Resolução",
+        order: 3
+      },
+      {
+        id: "stage-9",
+        pipelineId: "pipeline-2",
+        title: "Verificação",
+        order: 4
+      }
+    ]
+  }
+];
 
 // Mock data para deals
-export const getDeals = (): Deal[] => {
-  return [
-    {
-      id: "deal-1",
-      title: "Cliente A - Contrato Anual",
-      description: "Renovação de contrato anual",
-      stageId: "stage-4",
-      type: "Contrato",
-      amount: 15000,
-      status: "open",
-      customerName: "João Silva",
-      customerOrganization: "Empresa A",
-      createdAt: new Date("2023-10-15")
-    },
-    {
-      id: "deal-2",
-      title: "Cliente B - Novo Projeto",
-      description: "Implementação de novo sistema",
-      stageId: "stage-2",
-      type: "Projeto",
-      amount: 25000,
-      status: "open",
-      customerName: "Maria Santos",
-      customerOrganization: "Empresa B",
-      createdAt: new Date("2023-11-02")
-    },
-    {
-      id: "deal-3",
-      title: "Suporte Premium",
-      description: "Upgrade para plano premium",
-      stageId: "stage-7",
-      type: "Suporte",
-      amount: 1200,
-      status: "open",
-      customerName: "Carlos Oliveira",
-      customerOrganization: "Empresa C",
-      createdAt: new Date("2023-11-10")
-    },
-    {
-      id: "deal-4",
-      title: "Campanha Redes Sociais",
-      description: "Campanha para Instagram e Facebook",
-      stageId: "stage-11",
-      type: "Marketing",
-      amount: 8000,
-      status: "open",
-      customerName: "Ana Pereira",
-      customerOrganization: "Empresa D",
-      createdAt: new Date("2023-11-05")
-    }
-  ];
+const mockDeals: Deal[] = [
+  // Deals do pipeline de vendas
+  {
+    id: "deal-1",
+    title: "Cliente A",
+    stageId: "stage-1",
+    status: "open",
+    customerName: "João Silva",
+    customerOrganization: "Empresa X",
+    createdAt: new Date()
+  },
+  {
+    id: "deal-2",
+    title: "Cliente B",
+    stageId: "stage-1",
+    status: "open",
+    customerName: "Maria Oliveira",
+    customerOrganization: "Empresa Y",
+    createdAt: new Date()
+  },
+  {
+    id: "deal-3",
+    title: "Cliente C",
+    stageId: "stage-2",
+    status: "open",
+    amount: 5000,
+    customerName: "Pedro Santos",
+    customerOrganization: "Empresa Z",
+    createdAt: new Date()
+  },
+  {
+    id: "deal-4",
+    title: "Cliente D",
+    stageId: "stage-3",
+    status: "open",
+    amount: 12000,
+    customerName: "Ana Costa",
+    customerOrganization: "Empresa W",
+    createdAt: new Date()
+  },
+  {
+    id: "deal-5",
+    title: "Cliente E",
+    stageId: "stage-4",
+    status: "open",
+    amount: 8500,
+    customerName: "Carlos Ferreira",
+    customerOrganization: "Empresa K",
+    createdAt: new Date()
+  },
+  {
+    id: "deal-6",
+    title: "Cliente F",
+    stageId: "stage-5",
+    status: "won",
+    amount: 15000,
+    customerName: "Fernanda Lima",
+    customerOrganization: "Empresa M",
+    createdAt: new Date()
+  },
+  
+  // Deals do pipeline de suporte
+  {
+    id: "deal-7",
+    title: "Suporte Cliente X",
+    stageId: "stage-6",
+    status: "open",
+    customerName: "Roberto Alves",
+    customerOrganization: "Empresa N",
+    createdAt: new Date()
+  },
+  {
+    id: "deal-8",
+    title: "Suporte Cliente Y",
+    stageId: "stage-7",
+    status: "open",
+    customerName: "Luciana Mendes",
+    customerOrganization: "Empresa P",
+    createdAt: new Date()
+  },
+  {
+    id: "deal-9",
+    title: "Suporte Cliente Z",
+    stageId: "stage-8",
+    status: "completed",
+    customerName: "Marcelo Souza",
+    customerOrganization: "Empresa Q",
+    createdAt: new Date()
+  }
+];
+
+// Funções para acessar os dados
+export const getWorkflows = (): Workflow[] => {
+  return mockWorkflows;
 };
 
-// Filtrar pipelines por departamento
+export const getDepartments = (): Department[] => {
+  return mockDepartments;
+};
+
 export const getPipelinesByDepartment = (departmentId: string): Pipeline[] => {
-  return getPipelines().filter(pipeline => pipeline.departmentId === departmentId);
+  return mockPipelines.filter(pipeline => pipeline.departmentId === departmentId);
 };
 
-// Filtrar deals por estágio
 export const getDealsByStage = (stageId: string): Deal[] => {
-  return getDeals().filter(deal => deal.stageId === stageId);
+  return mockDeals.filter(deal => deal.stageId === stageId);
 };
 
-// Obter pipeline por ID
-export const getPipelineById = (pipelineId: string): Pipeline | undefined => {
-  return getPipelines().find(pipeline => pipeline.id === pipelineId);
+export const getDealsByPipeline = (pipelineId: string): Deal[] => {
+  const stageIds = mockPipelines
+    .find(pipeline => pipeline.id === pipelineId)?.stages
+    .map(stage => stage.id) || [];
+  
+  return mockDeals.filter(deal => stageIds.includes(deal.stageId));
 };
 
-// Obter departamento por ID
-export const getDepartmentById = (departmentId: string): Department | undefined => {
-  return getDepartments().find(dept => dept.id === departmentId);
+export const getDealsByDepartment = (departmentId: string): Deal[] => {
+  const pipelines = getPipelinesByDepartment(departmentId);
+  const pipelineIds = pipelines.map(pipeline => pipeline.id);
+  
+  let deals: Deal[] = [];
+  pipelineIds.forEach(pipelineId => {
+    deals = [...deals, ...getDealsByPipeline(pipelineId)];
+  });
+  
+  return deals;
+};
+
+export const getDealsByWorkflow = (workflowId: string): Deal[] => {
+  const workflow = mockWorkflows.find(w => w.id === workflowId);
+  if (!workflow) return [];
+  
+  return getDealsByDepartment(workflow.departmentId);
 };
