@@ -4,14 +4,14 @@ import { Stage, Deal } from "@/pages/Workflows/models/WorkflowModels";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import DealCard from "./DealCard";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { DragDropContext, Droppable, Draggable, DroppableProvided, DraggableProvided, DropResult } from "react-beautiful-dnd";
 
 interface KanbanBoardProps {
   stages: Stage[];
   pipelineId?: string;
   onAction?: (action: string, data?: any) => void;
   deals: Deal[];
-  onDragEnd: (result: any) => void;
+  onDragEnd: (result: DropResult) => void;
   onDealClick: (deal: Deal) => void;
 }
 
@@ -47,20 +47,21 @@ const KanbanBoard = ({
                   </div>
                   
                   <Droppable droppableId={stage.id}>
-                    {(provided) => (
+                    {(provided: DroppableProvided, snapshot) => (
                       <div 
                         ref={provided.innerRef}
                         {...provided.droppableProps}
-                        className="space-y-3 flex-1 min-h-[200px]"
+                        className={`space-y-3 flex-1 min-h-[200px] rounded-md p-2 transition-colors ${snapshot.isDraggingOver ? 'bg-primary/10' : ''}`}
                       >
                         {stageDeals.length > 0 ? (
                           stageDeals.map((deal, index) => (
                             <Draggable key={deal.id} draggableId={deal.id} index={index}>
-                              {(provided) => (
+                              {(provided: DraggableProvided, snapshot) => (
                                 <div
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
+                                  className={`transition-transform ${snapshot.isDragging ? 'scale-105 shadow-lg' : ''}`}
                                 >
                                   <DealCard 
                                     deal={deal} 

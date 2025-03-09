@@ -9,6 +9,7 @@ import {
 } from '@/pages/Workflows/models/WorkflowModels';
 import { mockWorkflows, mockPipelines, mockStages, mockDeals } from '@/pages/Workflows/data/mockData';
 import { useToast } from "@/hooks/use-toast";
+import { DropResult } from 'react-beautiful-dnd';
 
 export const useWorkflowState = () => {
   const { toast } = useToast();
@@ -40,26 +41,40 @@ export const useWorkflowState = () => {
     });
   };
 
-  const handleDragEnd = (result: any) => {
-    if (!result.destination) return;
-    
+  const handleDragEnd = (result: DropResult) => {
     const { source, destination, draggableId } = result;
     
-    if (source.droppableId === destination.droppableId) return;
+    // Dropped outside a valid droppable area
+    if (!destination) return;
     
-    // Update the deal's stageId
-    setDeals(prevDeals => 
-      prevDeals.map(deal => 
-        deal.id === draggableId 
-          ? { ...deal, stageId: destination.droppableId } 
-          : deal
-      )
-    );
+    // Dropped in the same position
+    if (source.droppableId === destination.droppableId && 
+        source.index === destination.index) return;
     
-    toast({
-      title: "Negócio movido",
-      description: "O negócio foi movido para um novo estágio com sucesso.",
-    });
+    // If dropped in a different stage, update the deal's stageId
+    if (source.droppableId !== destination.droppableId) {
+      // Update the deal's stageId
+      setDeals(prevDeals => 
+        prevDeals.map(deal => 
+          deal.id === draggableId 
+            ? { ...deal, stageId: destination.droppableId } 
+            : deal
+        )
+      );
+      
+      // Find stage name for toast message
+      const targetStage = stages.find(stage => stage.id === destination.droppableId);
+      const stageName = targetStage ? targetStage.title : 'novo estágio';
+      
+      toast({
+        title: "Negócio movido",
+        description: `O negócio foi movido para ${stageName} com sucesso.`,
+      });
+    } else {
+      // Reordering within the same stage (future enhancement)
+      // This would require adding an 'order' property to deals
+      // and implementing logic to reorder within a stage
+    }
   };
 
   const handleCreateDeal = () => {
