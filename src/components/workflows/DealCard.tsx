@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { 
   User, DollarSign, Calendar, Tag, MessageSquare, 
   Award, Building, FileText, CheckSquare, Mail, File, 
-  HeartPulse, Calendar as CalendarIcon
+  HeartPulse, Flag
 } from "lucide-react";
 import { 
   formatCurrency, 
@@ -49,17 +49,20 @@ const DealCard: React.FC<DealCardProps> = ({
         {/* Top row: Title and Type */}
         <div className="flex items-center justify-between mb-2">
           <h4 className="font-medium text-sm truncate pr-2">{deal.title}</h4>
-          <Badge 
-            variant="outline" 
-            className={cn("text-xs font-semibold flex items-center px-2 py-0.5", typeBadge.color)}
-          >
-            {deal.type === 'new' ? (
-              <Tag className="h-3 w-3 mr-1" />
-            ) : (
-              <Award className="h-3 w-3 mr-1" />
-            )}
-            {deal.type || "N/D"}
-          </Badge>
+          <div className="flex items-center gap-1">
+            <span className="text-xs text-muted-foreground mr-1">Tipo:</span>
+            <Badge 
+              variant="outline" 
+              className={cn("text-xs font-semibold flex items-center px-2 py-0.5", typeBadge.color)}
+            >
+              {deal.type === 'new' ? (
+                <Tag className="h-3 w-3 mr-1" />
+              ) : (
+                <Award className="h-3 w-3 mr-1" />
+              )}
+              {deal.type || "N/D"}
+            </Badge>
+          </div>
         </div>
         
         <div className="space-y-2">
@@ -89,7 +92,10 @@ const DealCard: React.FC<DealCardProps> = ({
                 <div className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-pink-500/10 mt-0.5">
                   <HeartPulse className="h-3 w-3 text-pink-500" />
                 </div>
-                <span className="truncate max-w-[80px]">{deal.interests}</span>
+                <div className="flex flex-col">
+                  <span className="text-muted-foreground text-[10px]">Interesse:</span>
+                  <span className="truncate max-w-[80px]">{deal.interests}</span>
+                </div>
               </div>
             )}
           </div>
@@ -101,18 +107,22 @@ const DealCard: React.FC<DealCardProps> = ({
               <div className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-indigo-500/10 mt-0.5">
                 <Calendar className="h-3 w-3 text-indigo-500" />
               </div>
-              <span className="truncate">{formatDate(deal.startDate)}</span>
+              <div className="flex flex-col">
+                <span className="text-muted-foreground text-[10px]">Início:</span>
+                <span className="truncate">{formatDate(deal.startDate)}</span>
+              </div>
             </div>
             
             {/* End Date */}
-            {deal.endDate && (
-              <div className="flex items-start text-xs space-x-1.5 flex-shrink-0">
-                <div className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-orange-500/10 mt-0.5">
-                  <CalendarIcon className="h-3 w-3 text-orange-500" />
-                </div>
-                <span className="truncate">{formatDate(deal.endDate)}</span>
+            <div className="flex items-start text-xs space-x-1.5 flex-shrink-0">
+              <div className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-orange-500/10 mt-0.5">
+                <Flag className="h-3 w-3 text-orange-500" />
               </div>
-            )}
+              <div className="flex flex-col">
+                <span className="text-muted-foreground text-[10px]">Término:</span>
+                <span className="truncate">{deal.endDate ? formatDate(deal.endDate) : "N/D"}</span>
+              </div>
+            </div>
           </div>
           
           {/* Row: Amount and Status */}
@@ -122,13 +132,19 @@ const DealCard: React.FC<DealCardProps> = ({
               <div className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500/10">
                 <DollarSign className="h-3 w-3 text-emerald-500" />
               </div>
-              <span className="font-medium">{formatCurrency(deal.amount)}</span>
+              <div className="flex flex-col">
+                <span className="text-muted-foreground text-[10px]">Valor:</span>
+                <span className="font-medium">{formatCurrency(deal.amount)}</span>
+              </div>
             </div>
             
             {/* Status */}
-            <Badge variant={getStatusBadgeVariant(deal.status)}>
-              {getStatusText(deal.status)}
-            </Badge>
+            <div className="flex items-center text-xs space-x-1.5">
+              <span className="text-muted-foreground text-[10px]">Status:</span>
+              <Badge variant={getStatusBadgeVariant(deal.status)}>
+                {getStatusText(deal.status)}
+              </Badge>
+            </div>
           </div>
           
           {/* Content counters */}
