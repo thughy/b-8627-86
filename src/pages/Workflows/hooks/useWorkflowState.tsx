@@ -58,7 +58,7 @@ export const useWorkflowState = () => {
     const result = cancelAction(dealId);
     setDeals(deals.map(deal => 
       deal.id === result.dealId 
-        ? { ...deal, status: result.status, reasonForLoss: result.reasonForLoss } 
+        ? { ...deal, status: result.status as Deal['status'], reasonForLoss: result.reasonForLoss } 
         : deal
     ));
   };
