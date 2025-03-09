@@ -12,7 +12,25 @@ export const useAgentLogic = (
   setSelectedAgent: React.Dispatch<React.SetStateAction<Agent | null>>
 ) => {
   const { toast } = useToast();
-  const [newAgent, setNewAgent] = useState<Partial<Agent>>({ profile: { name: "", role: "", goal: "" } });
+  const [newAgent, setNewAgent] = useState<Partial<Agent>>({ 
+    profile: { name: "", role: "", goal: "" },
+    workEnvironment: {},
+    businessRules: {
+      rules: [],
+      restrictions: [],
+      conversationStyle: "professional"
+    },
+    expertise: {
+      knowledge: [],
+      skills: [],
+      examples: [],
+      tasks: []
+    },
+    ragDocuments: [],
+    tools: [],
+    llmModel: "GPT-4",
+    status: "active"
+  });
 
   const handleAddAgent = (stageId: string) => {
     if (!newAgent.profile?.name) {
@@ -24,6 +42,7 @@ export const useAgentLogic = (
       return;
     }
 
+    // Ensure we're not overwriting important fields
     const agent: Agent = {
       id: `agent-${Date.now()}`,
       stageId: stageId,
@@ -33,18 +52,51 @@ export const useAgentLogic = (
         goal: newAgent.profile.goal || ""
       },
       workEnvironment: {
-        stageTitle: stages.find(s => s.id === stageId)?.title || ""
+        stageTitle: stages.find(s => s.id === stageId)?.title || "",
+        ...newAgent.workEnvironment
       },
-      businessRules: {},
-      expertise: {},
-      status: "active",
+      businessRules: newAgent.businessRules || {
+        rules: [],
+        restrictions: [],
+        conversationStyle: "professional"
+      },
+      expertise: newAgent.expertise || {
+        knowledge: [],
+        skills: [],
+        examples: [],
+        tasks: []
+      },
+      ragDocuments: newAgent.ragDocuments || [],
+      tools: newAgent.tools || [],
+      llmModel: newAgent.llmModel || "GPT-4",
+      status: newAgent.status || "active",
       createdAt: new Date(),
       updatedAt: new Date()
     };
 
     setAgents(prev => [...prev, agent]);
     setSelectedAgent(agent);
-    setNewAgent({ profile: { name: "", role: "", goal: "" } });
+    
+    // Reset the new agent form with default values
+    setNewAgent({ 
+      profile: { name: "", role: "", goal: "" },
+      workEnvironment: {},
+      businessRules: {
+        rules: [],
+        restrictions: [],
+        conversationStyle: "professional"
+      },
+      expertise: {
+        knowledge: [],
+        skills: [],
+        examples: [],
+        tasks: []
+      },
+      ragDocuments: [],
+      tools: [],
+      llmModel: "GPT-4",
+      status: "active"
+    });
     
     toast({
       title: "Agente adicionado",

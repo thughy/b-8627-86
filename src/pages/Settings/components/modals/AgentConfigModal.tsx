@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   Dialog, 
   DialogContent, 
@@ -14,8 +13,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { Agent } from "@/pages/Workflows/models/WorkflowModels";
+import { Agent, Department, Pipeline, Stage } from "@/pages/Workflows/models/WorkflowModels";
+import { getDepartments, getPipelines, getStages } from "@/pages/Settings/services/settingsService";
+import { Eye, Ear, Mic, Phone, Video, Calendar, Mail, FileText, Database, MessageSquare, Search } from "lucide-react";
 
 interface AgentConfigModalProps {
   isOpen: boolean;
@@ -23,6 +25,29 @@ interface AgentConfigModalProps {
   agent?: Agent;
   onSave: (agent: Partial<Agent>) => void;
 }
+
+const AVAILABLE_TOOLS = [
+  { id: "vision", name: "Visão", icon: Eye },
+  { id: "hearing", name: "Audição", icon: Ear },
+  { id: "speech", name: "Fala", icon: Mic },
+  { id: "telephony", name: "Telefonia", icon: Phone },
+  { id: "meeting", name: "Meeting", icon: Video },
+  { id: "calendar", name: "Agenda", icon: Calendar },
+  { id: "email", name: "Email", icon: Mail },
+  { id: "pdf", name: "PDF", icon: FileText },
+  { id: "rag", name: "RAG", icon: Database },
+  { id: "chat", name: "Chat", icon: MessageSquare },
+  { id: "web-search", name: "Pesquisa Web", icon: Search }
+];
+
+const CONVERSATION_STYLES = [
+  { id: "formal", name: "Formal" },
+  { id: "informal", name: "Informal" },
+  { id: "funny", name: "Engraçado" },
+  { id: "friendly", name: "Amigável" },
+  { id: "technical", name: "Técnico" },
+  { id: "professional", name: "Profissional" }
+];
 
 const AgentConfigModal = ({ 
   isOpen, 
@@ -32,6 +57,9 @@ const AgentConfigModal = ({
 }: AgentConfigModalProps) => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("profile");
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [pipelines, setPipelines] = useState<Pipeline[]>([]);
+  const [stages, setStages] = useState<Stage[]>([]);
   const [formData, setFormData] = useState<Partial<Agent>>(
     agent || {
       profile: {
@@ -40,14 +68,35 @@ const AgentConfigModal = ({
         goal: ""
       },
       workEnvironment: {},
-      businessRules: {},
-      expertise: {},
+      businessRules: {
+        rules: [],
+        restrictions: [],
+        conversationStyle: "professional"
+      },
+      expertise: {
+        knowledge: [],
+        skills: [],
+        examples: [],
+        tasks: []
+      },
       ragDocuments: [],
       tools: [],
       llmModel: "GPT-4",
       status: "active"
     }
   );
+
+  useEffect(() => {
+    setDepartments(getDepartments());
+    setPipelines(getPipelines());
+    setStages(getStages());
+  }, []);
+  
+  useEffect(() => {
+    if (agent) {
+      setFormData(agent);
+    }
+  }, [agent]);
 
   const handleProfileChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -60,20 +109,27 @@ const AgentConfigModal = ({
   };
 
   const handleWorkEnvironmentChange = (field: string, value: string) => {
+    let newWorkEnvironment = {
+      ...formData.workEnvironment!,
+      [field]: value
+    };
+
+    if (field === "workflowTitle") {
+      newWorkEnvironment.departmentTitle = "";
+      newWorkEnvironment.stageTitle = "";
+    } else if (field === "departmentTitle") {
+      newWorkEnvironment.stageTitle = "";
+    }
+
     setFormData(prev => ({
       ...prev,
-      workEnvironment: {
-        ...prev.workEnvironment!,
-        [field]: value
-      }
+      workEnvironment: newWorkEnvironment
     }));
   };
 
   const handleBusinessRulesChange = (field: string, value: string | string[]) => {
-    // Corrigindo para aceitar tanto string como array de strings
-    if (field === "rules") {
-      // Se for o campo "rules", garantimos que seja um array
-      const rulesArray = typeof value === 'string' 
+    if (field === "rules" || field === "restrictions") {
+      const itemsArray = typeof value === 'string' 
         ? value.split('\n').filter(r => r.trim()) 
         : value;
       
@@ -81,11 +137,10 @@ const AgentConfigModal = ({
         ...prev,
         businessRules: {
           ...prev.businessRules!,
-          rules: rulesArray
+          [field]: itemsArray
         }
       }));
     } else {
-      // Para outros campos como conversationStyle, mantemos como string
       setFormData(prev => ({
         ...prev,
         businessRules: {
@@ -97,9 +152,7 @@ const AgentConfigModal = ({
   };
 
   const handleExpertiseChange = (field: string, value: string | string[]) => {
-    // Corrigindo para aceitar tanto string como array de strings
-    if (field === "knowledge" || field === "skills") {
-      // Se for campos que devem ser arrays, garantimos o formato correto
+    if (field === "knowledge" || field === "skills" || field === "examples" || field === "tasks") {
       const itemsArray = typeof value === 'string' 
         ? value.split('\n').filter(item => item.trim()) 
         : value;
@@ -112,7 +165,6 @@ const AgentConfigModal = ({
         }
       }));
     } else {
-      // Para outros campos, mantemos como string
       setFormData(prev => ({
         ...prev,
         expertise: {
@@ -123,20 +175,28 @@ const AgentConfigModal = ({
     }
   };
 
-  const handleToolsChange = (value: string) => {
-    const tools = value.split(',').map(t => t.trim()).filter(t => t);
-    setFormData(prev => ({
-      ...prev,
-      tools
-    }));
-  };
-
   const handleRagDocumentsChange = (value: string) => {
-    const documents = value.split(',').map(d => d.trim()).filter(d => d);
+    const documents = value.split('\n').map(d => d.trim()).filter(d => d);
     setFormData(prev => ({
       ...prev,
       ragDocuments: documents
     }));
+  };
+
+  const handleToolToggle = (toolId: string) => {
+    const currentTools = formData.tools || [];
+    
+    if (currentTools.includes(toolId)) {
+      setFormData(prev => ({
+        ...prev,
+        tools: currentTools.filter(t => t !== toolId)
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        tools: [...currentTools, toolId]
+      }));
+    }
   };
 
   const handleLLMModelChange = (value: string) => {
@@ -171,6 +231,16 @@ const AgentConfigModal = ({
     onClose();
   };
 
+  const filteredPipelines = pipelines.filter(pipeline => 
+    !formData.workEnvironment?.departmentTitle || 
+    pipeline.departmentId === departments.find(d => d.title === formData.workEnvironment?.departmentTitle)?.id
+  );
+
+  const filteredStages = stages.filter(stage => 
+    !formData.workEnvironment?.departmentTitle || 
+    stage.pipelineId === filteredPipelines.find(p => p.title === formData.workEnvironment?.workflowTitle)?.id
+  );
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
@@ -184,11 +254,14 @@ const AgentConfigModal = ({
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-5">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="profile">Perfil</TabsTrigger>
             <TabsTrigger value="environment">Ambiente</TabsTrigger>
-            <TabsTrigger value="capabilities">Capacidades</TabsTrigger>
-            <TabsTrigger value="configuration">Configuração</TabsTrigger>
+            <TabsTrigger value="rules">Regras</TabsTrigger>
+            <TabsTrigger value="expertise">Expertise</TabsTrigger>
+            <TabsTrigger value="rag">RAG</TabsTrigger>
+            <TabsTrigger value="tools">Ferramentas</TabsTrigger>
+            <TabsTrigger value="configuration">Config</TabsTrigger>
           </TabsList>
 
           <TabsContent value="profile" className="space-y-4 mt-4">
@@ -230,32 +303,61 @@ const AgentConfigModal = ({
             <div className="space-y-4">
               <div className="grid gap-2">
                 <Label htmlFor="workflowTitle">Workflow</Label>
-                <Input 
-                  id="workflowTitle"
-                  value={formData.workEnvironment?.workflowTitle || ""}
-                  onChange={(e) => handleWorkEnvironmentChange("workflowTitle", e.target.value)}
-                  placeholder="Nome do workflow onde o agente atua"
-                />
+                <Select 
+                  value={formData.workEnvironment?.workflowTitle || ""} 
+                  onValueChange={(value) => handleWorkEnvironmentChange("workflowTitle", value)}
+                >
+                  <SelectTrigger id="workflowTitle">
+                    <SelectValue placeholder="Selecione o workflow" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {pipelines.map(pipeline => (
+                      <SelectItem key={pipeline.id} value={pipeline.title}>
+                        {pipeline.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               
               <div className="grid gap-2">
                 <Label htmlFor="departmentTitle">Departamento</Label>
-                <Input 
-                  id="departmentTitle"
-                  value={formData.workEnvironment?.departmentTitle || ""}
-                  onChange={(e) => handleWorkEnvironmentChange("departmentTitle", e.target.value)}
-                  placeholder="Nome do departamento"
-                />
+                <Select 
+                  value={formData.workEnvironment?.departmentTitle || ""} 
+                  onValueChange={(value) => handleWorkEnvironmentChange("departmentTitle", value)}
+                  disabled={!formData.workEnvironment?.workflowTitle}
+                >
+                  <SelectTrigger id="departmentTitle">
+                    <SelectValue placeholder="Selecione o departamento" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {departments.map(department => (
+                      <SelectItem key={department.id} value={department.title}>
+                        {department.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="grid gap-2">
                 <Label htmlFor="stageTitle">Estágio</Label>
-                <Input 
-                  id="stageTitle"
-                  value={formData.workEnvironment?.stageTitle || ""}
-                  onChange={(e) => handleWorkEnvironmentChange("stageTitle", e.target.value)}
-                  placeholder="Estágio do pipeline onde o agente atua"
-                />
+                <Select 
+                  value={formData.workEnvironment?.stageTitle || ""} 
+                  onValueChange={(value) => handleWorkEnvironmentChange("stageTitle", value)}
+                  disabled={!formData.workEnvironment?.departmentTitle}
+                >
+                  <SelectTrigger id="stageTitle">
+                    <SelectValue placeholder="Selecione o estágio" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {filteredStages.map(stage => (
+                      <SelectItem key={stage.id} value={stage.title}>
+                        {stage.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="grid gap-2">
@@ -271,7 +373,7 @@ const AgentConfigModal = ({
             </div>
           </TabsContent>
 
-          <TabsContent value="capabilities" className="space-y-4 mt-4">
+          <TabsContent value="rules" className="space-y-4 mt-4">
             <div className="space-y-4">
               <div className="grid gap-2">
                 <Label htmlFor="rules">Regras de Negócio</Label>
@@ -285,15 +387,39 @@ const AgentConfigModal = ({
               </div>
               
               <div className="grid gap-2">
-                <Label htmlFor="conversationStyle">Estilo de Conversação</Label>
-                <Input 
-                  id="conversationStyle"
-                  value={formData.businessRules?.conversationStyle || ""}
-                  onChange={(e) => handleBusinessRulesChange("conversationStyle", e.target.value)}
-                  placeholder="Ex: Formal, Amigável, Profissional"
+                <Label htmlFor="restrictions">Restrições</Label>
+                <Textarea 
+                  id="restrictions"
+                  value={formData.businessRules?.restrictions?.join('\n') || ""}
+                  onChange={(e) => handleBusinessRulesChange("restrictions", e.target.value)}
+                  placeholder="Uma restrição por linha"
+                  rows={3}
                 />
               </div>
 
+              <div className="grid gap-2">
+                <Label htmlFor="conversationStyle">Estilo de Conversação</Label>
+                <Select 
+                  value={formData.businessRules?.conversationStyle || "professional"} 
+                  onValueChange={(value) => handleBusinessRulesChange("conversationStyle", value)}
+                >
+                  <SelectTrigger id="conversationStyle">
+                    <SelectValue placeholder="Selecione o estilo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CONVERSATION_STYLES.map(style => (
+                      <SelectItem key={style.id} value={style.id}>
+                        {style.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="expertise" className="space-y-4 mt-4">
+            <div className="space-y-4">
               <div className="grid gap-2">
                 <Label htmlFor="knowledge">Conhecimentos</Label>
                 <Textarea 
@@ -315,31 +441,76 @@ const AgentConfigModal = ({
                   rows={3}
                 />
               </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="examples">Exemplos</Label>
+                <Textarea 
+                  id="examples"
+                  value={formData.expertise?.examples?.join('\n') || ""}
+                  onChange={(e) => handleExpertiseChange("examples", e.target.value)}
+                  placeholder="Um exemplo por linha"
+                  rows={3}
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="tasks">Tarefas</Label>
+                <Textarea 
+                  id="tasks"
+                  value={formData.expertise?.tasks?.join('\n') || ""}
+                  onChange={(e) => handleExpertiseChange("tasks", e.target.value)}
+                  placeholder="Uma tarefa por linha"
+                  rows={3}
+                />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="rag" className="space-y-4 mt-4">
+            <div className="space-y-4">
+              <div className="grid gap-2">
+                <Label htmlFor="ragDocuments">Documentos RAG</Label>
+                <Textarea 
+                  id="ragDocuments"
+                  value={formData.ragDocuments?.join('\n') || ""}
+                  onChange={(e) => handleRagDocumentsChange(e.target.value)}
+                  placeholder="Um documento por linha (ex: Produtos.pdf, Serviços.pdf)"
+                  rows={6}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Exemplos: Produtos.pdf, Institucional.pdf, Serviços.pdf, Portfólio.pdf, Normativa.pdf, ProcedimentoOperacional.pdf
+                </p>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="tools" className="space-y-4 mt-4">
+            <div className="space-y-2">
+              <Label>Ferramentas disponíveis</Label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                {AVAILABLE_TOOLS.map(tool => {
+                  const isActive = formData.tools?.includes(tool.id);
+                  return (
+                    <div key={tool.id} className={`p-3 rounded-md border ${isActive ? 'border-primary bg-primary/5' : 'border-input'}`}>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <tool.icon className={`h-5 w-5 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
+                          <span className={`font-medium ${isActive ? 'text-primary' : ''}`}>{tool.name}</span>
+                        </div>
+                        <Switch 
+                          checked={isActive}
+                          onCheckedChange={() => handleToolToggle(tool.id)}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </TabsContent>
 
           <TabsContent value="configuration" className="space-y-4 mt-4">
             <div className="space-y-4">
-              <div className="grid gap-2">
-                <Label htmlFor="tools">Ferramentas (separadas por vírgula)</Label>
-                <Input 
-                  id="tools"
-                  value={formData.tools?.join(', ') || ""}
-                  onChange={(e) => handleToolsChange(e.target.value)}
-                  placeholder="Ex: Chat, Email, Agenda"
-                />
-              </div>
-              
-              <div className="grid gap-2">
-                <Label htmlFor="ragDocuments">Documentos RAG (separados por vírgula)</Label>
-                <Input 
-                  id="ragDocuments"
-                  value={formData.ragDocuments?.join(', ') || ""}
-                  onChange={(e) => handleRagDocumentsChange(e.target.value)}
-                  placeholder="Ex: manual.pdf, faq.pdf"
-                />
-              </div>
-
               <div className="grid gap-2">
                 <Label htmlFor="llmModel">Modelo LLM</Label>
                 <Select 
@@ -362,31 +533,37 @@ const AgentConfigModal = ({
 
               <div className="grid gap-2">
                 <Label>Status</Label>
-                <div className="flex space-x-2">
-                  <Button 
-                    type="button" 
-                    variant={formData.status === 'active' ? "default" : "outline"}
-                    onClick={() => handleStatusChange('active')}
-                    className="flex-1"
-                  >
-                    Ativo
-                  </Button>
-                  <Button 
-                    type="button" 
-                    variant={formData.status === 'paused' ? "default" : "outline"}
-                    onClick={() => handleStatusChange('paused')}
-                    className="flex-1"
-                  >
-                    Pausado
-                  </Button>
-                  <Button 
-                    type="button" 
-                    variant={formData.status === 'blocked' ? "default" : "outline"}
-                    onClick={() => handleStatusChange('blocked')}
-                    className="flex-1"
-                  >
-                    Bloqueado
-                  </Button>
+                <div className="flex flex-col space-y-3">
+                  <div className="flex items-center justify-between p-3 border rounded-md">
+                    <div className="flex items-center space-x-3">
+                      <div className="h-2 w-2 rounded-full bg-green-500"></div>
+                      <span className="font-medium">Ativo</span>
+                    </div>
+                    <Switch 
+                      checked={formData.status === 'active'}
+                      onCheckedChange={() => handleStatusChange('active')}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-md">
+                    <div className="flex items-center space-x-3">
+                      <div className="h-2 w-2 rounded-full bg-yellow-500"></div>
+                      <span className="font-medium">Pausado</span>
+                    </div>
+                    <Switch 
+                      checked={formData.status === 'paused'}
+                      onCheckedChange={() => handleStatusChange('paused')}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-md">
+                    <div className="flex items-center space-x-3">
+                      <div className="h-2 w-2 rounded-full bg-red-500"></div>
+                      <span className="font-medium">Bloqueado</span>
+                    </div>
+                    <Switch 
+                      checked={formData.status === 'blocked'}
+                      onCheckedChange={() => handleStatusChange('blocked')}
+                    />
+                  </div>
                 </div>
               </div>
             </div>

@@ -54,6 +54,9 @@ const StageContent = ({
                   selectedAgent={selectedAgent}
                   setSelectedAgent={setSelectedAgent}
                   handleDeleteAgent={handleDeleteAgent}
+                  handleAddAgent={handleAddAgent}
+                  newAgent={newAgent}
+                  setNewAgent={setNewAgent}
                 />
               </div>
               <div>

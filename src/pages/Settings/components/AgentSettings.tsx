@@ -12,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Search, Filter, Edit, Trash, ListFilter } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { formatDate } from "@/lib/utils";
 import { getAgents } from "../services/settingsService";
 import { Agent } from "@/pages/Workflows/models/WorkflowModels";
 import AgentConfigModal from "./modals/AgentConfigModal";

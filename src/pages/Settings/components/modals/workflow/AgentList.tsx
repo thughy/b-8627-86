@@ -3,6 +3,9 @@ import React, { useState } from "react";
 import { Agent } from "@/pages/Workflows/models/WorkflowModels";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getAgents } from "@/pages/Settings/services/settingsService";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import AgentConfigModal from "../AgentConfigModal";
 
 interface AgentListProps {
   stageId: string;
@@ -10,6 +13,9 @@ interface AgentListProps {
   selectedAgent: Agent | null;
   setSelectedAgent: React.Dispatch<React.SetStateAction<Agent | null>>;
   handleDeleteAgent: (agentId: string) => void;
+  handleAddAgent: (stageId: string) => void;
+  newAgent: Partial<Agent>;
+  setNewAgent: React.Dispatch<React.SetStateAction<Partial<Agent>>>;
 }
 
 const AgentList = ({
@@ -17,9 +23,13 @@ const AgentList = ({
   agents,
   selectedAgent,
   setSelectedAgent,
-  handleDeleteAgent
+  handleDeleteAgent,
+  handleAddAgent,
+  newAgent,
+  setNewAgent
 }: AgentListProps) => {
   const [allAgents] = useState<Agent[]>(getAgents());
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   // Filter existing agents by stage
   const stageAgentIds = agents
@@ -50,35 +60,63 @@ const AgentList = ({
     const newAgent = allAgents.find(agent => agent.id === agentId);
     if (newAgent) {
       setSelectedAgent(newAgent);
-      
-      // In a real implementation, this would add the agent to the stage
-      // The parent component would handle this with the handleAddAgent function
     }
+  };
+
+  const handleOpenAddModal = () => {
+    // Initialize the new agent with the current stage
+    setNewAgent({
+      ...newAgent,
+      stageId: stageId,
+      workEnvironment: {
+        ...newAgent.workEnvironment,
+        stageTitle: stages.find(s => s.id === stageId)?.title
+      }
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleSaveAgent = (agentData: Partial<Agent>) => {
+    setNewAgent(agentData);
+    handleAddAgent(stageId);
+    setIsModalOpen(false);
   };
 
   return (
     <div>
-      <Select 
-        value={currentStageAgent?.id || ""} 
-        onValueChange={handleAgentChange}
-      >
-        <SelectTrigger className="w-full">
-          <SelectValue placeholder="Selecionar agente" />
-        </SelectTrigger>
-        <SelectContent>
-          {dropdownAgents.length > 0 ? (
-            dropdownAgents.map(agent => (
-              <SelectItem key={agent.id} value={agent.id}>
-                {agent.profile.name} - {agent.profile.role}
+      <div className="flex space-x-2 items-center">
+        <Select 
+          value={currentStageAgent?.id || ""} 
+          onValueChange={handleAgentChange}
+          className="flex-1"
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Selecionar agente" />
+          </SelectTrigger>
+          <SelectContent>
+            {dropdownAgents.length > 0 ? (
+              dropdownAgents.map(agent => (
+                <SelectItem key={agent.id} value={agent.id}>
+                  {agent.profile.name} - {agent.profile.role}
+                </SelectItem>
+              ))
+            ) : (
+              <SelectItem value="none" disabled>
+                Nenhum agente disponível
               </SelectItem>
-            ))
-          ) : (
-            <SelectItem value="none" disabled>
-              Nenhum agente disponível
-            </SelectItem>
-          )}
-        </SelectContent>
-      </Select>
+            )}
+          </SelectContent>
+        </Select>
+        <Button size="sm" onClick={handleOpenAddModal}>
+          <Plus className="h-4 w-4" />
+        </Button>
+      </div>
+
+      <AgentConfigModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSaveAgent}
+      />
     </div>
   );
 };
