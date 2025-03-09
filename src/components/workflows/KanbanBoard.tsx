@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Stage, Deal } from "@/pages/Workflows/models/WorkflowModels";
-import { DropResult } from "react-beautiful-dnd";
+import { DropResult, DragDropContext } from "react-beautiful-dnd";
 import StageColumn from "./StageColumn";
 
 interface KanbanBoardProps {
@@ -27,21 +27,23 @@ const KanbanBoard = ({
   const sortedStages = [...stages].sort((a, b) => a.order - b.order);
   
   return (
-    <div className="overflow-x-auto pb-4">
-      <div className="flex gap-4" style={{ minWidth: Math.max(stages.length * 320, 100) + "px" }}>
-        {sortedStages.map((stage) => (
-          <StageColumn
-            key={stage.id}
-            stage={stage}
-            deals={deals}
-            onDealClick={onDealClick}
-            onAction={onAction}
-            pipelineId={pipelineId}
-            getChatPreview={getChatPreview}
-          />
-        ))}
+    <DragDropContext onDragEnd={onDragEnd}>
+      <div className="overflow-x-auto pb-4">
+        <div className="flex gap-4" style={{ minWidth: Math.max(stages.length * 320, 100) + "px" }}>
+          {sortedStages.map((stage) => (
+            <StageColumn
+              key={stage.id}
+              stage={stage}
+              deals={deals}
+              onDealClick={onDealClick}
+              onAction={onAction}
+              pipelineId={pipelineId}
+              getChatPreview={getChatPreview}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+    </DragDropContext>
   );
 };
 

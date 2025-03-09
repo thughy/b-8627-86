@@ -3,8 +3,9 @@ import React from "react";
 import { Stage, Deal } from "@/pages/Workflows/models/WorkflowModels";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import DealCard from "./DealCard";
+import DealList from "./DealList";
 import { getDealsByStage } from "./utils/dealUtils";
+import { Droppable } from "react-beautiful-dnd";
 
 interface StageColumnProps {
   stage: Stage;
@@ -35,22 +36,22 @@ const StageColumn: React.FC<StageColumnProps> = ({
           </span>
         </div>
         
-        <div className="space-y-3 flex-1 min-h-[200px] rounded-md p-2">
-          {stageDeals.length > 0 ? (
-            stageDeals.map((deal) => (
-              <DealCard 
-                key={deal.id}
-                deal={deal}
+        <Droppable droppableId={stage.id}>
+          {(provided) => (
+            <div 
+              className="space-y-3 flex-1 min-h-[200px] rounded-md p-2"
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+            >
+              <DealList 
+                deals={stageDeals} 
                 onDealClick={onDealClick}
-                chatPreview={getChatPreview ? getChatPreview(deal.id) : []}
+                getChatPreview={getChatPreview}
               />
-            ))
-          ) : (
-            <div className="flex items-center justify-center h-full">
-              <p className="text-sm text-muted-foreground">Sem deals</p>
+              {provided.placeholder}
             </div>
           )}
-        </div>
+        </Droppable>
         
         <Button 
           variant="ghost" 
