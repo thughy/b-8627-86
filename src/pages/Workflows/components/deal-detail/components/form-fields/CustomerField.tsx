@@ -85,7 +85,7 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full relative">
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <div className="w-full">
@@ -107,11 +107,15 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
         <PopoverContent 
           ref={popoverRef}
           role="presentation"
-          className="p-0 w-[300px] bg-background border rounded-md shadow-lg z-[100] overflow-hidden"
+          className="p-0 w-[300px] bg-background border-2 border-input-border rounded-md shadow-xl z-[200] overflow-hidden"
           align="start"
           alignOffset={0}
           sideOffset={8}
           onClick={handlePopoverClick}
+          onInteractOutside={(e) => {
+            e.preventDefault();
+            setIsOpen(false);
+          }}
         >
           <CustomerList
             customers={customers}

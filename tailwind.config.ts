@@ -65,6 +65,11 @@ export default {
       animation: {
         "card-hover": "card-hover 0.2s ease-out forwards",
       },
+      zIndex: {
+        'dropdown': '200',
+        'tooltip': '300',
+        'modal': '400',
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

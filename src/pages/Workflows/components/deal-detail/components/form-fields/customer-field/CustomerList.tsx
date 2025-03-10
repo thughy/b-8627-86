@@ -46,6 +46,11 @@ const CustomerList: React.FC<CustomerListProps> = ({
     };
   }, [customers]);
   
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+  };
+  
   if (isLoading) {
     return (
       <div className="p-4 text-center text-sm text-muted-foreground">
@@ -59,13 +64,16 @@ const CustomerList: React.FC<CustomerListProps> = ({
   
   if (customers.length > 0) {
     return (
-      <ScrollArea className="max-h-[300px] relative z-50" onClick={(e) => e.stopPropagation()}>
+      <ScrollArea 
+        className="max-h-[300px] relative z-[201]" 
+        onClick={handleClick}
+      >
         <div 
           ref={listRef} 
           className="p-2" 
           role="listbox" 
           tabIndex={-1}
-          onClick={(e) => e.stopPropagation()}
+          onClick={handleClick}
         >
           {customers.map((customer) => (
             <CustomerListItem 
