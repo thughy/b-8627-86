@@ -3,18 +3,20 @@ import React from "react";
 import { Customer, Person, Organization } from "@/pages/Workflows/models/CustomerModel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2, UserCircle, Building } from "lucide-react";
+import { Edit, Trash2, UserCircle, Building, Eye } from "lucide-react";
 
 interface CustomerListItemProps {
   customer: Customer;
   onEdit: (customer: Customer) => void;
   onDelete: (customerId: string) => void;
+  onView: (customer: Customer) => void;
 }
 
 const CustomerListItem: React.FC<CustomerListItemProps> = ({
   customer,
   onEdit,
-  onDelete
+  onDelete,
+  onView
 }) => {
   const isPerson = customer.type === "person";
   const person = customer as Person;
@@ -56,6 +58,9 @@ const CustomerListItem: React.FC<CustomerListItemProps> = ({
       </div>
 
       <div className="col-span-1 flex justify-end gap-2">
+        <Button variant="ghost" size="icon" onClick={() => onView(customer)}>
+          <Eye className="h-4 w-4" />
+        </Button>
         <Button variant="ghost" size="icon" onClick={() => onEdit(customer)}>
           <Edit className="h-4 w-4" />
         </Button>

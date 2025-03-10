@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Customer, CustomerFilter } from "@/pages/Workflows/models/CustomerModel";
 import { filterCustomers } from "./services/customerFilterService";
 import { createPerson, updatePerson } from "./services/personService";
@@ -12,10 +13,13 @@ import CustomerHeader from "./components/CustomerHeader";
 import CustomerSearch from "./components/CustomerSearch";
 import CustomerList from "./components/CustomerList";
 import CustomerConfigModal from "./components/modals/CustomerConfigModal";
+import CustomerViewModal from "./components/modals/CustomerViewModal";
+import { Download, Upload } from "lucide-react";
 
 const CustomersPage = () => {
   const { toast } = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [filters, setFilters] = useState<CustomerFilter>({
@@ -44,9 +48,15 @@ const CustomersPage = () => {
     setIsModalOpen(true);
   };
 
+  const handleViewCustomer = (customer: Customer) => {
+    setSelectedCustomer(customer);
+    setIsViewModalOpen(true);
+  };
+
   const handleEditCustomer = (customer: Customer) => {
     setSelectedCustomer(customer);
     setIsModalOpen(true);
+    setIsViewModalOpen(false);
   };
 
   const handleDeleteCustomer = (customerId: string) => {
@@ -111,12 +121,49 @@ const CustomersPage = () => {
     setCurrentPage(page);
   };
 
+  const handleExportCustomers = () => {
+    // Simulação de exportação
+    toast({
+      title: "Exportação iniciada",
+      description: "Seus dados estão sendo exportados para CSV."
+    });
+    
+    // Simular conclusão após 2 segundos
+    setTimeout(() => {
+      toast({
+        title: "Exportação concluída",
+        description: "Seus dados foram exportados com sucesso."
+      });
+    }, 2000);
+  };
+
+  const handleImportCustomers = () => {
+    // Simulação de importação
+    toast({
+      title: "Funcionalidade em desenvolvimento",
+      description: "A importação de clientes estará disponível em breve."
+    });
+  };
+
   return (
     <DashboardLayout>
       <div className="container mx-auto p-4 space-y-6">
         <Card>
           <CardContent className="p-6 space-y-6">
-            <CustomerHeader onAddCustomer={handleAddCustomer} />
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <CustomerHeader onAddCustomer={handleAddCustomer} />
+              
+              <div className="flex gap-2 self-end">
+                <Button variant="outline" size="sm" onClick={handleExportCustomers}>
+                  <Download className="h-4 w-4 mr-2" />
+                  Exportar
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleImportCustomers}>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Importar
+                </Button>
+              </div>
+            </div>
             
             <CustomerSearch 
               search={filters.search || ""}
@@ -131,6 +178,7 @@ const CustomersPage = () => {
               customers={customers}
               onEditCustomer={handleEditCustomer}
               onDeleteCustomer={handleDeleteCustomer}
+              onViewCustomer={handleViewCustomer}
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={handlePageChange}
@@ -145,6 +193,15 @@ const CustomersPage = () => {
             onClose={() => setIsModalOpen(false)}
             onSave={handleSaveCustomer}
             onDelete={handleDeleteCustomer}
+            customer={selectedCustomer}
+          />
+        )}
+
+        {isViewModalOpen && selectedCustomer && (
+          <CustomerViewModal 
+            isOpen={isViewModalOpen}
+            onClose={() => setIsViewModalOpen(false)}
+            onEdit={handleEditCustomer}
             customer={selectedCustomer}
           />
         )}

@@ -11,12 +11,12 @@ import {
   PaginationPrevious,
   PaginationEllipsis
 } from "@/components/ui/pagination";
-import { getPageRange } from "@/lib/utils";
 
 interface CustomerListProps {
   customers: Customer[];
   onEditCustomer: (customer: Customer) => void;
   onDeleteCustomer: (customerId: string) => void;
+  onViewCustomer: (customer: Customer) => void;
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
@@ -27,6 +27,7 @@ const CustomerList: React.FC<CustomerListProps> = ({
   customers,
   onEditCustomer,
   onDeleteCustomer,
+  onViewCustomer,
   currentPage,
   totalPages,
   onPageChange,
@@ -128,6 +129,7 @@ const CustomerList: React.FC<CustomerListProps> = ({
               customer={customer}
               onEdit={onEditCustomer}
               onDelete={onDeleteCustomer}
+              onView={onViewCustomer}
             />
           ))
         ) : (
