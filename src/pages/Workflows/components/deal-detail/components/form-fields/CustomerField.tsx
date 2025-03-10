@@ -36,18 +36,15 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   } = useCustomerSearch();
   
   const inputRef = useRef<HTMLInputElement>(null);
-  const popoverRef = useRef<HTMLDivElement>(null);
   
   const handleCustomerSelect = (customer: Customer) => {
     selectCustomer(customer);
     onCustomerSelect(customer);
-    // Close dropdown after selection
     setIsOpen(false);
   };
 
   const handleClearSelection = (e: React.MouseEvent) => {
     e.preventDefault();
-    e.stopPropagation();
     clearSearch();
     onCustomerSelect({ 
       id: '', 
@@ -66,26 +63,8 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
     openDropdown();
   };
 
-  const handleBlur = (e: React.FocusEvent) => {
-    // Check if the related target is inside our popover
-    const relatedTarget = e.relatedTarget as Node;
-    if (relatedTarget instanceof Element) {
-      const isInsidePopover = relatedTarget.closest('[role="listbox"]') || 
-                             relatedTarget.closest('[role="option"]');
-      if (isInsidePopover) return;
-    }
-    
-    // Use a longer delay to allow click events to register fully
-    setTimeout(() => setIsOpen(false), 300);
-  };
-
-  // Prevent clicks from passing through
-  const handlePopoverClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-  };
-
   return (
-    <div className="w-full relative isolate">
+    <div className="w-full relative" style={{ zIndex: 9999 }}>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <div className="w-full">
@@ -94,7 +73,7 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
               searchTerm={searchTerm}
               onChange={setSearchTerm}
               onFocus={handleFocus}
-              onBlur={handleBlur}
+              onBlur={() => {}}
               hasSelectedCustomer={Boolean(customerName)}
               customerName={customerName}
               customerOrganization={customerOrganization}
@@ -105,19 +84,11 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
         </PopoverTrigger>
         
         <PopoverContent 
-          ref={popoverRef}
-          role="presentation"
-          className="p-0 w-[300px] bg-background border-2 border-input-border rounded-md shadow-xl z-[9999] overflow-hidden"
+          className="p-0 w-[300px] bg-background border-2 border-input-border rounded-md shadow-xl overflow-hidden"
           align="start"
           alignOffset={0}
           sideOffset={8}
-          onClick={handlePopoverClick}
-          onInteractOutside={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setIsOpen(false);
-          }}
-          forceMount
+          style={{ zIndex: 9999 }}
         >
           <CustomerList
             customers={customers}

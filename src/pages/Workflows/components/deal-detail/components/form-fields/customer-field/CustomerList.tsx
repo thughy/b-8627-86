@@ -18,39 +18,6 @@ const CustomerList: React.FC<CustomerListProps> = ({
   searchTerm, 
   onSelectCustomer 
 }) => {
-  const listRef = useRef<HTMLDivElement>(null);
-  
-  useEffect(() => {
-    // Focus the first item when list receives focus
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!listRef.current) return;
-      
-      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-        e.preventDefault();
-        const items = listRef.current.querySelectorAll('[role="option"]');
-        if (items.length > 0) {
-          (items[0] as HTMLElement).focus();
-        }
-      }
-    };
-    
-    const listElement = listRef.current;
-    if (listElement) {
-      listElement.addEventListener('keydown', handleKeyDown);
-    }
-    
-    return () => {
-      if (listElement) {
-        listElement.removeEventListener('keydown', handleKeyDown);
-      }
-    };
-  }, [customers]);
-  
-  const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-  };
-  
   if (isLoading) {
     return (
       <div className="p-4 text-center text-sm text-muted-foreground">
@@ -64,17 +31,8 @@ const CustomerList: React.FC<CustomerListProps> = ({
   
   if (customers.length > 0) {
     return (
-      <ScrollArea 
-        className="max-h-[300px] relative z-[9999]" 
-        onClick={handleClick}
-      >
-        <div 
-          ref={listRef} 
-          className="p-2" 
-          role="listbox" 
-          tabIndex={-1}
-          onClick={handleClick}
-        >
+      <ScrollArea className="max-h-[300px]">
+        <div className="p-2" role="listbox">
           {customers.map((customer) => (
             <CustomerListItem 
               key={customer.id} 

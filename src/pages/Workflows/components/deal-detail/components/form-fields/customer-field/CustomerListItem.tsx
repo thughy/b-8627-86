@@ -25,18 +25,7 @@ const CustomerListItem: React.FC<CustomerListItemProps> = ({ customer, onSelect 
   };
   
   const handleClick = (e: React.MouseEvent) => {
-    // Prevent any event propagation and default actions
-    e.stopPropagation();
-    e.preventDefault();
     onSelect(customer);
-  };
-  
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      e.stopPropagation();
-      onSelect(customer);
-    }
   };
   
   return (
@@ -48,7 +37,6 @@ const CustomerListItem: React.FC<CustomerListItemProps> = ({ customer, onSelect 
         "active:scale-[0.99]"
       )}
       onClick={handleClick}
-      onKeyDown={handleKeyDown}
       role="option"
       tabIndex={0}
       aria-selected={false}

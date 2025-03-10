@@ -36,7 +36,7 @@ export function useCustomerSearch() {
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       fetchCustomers(searchTerm);
-    }, 200); // Reduced debounce for faster response
+    }, 100); // Reduced debounce time
 
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm, fetchCustomers]);
@@ -52,7 +52,6 @@ export function useCustomerSearch() {
     setSelectedCustomer(customer);
     setSearchTerm('');
     setCustomers([]);
-    setIsOpen(false);
   };
 
   const openDropdown = () => {
