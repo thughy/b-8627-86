@@ -27,6 +27,9 @@ const DealBasicInfoFields: React.FC<DealBasicInfoFieldsProps> = ({
     // If it's an organization, set the organization name directly
     if (customerType === 'organization') {
       handleChange('customerOrganization', customerName);
+    } else {
+      // Clear organization if a person is selected without an organization
+      handleChange('customerOrganization', '');
     }
   };
 
