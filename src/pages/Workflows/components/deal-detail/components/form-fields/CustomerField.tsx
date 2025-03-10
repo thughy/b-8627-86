@@ -36,11 +36,10 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   
   const inputRef = useRef<HTMLInputElement>(null);
   const hasSelectedCustomer = Boolean(customerName);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Quando o componente é montado, verifica se já temos um cliente selecionado
   useEffect(() => {
     if (customerName && customerType) {
-      // Atualiza a UI para mostrar que temos um cliente selecionado
       setSearchTerm('');
     }
   }, [customerName, customerType, setSearchTerm]);
@@ -49,22 +48,17 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
     setIsOpen(true);
   };
 
-  const handleBlur = () => {
-    // Usa setTimeout para garantir que os eventos de clique sejam processados primeiro
-    setTimeout(() => {
-      if (
-        !document.activeElement?.closest('.customer-search-popover') && 
-        document.activeElement !== inputRef.current
-      ) {
+  const handleBlur = (e: React.FocusEvent) => {
+    // Check if the related target is within our component
+    if (!containerRef.current?.contains(e.relatedTarget as Node)) {
+      setTimeout(() => {
         setIsOpen(false);
-      }
-    }, 200);
+      }, 200);
+    }
   };
 
   const handleCustomerSelect = (customer: Customer) => {
-    // Primeiro atualiza o estado local
     selectCustomer(customer);
-    // Então notifica o componente pai
     onCustomerSelect(customer);
   };
 
@@ -85,38 +79,40 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   };
 
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverTrigger asChild>
-        <div onClick={() => setIsOpen(true)}>
-          <CustomerSearchInput
-            ref={inputRef}
+    <div ref={containerRef}>
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
+        <PopoverTrigger asChild>
+          <div>
+            <CustomerSearchInput
+              ref={inputRef}
+              searchTerm={searchTerm}
+              onChange={setSearchTerm}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+              onClearSelection={handleClearSelection}
+              hasSelectedCustomer={hasSelectedCustomer}
+              customerName={customerName}
+              customerOrganization={customerOrganization}
+              customerType={customerType}
+            />
+          </div>
+        </PopoverTrigger>
+        
+        <PopoverContent 
+          className="p-0 w-[300px] max-h-[300px] overflow-auto customer-search-popover"
+          align="start"
+          alignOffset={0}
+          sideOffset={5}
+        >
+          <CustomerList
+            customers={customers}
+            isLoading={isLoading}
             searchTerm={searchTerm}
-            onChange={setSearchTerm}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-            onClearSelection={handleClearSelection}
-            hasSelectedCustomer={hasSelectedCustomer}
-            customerName={customerName}
-            customerOrganization={customerOrganization}
-            customerType={customerType}
+            onSelectCustomer={handleCustomerSelect}
           />
-        </div>
-      </PopoverTrigger>
-      
-      <PopoverContent 
-        className="p-0 w-[300px] max-h-[300px] overflow-auto customer-search-popover"
-        align="start"
-        alignOffset={0}
-        sideOffset={5}
-      >
-        <CustomerList
-          customers={customers}
-          isLoading={isLoading}
-          searchTerm={searchTerm}
-          onSelectCustomer={handleCustomerSelect}
-        />
-      </PopoverContent>
-    </Popover>
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 };
 

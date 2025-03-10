@@ -51,7 +51,11 @@ export function useCustomerSearch() {
     setSelectedCustomer(customer);
     setSearchTerm('');
     setCustomers([]);
-    setIsOpen(false);
+    
+    // Give a small delay before closing the popover
+    requestAnimationFrame(() => {
+      setIsOpen(false);
+    });
   };
 
   return {
