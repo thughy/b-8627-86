@@ -11,9 +11,9 @@ import {
   MoreHorizontal, 
   FileText, 
   ClipboardList, 
-  Image as ImageIcon, 
-  Send, 
-  FileInput 
+  Image, 
+  Mail, 
+  Paperclip 
 } from 'lucide-react';
 import { Asset } from '@/pages/Workflows/models/WorkflowModels';
 
@@ -65,7 +65,7 @@ const WorkspaceActionButtons: React.FC<WorkspaceActionButtonsProps> = React.memo
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-48">
           <DropdownMenuItem onClick={handleCreateAsset}>
-            <ImageIcon className="h-4 w-4 mr-2 text-blue-500" />
+            <Image className="h-4 w-4 mr-2 text-blue-500" />
             Asset
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleCreateTask}>
@@ -77,11 +77,11 @@ const WorkspaceActionButtons: React.FC<WorkspaceActionButtonsProps> = React.memo
             Nota
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleCreateDocument}>
-            <FileInput className="h-4 w-4 mr-2 text-purple-500" />
-            Documento
+            <Paperclip className="h-4 w-4 mr-2 text-purple-500" />
+            Anexo
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleCreateEmail}>
-            <Send className="h-4 w-4 mr-2 text-red-500" />
+            <Mail className="h-4 w-4 mr-2 text-red-500" />
             Email
           </DropdownMenuItem>
         </DropdownMenuContent>

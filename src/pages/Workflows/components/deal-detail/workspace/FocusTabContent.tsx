@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Deal, Asset } from '@/pages/Workflows/models/WorkflowModels';
-import { CalendarDays, FileText, CheckSquare, Image, Mail, File, Clock } from 'lucide-react';
+import { CalendarDays, FileText, ClipboardList, Image, Mail, Paperclip, Clock } from 'lucide-react';
 
 interface FocusTabContentProps {
   deal: Deal;
@@ -64,8 +64,8 @@ const FocusTabContent: React.FC<FocusTabContentProps> = ({
     { 
       id: 'document-1', 
       type: 'document', 
-      title: 'Contrato inicial', 
-      description: 'Versão preliminar do contrato',
+      title: 'Anexo inicial', 
+      description: 'Versão preliminar do documento',
       date: new Date(Date.now() - 1000 * 60 * 60 * 96) 
     }
   ];
@@ -88,12 +88,12 @@ const FocusTabContent: React.FC<FocusTabContentProps> = ({
   // Função para renderizar o ícone baseado no tipo do item
   const getItemIcon = (type: string) => {
     switch (type) {
-      case 'asset': return <Image className="h-4 w-4" />;
-      case 'task': return <CheckSquare className="h-4 w-4" />;
-      case 'note': return <FileText className="h-4 w-4" />;
-      case 'email': return <Mail className="h-4 w-4" />;
-      case 'document': return <File className="h-4 w-4" />;
-      default: return <File className="h-4 w-4" />;
+      case 'asset': return <Image className="h-4 w-4 text-blue-500" />;
+      case 'task': return <ClipboardList className="h-4 w-4 text-green-500" />;
+      case 'note': return <FileText className="h-4 w-4 text-yellow-500" />;
+      case 'email': return <Mail className="h-4 w-4 text-red-500" />;
+      case 'document': return <Paperclip className="h-4 w-4 text-purple-500" />;
+      default: return <CalendarDays className="h-4 w-4" />;
     }
   };
 
@@ -139,7 +139,7 @@ const FocusTabContent: React.FC<FocusTabContentProps> = ({
                 
                 <div className="flex justify-between mt-2">
                   <span className="text-xs bg-primary/10 px-2 py-1 rounded">
-                    {item.type}
+                    {item.type === 'document' ? 'anexo' : item.type}
                   </span>
                   {item.status && (
                     <span className="text-xs bg-primary/10 px-2 py-1 rounded">

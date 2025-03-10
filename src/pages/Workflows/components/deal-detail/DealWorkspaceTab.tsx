@@ -24,7 +24,7 @@ const filterOptions = [
   { id: 'tasks', label: 'Tarefas' },
   { id: 'emails', label: 'Emails' },
   { id: 'assets', label: 'Assets' },
-  { id: 'documents', label: 'Documentos' }
+  { id: 'documents', label: 'Anexos' }
 ];
 
 const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
@@ -85,7 +85,7 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
           <TabsList>
             <TabsTrigger value="chat">Chat</TabsTrigger>
             <TabsTrigger value="focus">Foco</TabsTrigger>
-            <TabsTrigger value="history">Histórico</TabsTrigger>
+            <TabsTrigger value="history">Registros</TabsTrigger>
           </TabsList>
           
           <WorkspaceActionButtons 

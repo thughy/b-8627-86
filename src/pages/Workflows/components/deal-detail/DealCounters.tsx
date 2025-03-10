@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { MessageCircle, CheckSquare, FileText, Mail, Image, File, CalendarClock } from 'lucide-react';
+import { MessageCircle, ClipboardList, FileText, Mail, Image, Paperclip } from 'lucide-react';
 
 interface CountersProps {
   counters: {
@@ -22,33 +22,33 @@ const DealCounters: React.FC<CountersProps> = ({ counters }) => {
         <span className="font-medium">{counters.chat}</span>
       </div>
       <div className="flex items-center gap-1 text-sm">
-        <Image className="h-4 w-4 text-muted-foreground" />
+        <Image className="h-4 w-4 text-blue-500" />
         <span className="text-muted-foreground">Assets:</span>
         <span className="font-medium">{counters.assets}</span>
       </div>
       <div className="flex items-center gap-1 text-sm">
-        <CheckSquare className="h-4 w-4 text-muted-foreground" />
+        <ClipboardList className="h-4 w-4 text-green-500" />
         <span className="text-muted-foreground">Tarefas:</span>
         <span className="font-medium">{counters.tasks}</span>
       </div>
       {counters.notes !== undefined && (
         <div className="flex items-center gap-1 text-sm">
-          <FileText className="h-4 w-4 text-muted-foreground" />
+          <FileText className="h-4 w-4 text-yellow-500" />
           <span className="text-muted-foreground">Notas:</span>
           <span className="font-medium">{counters.notes}</span>
         </div>
       )}
       {counters.emails !== undefined && (
         <div className="flex items-center gap-1 text-sm">
-          <Mail className="h-4 w-4 text-muted-foreground" />
+          <Mail className="h-4 w-4 text-red-500" />
           <span className="text-muted-foreground">Emails:</span>
           <span className="font-medium">{counters.emails}</span>
         </div>
       )}
       {counters.documents !== undefined && (
         <div className="flex items-center gap-1 text-sm">
-          <File className="h-4 w-4 text-muted-foreground" />
-          <span className="text-muted-foreground">Documentos:</span>
+          <Paperclip className="h-4 w-4 text-purple-500" />
+          <span className="text-muted-foreground">Anexos:</span>
           <span className="font-medium">{counters.documents}</span>
         </div>
       )}
