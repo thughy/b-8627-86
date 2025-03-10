@@ -1,131 +1,92 @@
 
 import React from 'react';
+import { 
+  Send, 
+  Paperclip, 
+  Mic, 
+  XCircle,
+  Plus
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Paperclip, Send, X, User, Bot } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Textarea } from '@/components/ui/textarea';
+import { Deal } from '@/pages/Workflows/models/WorkflowModels';
 
-interface ChatMessage {
+type Attachment = {
+  id: string;
+  name: string;
+  type: string;
+  url: string;
+};
+
+type Message = {
   id: string;
   text: string;
-  attachments?: { id: string; name: string; url: string }[];
   sender: 'user' | 'agent';
   timestamp: Date;
-  type?: string;
-}
+  attachments?: Attachment[];
+};
 
-interface ChatSectionProps {
+export interface ChatSectionProps {
   dealId: string;
-  messages: ChatMessage[];
+  messages: Message[];
   messageText: string;
   setMessageText: (text: string) => void;
-  sendMessage: () => void; // Changed to not require text parameter
+  sendMessage: (text: string) => void;
   typing: boolean;
-  attachments: { id: string; name: string; url: string }[];
-  handleAddAttachment: (files: FileList) => void;
-  handleRemoveAttachment: (id: string) => void; // Changed to accept id instead of index
-  filter: string;
+  attachments: Attachment[];
+  handleAddAttachment: () => void;
+  handleRemoveAttachment: (index: number) => void;
 }
 
-const ChatSection: React.FC<ChatSectionProps> = ({
+export const ChatSection: React.FC<ChatSectionProps> = ({ 
   dealId,
-  messages,
-  messageText,
-  setMessageText,
-  sendMessage,
-  typing,
-  attachments,
-  handleAddAttachment,
-  handleRemoveAttachment,
-  filter
+  messages, 
+  messageText, 
+  setMessageText, 
+  sendMessage, 
+  typing, 
+  attachments, 
+  handleAddAttachment, 
+  handleRemoveAttachment 
 }) => {
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
-  
-  // Filtrar mensagens baseado no tipo (se aplicável)
-  const filteredMessages = filter === 'all' 
-    ? messages 
-    : messages.filter(msg => {
-        if (filter === 'emails' && msg.type === 'email') return true;
-        if (filter === 'documents' && msg.type === 'document') return true;
-        // Para outros tipos, mostrar apenas se não tivermos um filtro específico
-        return (filter === 'notes' || filter === 'tasks' || filter === 'assets') ? false : true;
-      });
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  };
-
-  const triggerFileInput = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      handleAddAttachment(e.target.files);
-      // Reset the input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (messageText.trim()) {
+      sendMessage(messageText);
     }
   };
 
   return (
-    <div className="flex flex-col h-full relative">
-      {/* Mensagens */}
-      <div className="flex-1 overflow-y-auto space-y-4 pb-4">
-        {filteredMessages.length > 0 ? (
-          <div className="relative">
-            {/* Linha vertical da timeline */}
-            <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-border" />
-
-            {filteredMessages.map((message, index) => (
-              <div 
-                key={message.id} 
-                className="relative pl-14 py-3 hover:bg-muted/40 rounded-md transition-colors"
-              >
-                {/* Avatar na linha do tempo */}
-                <div className="absolute left-2 top-4 w-5 h-5 rounded-full bg-primary/10 border-2 border-primary/50 flex items-center justify-center">
-                  {message.sender === 'user' ? (
-                    <User className="h-3 w-3" />
-                  ) : (
-                    <Bot className="h-3 w-3" />
-                  )}
-                </div>
-
-                {/* Tempo à esquerda */}
-                <div className="absolute left-9 top-4 text-xs text-muted-foreground">
-                  {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </div>
-
-                {/* Mensagem */}
-                <div className={`rounded-lg p-3 ${
+    <div className="flex flex-col h-full bg-background">
+      <div className="px-4 py-2 border-b">
+        <h3 className="text-md font-medium">Chat</h3>
+      </div>
+      
+      <ScrollArea className="flex-1 p-4">
+        <div className="space-y-4">
+          {messages.map((message, index) => (
+            <div 
+              key={index} 
+              className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+            >
+              <div className={`flex ${message.sender === 'user' ? 'flex-row-reverse' : 'flex-row'} items-start gap-2 max-w-[80%]`}>
+                <Avatar className={`h-8 w-8 ${message.sender === 'user' ? 'ml-2' : 'mr-2'}`}>
+                  <AvatarFallback>{message.sender === 'user' ? 'U' : 'A'}</AvatarFallback>
+                  <AvatarImage src={message.sender === 'user' ? '/avatar-user.png' : '/avatar-agent.png'} />
+                </Avatar>
+                <div className={`rounded-lg px-3 py-2 text-sm ${
                   message.sender === 'user' 
-                    ? 'bg-primary/10 border border-primary/20' 
-                    : 'bg-secondary/10 border border-secondary/20'
+                    ? 'bg-primary text-primary-foreground' 
+                    : 'bg-muted'
                 }`}>
-                  <div className="flex justify-between items-start mb-1">
-                    <span className="font-medium text-sm">
-                      {message.sender === 'user' ? 'Você' : 'Agente'}
-                    </span>
-                    {message.type && (
-                      <Badge variant="outline" className="text-xs">
-                        {message.type}
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="text-sm whitespace-pre-wrap">{message.text}</p>
-                  
-                  {/* Anexos */}
+                  {message.text}
                   {message.attachments && message.attachments.length > 0 && (
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {message.attachments.map(attachment => (
-                        <Badge variant="secondary" key={attachment.id} className="flex items-center gap-1">
-                          <Paperclip className="h-3 w-3" />
+                    <div className="mt-2 flex flex-wrap gap-1">
+                      {message.attachments.map((attachment, idx) => (
+                        <Badge key={idx} variant="outline" className="text-xs">
                           {attachment.name}
                         </Badge>
                       ))}
@@ -133,82 +94,69 @@ const ChatSection: React.FC<ChatSectionProps> = ({
                   )}
                 </div>
               </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center p-8 text-muted-foreground">
-            {filter === 'all' 
-              ? 'Nenhuma mensagem ainda. Comece a conversa!' 
-              : 'Nenhuma mensagem encontrada para o filtro selecionado.'}
-          </div>
-        )}
-
-        {typing && (
-          <div className="pl-14 py-2">
-            <div className="rounded-lg p-3 bg-muted animate-pulse w-24">
-              <div className="flex space-x-1 justify-center">
-                <div className="w-2 h-2 rounded-full bg-primary/60"></div>
-                <div className="w-2 h-2 rounded-full bg-primary/60 animation-delay-200"></div>
-                <div className="w-2 h-2 rounded-full bg-primary/60 animation-delay-500"></div>
+            </div>
+          ))}
+          
+          {typing && (
+            <div className="flex justify-start">
+              <div className="bg-muted rounded-lg px-4 py-2 text-sm">
+                <div className="flex space-x-1">
+                  <div className="w-1.5 h-1.5 bg-foreground/70 rounded-full animate-bounce" />
+                  <div className="w-1.5 h-1.5 bg-foreground/70 rounded-full animate-bounce delay-100" />
+                  <div className="w-1.5 h-1.5 bg-foreground/70 rounded-full animate-bounce delay-200" />
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
-
-      {/* Área de anexos */}
+          )}
+        </div>
+      </ScrollArea>
+      
       {attachments.length > 0 && (
-        <div className="p-2 border-t flex flex-wrap gap-2">
-          {attachments.map(attachment => (
-            <Badge key={attachment.id} variant="secondary" className="flex items-center gap-1">
-              <Paperclip className="h-3 w-3" />
+        <div className="px-4 py-2 flex flex-wrap gap-2 border-t">
+          {attachments.map((attachment, index) => (
+            <Badge key={index} variant="outline" className="py-1">
               {attachment.name}
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-4 w-4 p-0 ml-1" 
-                onClick={() => handleRemoveAttachment(attachment.id)}
+              <button 
+                className="ml-1 text-muted-foreground hover:text-foreground" 
+                onClick={() => handleRemoveAttachment(index)}
               >
-                <X className="h-3 w-3" />
-              </Button>
+                <XCircle className="h-3 w-3" />
+              </button>
             </Badge>
           ))}
         </div>
       )}
-
-      {/* Área de entrada */}
-      <div className="border-t pt-3 pb-1 px-1 flex gap-2 items-center">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="rounded-full" 
-          onClick={triggerFileInput}
-        >
-          <Paperclip className="h-5 w-5 text-muted-foreground" />
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            className="hidden"
-            multiple
-          />
-        </Button>
-        <Input
-          value={messageText}
-          onChange={(e) => setMessageText(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Digite sua mensagem..."
-          className="flex-1"
-        />
-        <Button
-          onClick={sendMessage}
-          disabled={!messageText.trim() && attachments.length === 0}
-          size="sm"
-        >
-          <Send className="h-4 w-4 mr-1" />
-          Enviar
-        </Button>
-      </div>
+      
+      <form onSubmit={handleSubmit} className="border-t p-3">
+        <div className="flex flex-col space-y-2">
+          <div className="flex gap-2">
+            <Button 
+              type="button" 
+              variant="outline" 
+              size="icon"
+              className="h-8 w-8"
+              onClick={handleAddAttachment}
+            >
+              <Paperclip className="h-4 w-4" />
+            </Button>
+            <Textarea 
+              placeholder="Digite sua mensagem..." 
+              value={messageText}
+              onChange={e => setMessageText(e.target.value)}
+              className="min-h-9 h-9 resize-none !py-1.5"
+              onKeyDown={e => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmit(e);
+                }
+              }}
+            />
+            <Button type="submit" size="icon" className="h-8 w-8">
+              <Send className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </form>
     </div>
   );
 };

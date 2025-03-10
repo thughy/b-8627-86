@@ -22,15 +22,15 @@ const WorkspaceActionButtons: React.FC<WorkspaceActionButtonsProps> = ({
   dealId
 }) => {
   return (
-    <div className="flex gap-2 overflow-x-auto">
+    <div className="flex gap-2 overflow-x-auto pb-2">
       <Button 
         size="sm" 
         variant="outline" 
-        onClick={() => onCreateNote?.(dealId)} 
+        onClick={() => onCreateAsset?.(dealId)} 
         className="whitespace-nowrap"
       >
-        <FileText className="h-4 w-4 mr-1" />
-        Nota
+        <Image className="h-4 w-4 mr-1" />
+        Asset
       </Button>
       <Button 
         size="sm" 
@@ -44,11 +44,11 @@ const WorkspaceActionButtons: React.FC<WorkspaceActionButtonsProps> = ({
       <Button 
         size="sm" 
         variant="outline" 
-        onClick={() => onCreateAsset?.(dealId)} 
+        onClick={() => onCreateNote?.(dealId)} 
         className="whitespace-nowrap"
       >
-        <Image className="h-4 w-4 mr-1" />
-        Asset
+        <FileText className="h-4 w-4 mr-1" />
+        Nota
       </Button>
       <Button 
         size="sm" 
@@ -57,7 +57,7 @@ const WorkspaceActionButtons: React.FC<WorkspaceActionButtonsProps> = ({
         className="whitespace-nowrap"
       >
         <File className="h-4 w-4 mr-1" />
-        Doc
+        Documento
       </Button>
       <Button 
         size="sm" 
