@@ -42,8 +42,10 @@ const CustomerListItem: React.FC<CustomerListItemProps> = ({ customer, onSelect 
   return (
     <div 
       className={cn(
-        "w-full text-left flex items-center px-3 py-2 rounded-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer",
-        "focus:bg-accent focus:text-accent-foreground outline-none"
+        "w-full text-left flex items-center px-3 py-2 rounded-sm transition-all cursor-pointer",
+        "hover:bg-accent hover:text-accent-foreground hover:scale-[1.02] hover:shadow-sm",
+        "focus:bg-accent focus:text-accent-foreground outline-none focus:scale-[1.02] focus:shadow-sm",
+        "active:scale-[0.99]"
       )}
       onClick={handleClick}
       onKeyDown={handleKeyDown}

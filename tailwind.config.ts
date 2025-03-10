@@ -43,7 +43,7 @@ export default {
           foreground: "hsl(var(--secondary-foreground))",
         },
         accent: {
-          DEFAULT: "#333333",
+          DEFAULT: "#474747", // Updated for better contrast on hover
           foreground: "#FFFFFF",
         },
         muted: {
