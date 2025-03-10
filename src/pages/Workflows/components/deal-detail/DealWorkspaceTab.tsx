@@ -71,7 +71,7 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
   };
 
   // Função wrapper para adapter o tipo para o ChatSection
-  // Fix the type mismatch by ensuring the parameter is a number
+  // Ensure this takes a number parameter and passes a number to the hook
   const handleRemoveAttachment = (index: number) => {
     chatState.handleRemoveAttachment(index);
   };
