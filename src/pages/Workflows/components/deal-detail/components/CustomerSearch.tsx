@@ -23,7 +23,7 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ value, onChange }) => {
 
   // Load customers when the search query changes
   useEffect(() => {
-    const fetchCustomers = () => {
+    const fetchCustomers = async () => {
       try {
         setLoading(true);
         // Call the customer service to get filtered customers
@@ -39,15 +39,18 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ value, onChange }) => {
       }
     };
 
-    // Only fetch if there's a search query or we're opening the dropdown
-    if (searchQuery || open) {
-      fetchCustomers();
-    }
-  }, [searchQuery, open]);
+    fetchCustomers();
+  }, [searchQuery]);
 
-  const handleInputClick = () => {
-    // Always open the dropdown when clicking the input
-    setOpen(true);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    if (!open) setOpen(true);
+  };
+
+  const handleSelect = (customerName: string, customerType: 'person' | 'organization') => {
+    onChange(customerName, customerType);
+    setSearchQuery('');
+    setOpen(false);
   };
 
   return (
@@ -57,9 +60,9 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ value, onChange }) => {
           <Input
             placeholder="Buscar cliente..."
             value={value || searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleInputChange}
             className="w-full pr-10"
-            onClick={handleInputClick}
+            onClick={() => setOpen(true)}
           />
           <ChevronsUpDown 
             className="absolute right-3 h-4 w-4 text-muted-foreground cursor-pointer" 
@@ -69,12 +72,12 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ value, onChange }) => {
       </PopoverTrigger>
 
       <PopoverContent 
-        className="w-[var(--radix-popover-trigger-width)] p-0 bg-background shadow-md z-50" 
+        className="w-[var(--radix-popover-trigger-width)] p-0 bg-background border shadow-md z-50" 
         align="start" 
         sideOffset={5}
         style={{ minWidth: triggerRef.current?.offsetWidth }}
       >
-        <Command>
+        <Command className="rounded-lg">
           <CommandInput 
             placeholder="Buscar cliente por nome..." 
             value={searchQuery}
@@ -95,11 +98,7 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ value, onChange }) => {
                   <CommandItem
                     key={customer.id}
                     value={customer.name}
-                    onSelect={() => {
-                      onChange(customer.name, customer.type);
-                      setSearchQuery(''); // Reset search after selection
-                      setOpen(false);
-                    }}
+                    onSelect={() => handleSelect(customer.name, customer.type)}
                     className="flex items-center"
                   >
                     <div className="flex items-center gap-2 flex-1">
