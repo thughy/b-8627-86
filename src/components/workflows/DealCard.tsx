@@ -5,7 +5,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { User, DollarSign, Calendar, Tag, MessageSquare, Award, Building, FileText, CheckSquare, Mail, File, HeartPulse, Flag } from "lucide-react";
-import { formatCurrency, formatDate, getStatusBadgeVariant, getStatusText, getDealTypeBadge, getDealTypeGradient, getTopBarColor } from "./utils/dealUtils";
+import { 
+  formatCurrency, 
+  formatDate, 
+  getStatusBadgeVariant, 
+  getStatusText, 
+  getDealTypeBadge, 
+  getDealTypeGradient, 
+  getTopBarColor,
+  getStatusBackgroundColor,
+  getInterestBackgroundColor
+} from "./utils/dealUtils";
 
 interface DealCardProps {
   deal: Deal;
@@ -21,6 +31,8 @@ const DealCard: React.FC<DealCardProps> = ({
   const dealTypeGradient = getDealTypeGradient(deal.type || 'default');
   const topBarColor = getTopBarColor(deal.type || 'default');
   const typeBadge = getDealTypeBadge(deal.type || 'default');
+  const statusBackground = getStatusBackgroundColor(deal.status);
+  const interestBackground = getInterestBackgroundColor(deal.interests);
 
   return (
     <Card 
@@ -66,11 +78,11 @@ const DealCard: React.FC<DealCardProps> = ({
               </div>
             </div>
             
-            {/* Interest - Moved to right side */}
+            {/* Interest - With background color */}
             {deal.interests && (
               <div className="flex items-start text-xs space-x-1.5 flex-shrink-0">
-                <div className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-pink-500/10 mt-0.5">
-                  <HeartPulse className="h-3 w-3 text-pink-500" />
+                <div className={`flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full ${interestBackground} mt-0.5`}>
+                  <HeartPulse className="h-3 w-3" />
                 </div>
                 <span className="truncate max-w-[80px]">{deal.interests}</span>
               </div>
@@ -106,9 +118,9 @@ const DealCard: React.FC<DealCardProps> = ({
               <span>{formatCurrency(deal.amount)}</span>
             </div>
             
-            {/* Status */}
+            {/* Status with background color */}
             <div className="flex items-center text-xs gap-1">
-              <Badge variant={getStatusBadgeVariant(deal.status)}>
+              <Badge variant="outline" className={cn("text-xs font-semibold px-2 py-0.5", statusBackground)}>
                 {getStatusText(deal.status)}
               </Badge>
             </div>

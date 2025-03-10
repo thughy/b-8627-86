@@ -92,3 +92,35 @@ export const getTopBarColor = (type: string) => {
 export const getDealsByStage = (deals: Deal[], stageId: string) => {
   return deals.filter(deal => deal.stageId === stageId);
 };
+
+// New functions for status and interest background colors
+
+// Function to get status background color
+export const getStatusBackgroundColor = (status: string) => {
+  switch (status) {
+    case 'won': 
+      return 'bg-green-500/10 text-green-500';
+    case 'lost': 
+      return 'bg-red-500/10 text-red-500';
+    case 'open': 
+      return 'bg-blue-500/10 text-blue-500';
+    case 'completed': 
+      return 'bg-purple-500/10 text-purple-500';
+    default: 
+      return 'bg-slate-500/10 text-slate-500';
+  }
+};
+
+// Function to get interest background color
+export const getInterestBackgroundColor = (interest?: string) => {
+  if (!interest) return 'bg-slate-500/10 text-slate-500';
+  
+  // Map interests to different background colors
+  if (interest.includes('undecided')) return 'bg-slate-500/10 text-slate-500';
+  if (interest.includes('interested')) return 'bg-blue-500/10 text-blue-500';
+  if (interest.includes('negotiate')) return 'bg-amber-500/10 text-amber-500';
+  if (interest.includes('buy')) return 'bg-green-500/10 text-green-500';
+  
+  // Default color for other interests
+  return 'bg-pink-500/10 text-pink-500';
+};
