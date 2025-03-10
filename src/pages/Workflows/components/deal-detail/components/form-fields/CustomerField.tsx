@@ -9,7 +9,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Search, User, Building2, X } from 'lucide-react';
+import { Search, User, Building2, X, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
@@ -35,6 +35,15 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   const hasSelectedCustomer = Boolean(customerName);
 
   // Gerenciar o foco e abertura/fechamento do popover
+  const handleInputClick = () => {
+    if (!isOpen) {
+      setIsOpen(true);
+    }
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
+
   const handleFocus = () => {
     setIsFocused(true);
     setIsOpen(true);
@@ -46,6 +55,11 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
     setTimeout(() => {
       if (!document.activeElement?.closest('.customer-search-popover')) {
         setIsOpen(false);
+        // Se não tiver selecionado um cliente mas tiver texto no campo,
+        // limpa o texto quando sair do foco
+        if (!hasSelectedCustomer && searchTerm) {
+          clearSearch();
+        }
       }
     }, 200);
   };
@@ -76,6 +90,15 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
     }
   };
 
+  // Pressionar Escape limpa a busca e fecha o popover
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      clearSearch();
+      setIsOpen(false);
+      inputRef.current?.blur();
+    }
+  };
+
   // Escolher o ícone apropriado com base no tipo de cliente
   const CustomerIcon = customerType === 'organization' ? Building2 : User;
 
@@ -83,8 +106,16 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
     <FormField id="customer" label="Cliente">
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
-          <div className="relative">
-            <Search className="absolute left-2.5 top-3 h-4 w-4 text-muted-foreground" />
+          <div 
+            className="relative cursor-text" 
+            onClick={handleInputClick}
+          >
+            <div className="absolute left-2.5 top-3 h-4 w-4 text-muted-foreground">
+              {hasSelectedCustomer && !isFocused ? 
+                <CustomerIcon className="text-primary" /> : 
+                <Search />
+              }
+            </div>
             
             <Input
               ref={inputRef}
@@ -92,19 +123,20 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
               placeholder="Buscar cliente..."
               className={cn(
                 "pl-8 pr-8 thin-border",
-                hasSelectedCustomer && !isFocused ? "text-transparent caret-current" : ""
+                hasSelectedCustomer && !isFocused ? "text-transparent caret-current" : "",
+                hasSelectedCustomer ? "bg-muted/30" : ""
               )}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onFocus={handleFocus}
               onBlur={handleBlur}
+              onKeyDown={handleKeyDown}
             />
             
-            {/* Exibir o cliente selecionado quando não estiver em foco */}
-            {hasSelectedCustomer && !isFocused && !searchTerm && (
+            {/* Exibir o cliente selecionado quando não estiver em foco de busca */}
+            {hasSelectedCustomer && !isFocused && (
               <div className="absolute inset-0 flex items-center px-8 pointer-events-none">
                 <div className="flex items-center gap-2 max-w-full overflow-hidden">
-                  <CustomerIcon className="h-4 w-4 flex-shrink-0 text-primary" />
                   <span className="font-medium truncate">{customerName}</span>
                   {customerOrganization && customerType === 'person' && (
                     <span className="text-muted-foreground text-xs truncate">
@@ -115,22 +147,31 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
               </div>
             )}
 
-            {/* Botão para limpar a seleção */}
-            {hasSelectedCustomer && (
-              <button
-                type="button"
-                onClick={handleClearSelection}
-                className="absolute right-2.5 top-3 h-4 w-4 text-muted-foreground hover:text-foreground"
-                aria-label="Limpar seleção"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
+            {/* Botão para limpar a seleção ou ícone de dropdown */}
+            <div className="absolute right-2.5 top-3 flex items-center">
+              {hasSelectedCustomer ? (
+                <button
+                  type="button"
+                  onClick={handleClearSelection}
+                  className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label="Limpar seleção"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              ) : (
+                <ChevronDown 
+                  className={cn(
+                    "h-4 w-4 text-muted-foreground transition-transform duration-200",
+                    isOpen ? "transform rotate-180" : ""
+                  )} 
+                />
+              )}
+            </div>
           </div>
         </PopoverTrigger>
         
         <PopoverContent 
-          className="p-0 w-[300px] max-h-[300px] overflow-auto bg-background customer-search-popover" 
+          className="p-0 w-[340px] max-h-[300px] overflow-auto bg-background customer-search-popover shadow-md border-border" 
           align="start"
           sideOffset={5}
         >
@@ -148,11 +189,11 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
                 return (
                   <div 
                     key={customer.id}
-                    className="flex items-center px-3 py-2 cursor-pointer hover:bg-accent"
+                    className="flex items-center px-3 py-2.5 cursor-pointer hover:bg-accent transition-colors"
                     onClick={() => handleCustomerSelect(customer)}
                     onMouseDown={(e) => e.preventDefault()} // Evita problemas de foco
                   >
-                    <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-primary/10 mr-2">
+                    <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-primary/10 mr-3">
                       {isPerson ? (
                         <User className="h-4 w-4 text-primary" />
                       ) : (
@@ -180,6 +221,11 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
               Digite para buscar clientes
             </div>
           )}
+          
+          {/* Rodapé do popover com dica de uso */}
+          <div className="border-t border-border p-2 text-xs text-center text-muted-foreground">
+            Digite para buscar ou ESC para fechar
+          </div>
         </PopoverContent>
       </Popover>
     </FormField>
