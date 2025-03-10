@@ -1,10 +1,10 @@
 
 import React from 'react';
-import { Deal } from '@/pages/Workflows/models/WorkflowModels';
 import { Input } from '@/components/ui/input';
 import SelectField from '@/components/ui/select-field';
 import FormField from '@/components/ui/form-field';
 import CustomerSearch from './CustomerSearch';
+import { Deal } from '@/pages/Workflows/models/WorkflowModels';
 
 interface DealBasicInfoFieldsProps {
   formState: Partial<Deal>;
@@ -18,38 +18,32 @@ const DealBasicInfoFields: React.FC<DealBasicInfoFieldsProps> = ({
   formState,
   handleChange,
   typeOptions,
-  statusOptions,
-  customerTypeOptions
+  statusOptions
 }) => {
   const handleCustomerSelect = (customerName: string, customerType: 'person' | 'organization') => {
     handleChange('customerName', customerName);
     handleChange('customerType', customerType);
     
-    // If it's an organization, we set the customerOrganization to the same name
-    // If it's a person, we leave the organization field as is
+    // If it's an organization, set the organization name directly
     if (customerType === 'organization') {
       handleChange('customerOrganization', customerName);
     }
   };
 
   return (
-    <div className="space-y-4">
+    <div className="grid gap-4">
       <FormField id="title" label="Título" required>
-        <Input 
+        <Input
           id="title"
-          value={formState.title || ''} 
-          onChange={(e) => handleChange('title', e.target.value)} 
+          value={formState.title || ''}
+          onChange={(e) => handleChange('title', e.target.value)}
         />
       </FormField>
 
-      <FormField id="status" label="Status">
-        <SelectField
-          id="status"
-          label=""
-          value={formState.status || ''}
-          onChange={(value) => handleChange('status', value)}
-          options={statusOptions}
-          placeholder="Selecione o status"
+      <FormField id="customer" label="Cliente" required>
+        <CustomerSearch
+          value={formState.customerName}
+          onChange={handleCustomerSelect}
         />
       </FormField>
 
@@ -64,23 +58,16 @@ const DealBasicInfoFields: React.FC<DealBasicInfoFieldsProps> = ({
         />
       </FormField>
 
-      <FormField id="customer" label="Cliente">
-        <CustomerSearch
-          value={formState.customerName}
-          onChange={handleCustomerSelect}
+      <FormField id="status" label="Status">
+        <SelectField
+          id="status"
+          label=""
+          value={formState.status || ''}
+          onChange={(value) => handleChange('status', value)}
+          options={statusOptions}
+          placeholder="Selecione o status"
         />
       </FormField>
-
-      {/* Only show the organization input field if the customer type is person */}
-      {formState.customerType === 'person' && (
-        <FormField id="customerOrganization" label="Organização">
-          <Input 
-            id="customerOrganization"
-            value={formState.customerOrganization || ''} 
-            onChange={(e) => handleChange('customerOrganization', e.target.value)} 
-          />
-        </FormField>
-      )}
     </div>
   );
 };
