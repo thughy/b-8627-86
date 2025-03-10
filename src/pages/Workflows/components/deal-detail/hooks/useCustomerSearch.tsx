@@ -49,6 +49,7 @@ export function useCustomerSearch() {
     setSearchTerm('');
     setCustomers([]);
     setSelectedCustomer(null);
+    setIsOpen(false);
   };
 
   // Função para selecionar um cliente
