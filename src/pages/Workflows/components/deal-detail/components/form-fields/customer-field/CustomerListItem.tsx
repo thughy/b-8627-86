@@ -34,6 +34,7 @@ const CustomerListItem: React.FC<CustomerListItemProps> = ({ customer, onSelect 
       type="button"
       className="w-full text-left flex items-center px-3 py-2 cursor-pointer hover:bg-accent transition-colors"
       onClick={handleSelect}
+      // Prevent blur events from firing before click is processed
       onMouseDown={(e) => e.preventDefault()}
     >
       <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-primary/10 mr-2">

@@ -52,9 +52,12 @@ export function useCustomerSearch() {
     setSearchTerm('');
     setCustomers([]);
     
-    // Give a small delay before closing the popover
+    // Use requestAnimationFrame to defer closing the popover
+    // This ensures the selection is processed before the popover closes
     requestAnimationFrame(() => {
-      setIsOpen(false);
+      setTimeout(() => {
+        setIsOpen(false);
+      }, 50);
     });
   };
 

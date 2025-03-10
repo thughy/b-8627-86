@@ -49,9 +49,12 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   };
 
   const handleBlur = () => {
-    // Check if the related target is within our component after a short delay
+    // Give a small delay before closing the popover to allow click events to complete
     setTimeout(() => {
-      setIsOpen(false);
+      if (document.activeElement !== inputRef.current && 
+          !containerRef.current?.contains(document.activeElement)) {
+        setIsOpen(false);
+      }
     }, 200);
   };
 
@@ -97,7 +100,7 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
         </PopoverTrigger>
         
         <PopoverContent 
-          className="p-0 w-[300px] max-h-[300px] overflow-auto customer-search-popover"
+          className="p-0 w-[300px] max-h-[300px] overflow-auto customer-search-popover bg-background"
           align="start"
           alignOffset={0}
           sideOffset={5}
