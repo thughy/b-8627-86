@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { LockKeyhole, Mail, Eye, EyeOff } from "lucide-react";
+import Logo from "@/components/ui/Logo";
 
 const Login = () => {
   const { toast } = useToast();
@@ -20,16 +21,25 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      // In a real app, this would be an API call
-      console.log("Logging in with:", { email, password });
+      // Em um aplicativo real, esta seria uma chamada à API para fazer login
+      console.log("Realizando login com:", { email, password });
       
-      // Simulate login success
+      // Simular se é usuário Master ou comum (em produção, isso viria do backend)
+      const isMasterUser = email.includes("master") || email.includes("admin");
+      
+      // Simular login bem-sucedido
       setTimeout(() => {
         setIsLoading(false);
         toast({
           title: "Login realizado com sucesso",
-          description: "Bem-vindo ao AutB",
+          description: isMasterUser ? 
+            "Bem-vindo, administrador do sistema" : 
+            "Bem-vindo ao AutB",
         });
+        
+        // Redirecionamento baseado no tipo de usuário
+        // Se for Master (ou primeiro usuário), vai direto para o dashboard
+        // Se for usuário comum, vai para o dashboard também
         navigate("/dashboard");
       }, 1000);
     } catch (error) {
@@ -47,9 +57,7 @@ const Login = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <div className="flex justify-center mb-6">
-            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-gray-300">
-              AutB
-            </h1>
+            <Logo />
           </div>
           <CardTitle className="text-2xl font-bold">Entrar na sua conta</CardTitle>
           <CardDescription>Digite seu email e senha para acessar o sistema</CardDescription>

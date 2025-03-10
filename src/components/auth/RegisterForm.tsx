@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -30,6 +30,32 @@ const RegisterForm = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isFirstUser, setIsFirstUser] = useState(false);
+
+  // Verificar se é o primeiro usuário
+  useEffect(() => {
+    const checkFirstUser = async () => {
+      try {
+        // Em um app real, esta seria uma chamada à API para verificar se existem usuários
+        // Por enquanto vamos simular que não existem usuários (é o primeiro)
+        const mockCheckFirstUser = () => {
+          return new Promise<boolean>((resolve) => {
+            setTimeout(() => {
+              // Simular que é o primeiro usuário
+              resolve(true);
+            }, 500);
+          });
+        };
+
+        const result = await mockCheckFirstUser();
+        setIsFirstUser(result);
+      } catch (error) {
+        console.error("Erro ao verificar se é o primeiro usuário:", error);
+      }
+    };
+
+    checkFirstUser();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -51,17 +77,24 @@ const RegisterForm = () => {
     setIsLoading(true);
 
     try {
-      // In a real app, this would be an API call
-      console.log("Registering with:", formData);
+      // Aqui simularemos o cadastro
+      console.log("Registrando com:", formData);
+      console.log("Tipo de usuário:", isFirstUser ? "Master" : "Comum");
       
-      // Simulate registration success
+      // Simular sucesso no registro
       setTimeout(() => {
         setIsLoading(false);
         toast({
-          title: "Conta criada com sucesso",
-          description: "Agora vamos escolher seu plano",
+          title: isFirstUser 
+            ? "Conta Master criada com sucesso" 
+            : "Conta criada com sucesso",
+          description: isFirstUser 
+            ? "Você é o administrador principal do sistema" 
+            : "Agora vamos escolher seu plano",
         });
-        navigate("/auth/plans");
+        
+        // Redirecionar para a página apropriada
+        navigate(isFirstUser ? "/dashboard" : "/auth/plans");
       }, 1000);
     } catch (error) {
       setIsLoading(false);
@@ -75,6 +108,14 @@ const RegisterForm = () => {
 
   return (
     <form onSubmit={handleRegister} className="space-y-4">
+      {isFirstUser && (
+        <div className="bg-primary/10 border border-primary/30 rounded-md p-3 mb-4">
+          <p className="text-sm font-medium text-primary">
+            Você será o usuário Master do sistema com acesso total às funcionalidades.
+          </p>
+        </div>
+      )}
+      
       <FormInput
         type="text"
         name="name"

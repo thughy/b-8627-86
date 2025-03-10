@@ -14,7 +14,9 @@ const Register = () => {
             <Logo />
           </div>
           <CardTitle className="text-2xl font-bold">Criar nova conta</CardTitle>
-          <CardDescription>Preencha os dados abaixo para se cadastrar</CardDescription>
+          <CardDescription>
+            Preencha os dados abaixo para se cadastrar
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <RegisterForm />
