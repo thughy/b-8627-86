@@ -19,11 +19,11 @@ interface ChatSectionProps {
   messages: ChatMessage[];
   messageText: string;
   setMessageText: (text: string) => void;
-  sendMessage: () => void;
+  sendMessage: () => void; // Changed to not require text parameter
   typing: boolean;
   attachments: { id: string; name: string; url: string }[];
   handleAddAttachment: (files: FileList) => void;
-  handleRemoveAttachment: (id: string) => void;
+  handleRemoveAttachment: (id: string) => void; // Changed to accept id instead of index
   filter: string;
 }
 
