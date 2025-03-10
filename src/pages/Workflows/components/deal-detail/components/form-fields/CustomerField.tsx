@@ -36,10 +36,12 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   } = useCustomerSearch();
   
   const inputRef = useRef<HTMLInputElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
   
   const handleCustomerSelect = (customer: Customer) => {
     selectCustomer(customer);
     onCustomerSelect(customer);
+    setIsOpen(false);
   };
 
   const handleClearSelection = (e: React.MouseEvent) => {
@@ -67,12 +69,13 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
     // Check if the related target is inside our popover
     const relatedTarget = e.relatedTarget as Node;
     if (relatedTarget instanceof Element) {
-      const isInsidePopover = relatedTarget.closest('[role="listbox"]');
+      const isInsidePopover = relatedTarget.closest('[role="listbox"]') || 
+                              relatedTarget.closest('[role="option"]');
       if (isInsidePopover) return;
     }
     
-    // Small delay to allow click events to register
-    setTimeout(() => setIsOpen(false), 200);
+    // Use a longer delay to allow click events to register
+    setTimeout(() => setIsOpen(false), 300);
   };
 
   return (
@@ -96,7 +99,8 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
         </PopoverTrigger>
         
         <PopoverContent 
-          role="listbox"
+          ref={popoverRef}
+          role="presentation"
           className="p-0 w-[300px] bg-background border rounded-md shadow-lg z-50 overflow-hidden"
           align="start"
           alignOffset={0}

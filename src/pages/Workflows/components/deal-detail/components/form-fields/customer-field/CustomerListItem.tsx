@@ -24,21 +24,28 @@ const CustomerListItem: React.FC<CustomerListItemProps> = ({ customer, onSelect 
     return "";
   };
   
-  const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleClick = () => {
     onSelect(customer);
   };
   
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onSelect(customer);
+    }
+  };
+  
   return (
-    <button 
-      type="button"
+    <div 
       className={cn(
-        "w-full text-left flex items-center px-3 py-2 rounded-sm hover:bg-accent hover:text-accent-foreground transition-colors",
+        "w-full text-left flex items-center px-3 py-2 rounded-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer",
         "focus:bg-accent focus:text-accent-foreground outline-none"
       )}
       onClick={handleClick}
+      onKeyDown={handleKeyDown}
       role="option"
+      tabIndex={0}
+      aria-selected={false}
     >
       <div className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-full bg-primary/10 mr-2">
         {isPerson ? (
@@ -53,7 +60,7 @@ const CustomerListItem: React.FC<CustomerListItemProps> = ({ customer, onSelect 
           {getSecondaryText()}
         </div>
       </div>
-    </button>
+    </div>
   );
 };
 

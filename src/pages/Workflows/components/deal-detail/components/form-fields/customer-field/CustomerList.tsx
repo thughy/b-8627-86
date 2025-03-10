@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Customer } from '@/pages/Workflows/models/CustomerModel';
 import CustomerListItem from './CustomerListItem';
 import { Loader2 } from 'lucide-react';
@@ -18,6 +18,34 @@ const CustomerList: React.FC<CustomerListProps> = ({
   searchTerm, 
   onSelectCustomer 
 }) => {
+  const listRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    // Focus the first item when list receives focus
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!listRef.current) return;
+      
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        const items = listRef.current.querySelectorAll('[role="option"]');
+        if (items.length > 0) {
+          (items[0] as HTMLElement).focus();
+        }
+      }
+    };
+    
+    const listElement = listRef.current;
+    if (listElement) {
+      listElement.addEventListener('keydown', handleKeyDown);
+    }
+    
+    return () => {
+      if (listElement) {
+        listElement.removeEventListener('keydown', handleKeyDown);
+      }
+    };
+  }, [customers]);
+  
   if (isLoading) {
     return (
       <div className="p-4 text-center text-sm text-muted-foreground">
@@ -32,7 +60,7 @@ const CustomerList: React.FC<CustomerListProps> = ({
   if (customers.length > 0) {
     return (
       <ScrollArea className="max-h-[300px]">
-        <div className="p-2">
+        <div ref={listRef} className="p-2" role="listbox" tabIndex={-1}>
           {customers.map((customer) => (
             <CustomerListItem 
               key={customer.id} 
