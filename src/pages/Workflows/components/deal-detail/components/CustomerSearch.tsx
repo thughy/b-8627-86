@@ -28,14 +28,6 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ value, onChange }) => {
     setLoading(false);
   }, [searchQuery]);
 
-  // Get the display name for the selected value
-  const getSelectedCustomerName = () => {
-    if (!value) return '';
-    
-    const customer = customers.find(c => c.name === value);
-    return customer ? customer.name : value;
-  };
-
   return (
     <div className="relative w-full">
       <div className="flex items-center relative">
@@ -63,7 +55,7 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ value, onChange }) => {
               </button>
             </div>
           </PopoverTrigger>
-          <PopoverContent className="w-full p-0 dropdown-content" style={{ width: inputRef.current?.offsetWidth }}>
+          <PopoverContent className="w-full p-0 dropdown-content bg-background" style={{ width: inputRef.current?.offsetWidth }}>
             <Command>
               <CommandInput 
                 placeholder="Buscar cliente..." 

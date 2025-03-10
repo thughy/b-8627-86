@@ -8,107 +8,87 @@ type Attachment = {
   url: string;
 };
 
-export type Message = {
+type Message = {
   id: string;
   text: string;
   sender: 'user' | 'agent';
   timestamp: Date;
   attachments?: Attachment[];
-  // Adding properties needed for compatibility with ChatMessage
-  senderName?: string;
-  content?: string;
 };
 
-export const useChatState = (dealId: string) => {
-  const [messages, setMessages] = useState<Message[]>([]);
+// Mock agent responses for demonstration
+const mockResponses = [
+  "Olá! Como posso ajudar com este negócio?",
+  "Entendi. Vou verificar essas informações para você.",
+  "Acabei de atualizar os detalhes no sistema.",
+  "Sim, posso preparar essa proposta ainda hoje.",
+  "Vou agendar uma reunião com o cliente para discutir os próximos passos."
+];
+
+export function useChatState(dealId: string) {
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: '1',
+      text: "Olá! Como posso ajudar com este negócio?",
+      sender: 'agent',
+      timestamp: new Date(Date.now() - 60000)
+    }
+  ]);
   const [messageText, setMessageText] = useState('');
   const [typing, setTyping] = useState(false);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
 
-  // Load initial messages when dealId changes
-  useEffect(() => {
-    const loadMessages = async () => {
-      // This would be an API call in a real application
-      const mockMessages: Message[] = [
-        {
-          id: '1',
-          text: 'Olá, como posso ajudar com esse negócio?',
-          sender: 'agent',
-          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
-          senderName: 'Assistente',
-          content: 'Olá, como posso ajudar com esse negócio?'
-        },
-        {
-          id: '2',
-          text: 'Preciso revisar os termos do contrato antes de fechar.',
-          sender: 'user',
-          timestamp: new Date(Date.now() - 1000 * 60 * 60),
-          senderName: 'Você',
-          content: 'Preciso revisar os termos do contrato antes de fechar.'
-        },
-        {
-          id: '3',
-          text: 'Claro, vou preparar uma análise dos termos para você.',
-          sender: 'agent',
-          timestamp: new Date(Date.now() - 1000 * 60 * 30),
-          senderName: 'Assistente',
-          content: 'Claro, vou preparar uma análise dos termos para você.'
-        }
-      ];
-      
-      setMessages(mockMessages);
-    };
-    
-    loadMessages();
-  }, [dealId]);
-
+  // Function to send a message
   const sendMessage = (text: string) => {
-    // Add user message immediately
-    const userMessage: Message = {
+    if (!text.trim()) return;
+    
+    // Add user message
+    const newUserMessage: Message = {
       id: Date.now().toString(),
       text,
       sender: 'user',
       timestamp: new Date(),
-      attachments: attachments.length > 0 ? [...attachments] : undefined,
-      senderName: 'Você',
-      content: text
+      attachments: attachments.length > 0 ? [...attachments] : undefined
     };
     
-    setMessages(prev => [...prev, userMessage]);
+    setMessages(prev => [...prev, newUserMessage]);
     setMessageText('');
     setAttachments([]);
     
-    // Show typing indicator
+    // Simulate agent typing
     setTyping(true);
     
-    // Simulate agent response after delay
+    // Simulate agent response after a delay
     setTimeout(() => {
-      const agentMessage: Message = {
+      // Random response for demo purposes
+      const randomResponse = mockResponses[Math.floor(Math.random() * mockResponses.length)];
+      
+      const newAgentMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: 'Obrigado pela sua mensagem. Vou analisar e retornar em breve.',
+        text: randomResponse,
         sender: 'agent',
-        timestamp: new Date(),
-        senderName: 'Assistente',
-        content: 'Obrigado pela sua mensagem. Vou analisar e retornar em breve.'
+        timestamp: new Date()
       };
       
-      setMessages(prev => [...prev, agentMessage]);
+      setMessages(prev => [...prev, newAgentMessage]);
       setTyping(false);
     }, 1500);
   };
 
+  // Mock function to add attachment
   const handleAddAttachment = () => {
-    // Simulate file selection
+    // In a real app, this would open a file picker
     const mockAttachment: Attachment = {
       id: Date.now().toString(),
-      name: `arquivo${attachments.length + 1}.pdf`,
+      name: `documento_${Math.floor(Math.random() * 1000)}.pdf`,
       type: 'application/pdf',
-      url: '#'
+      url: '/mock-url'
     };
     
     setAttachments(prev => [...prev, mockAttachment]);
   };
 
+  // Function to remove attachment
   const handleRemoveAttachment = (index: number) => {
     setAttachments(prev => prev.filter((_, i) => i !== index));
   };
@@ -123,4 +103,4 @@ export const useChatState = (dealId: string) => {
     handleAddAttachment,
     handleRemoveAttachment
   };
-};
+}
