@@ -7,7 +7,14 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { MoreHorizontal, FileText, CheckSquare, Image, Mail, File } from 'lucide-react';
+import { 
+  MoreHorizontal, 
+  FileText, 
+  ClipboardList, 
+  Image as ImageIcon, 
+  Send, 
+  FileInput 
+} from 'lucide-react';
 import { Asset } from '@/pages/Workflows/models/WorkflowModels';
 
 interface WorkspaceActionButtonsProps {
@@ -58,23 +65,23 @@ const WorkspaceActionButtons: React.FC<WorkspaceActionButtonsProps> = React.memo
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-48">
           <DropdownMenuItem onClick={handleCreateAsset}>
-            <Image className="h-4 w-4 mr-2" />
+            <ImageIcon className="h-4 w-4 mr-2 text-blue-500" />
             Asset
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleCreateTask}>
-            <CheckSquare className="h-4 w-4 mr-2" />
+            <ClipboardList className="h-4 w-4 mr-2 text-green-500" />
             Tarefa
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleCreateNote}>
-            <FileText className="h-4 w-4 mr-2" />
+            <FileText className="h-4 w-4 mr-2 text-yellow-500" />
             Nota
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleCreateDocument}>
-            <File className="h-4 w-4 mr-2" />
+            <FileInput className="h-4 w-4 mr-2 text-purple-500" />
             Documento
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleCreateEmail}>
-            <Mail className="h-4 w-4 mr-2" />
+            <Send className="h-4 w-4 mr-2 text-red-500" />
             Email
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -86,4 +93,3 @@ const WorkspaceActionButtons: React.FC<WorkspaceActionButtonsProps> = React.memo
 WorkspaceActionButtons.displayName = 'WorkspaceActionButtons';
 
 export default WorkspaceActionButtons;
-
