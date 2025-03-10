@@ -65,7 +65,7 @@ const CustomerList: React.FC<CustomerListProps> = ({
   if (customers.length > 0) {
     return (
       <ScrollArea 
-        className="max-h-[300px] relative z-[201]" 
+        className="max-h-[300px] relative z-[9999]" 
         onClick={handleClick}
       >
         <div 

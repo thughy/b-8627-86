@@ -66,9 +66,9 @@ export default {
         "card-hover": "card-hover 0.2s ease-out forwards",
       },
       zIndex: {
-        'dropdown': '200',
-        'tooltip': '300',
-        'modal': '400',
+        'dropdown': '9999',
+        'tooltip': '10000',
+        'modal': '10001',
       },
     },
   },

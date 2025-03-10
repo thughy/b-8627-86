@@ -25,7 +25,7 @@ const CustomerListItem: React.FC<CustomerListItemProps> = ({ customer, onSelect 
   };
   
   const handleClick = (e: React.MouseEvent) => {
-    // Stop event propagation to prevent it from reaching elements behind
+    // Prevent any event propagation and default actions
     e.stopPropagation();
     e.preventDefault();
     onSelect(customer);
