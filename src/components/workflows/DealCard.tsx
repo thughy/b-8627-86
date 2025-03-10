@@ -69,7 +69,7 @@ const DealCard: React.FC<DealCardProps> = ({
                 <Calendar className="h-3 w-3 text-indigo-500" />
               </div>
               <div>
-                <span className="text-muted-foreground mr-1">Início:</span>
+                
                 <span className="truncate">{formatDate(deal.startDate)}</span>
               </div>
             </div>
