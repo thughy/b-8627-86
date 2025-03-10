@@ -3,7 +3,6 @@ import React, { forwardRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Search, X, User, Building2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import FormField from '@/components/ui/form-field';
 
 interface CustomerSearchInputProps {
   searchTerm: string;
@@ -31,12 +30,16 @@ const CustomerSearchInput = forwardRef<HTMLInputElement, CustomerSearchInputProp
   const CustomerIcon = customerType === 'organization' ? Building2 : User;
 
   return (
-    <FormField id="customer-search" label="Cliente">
+    <div className="space-y-2">
+      <label htmlFor="customer-search" className="block text-sm font-medium text-foreground mb-1">
+        Cliente
+      </label>
       <div className="relative">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
         
         <Input
           ref={ref}
+          id="customer-search"
           type="search"
           placeholder={hasSelectedCustomer ? '' : "Buscar cliente..."}
           className={cn(
@@ -74,11 +77,10 @@ const CustomerSearchInput = forwardRef<HTMLInputElement, CustomerSearchInputProp
           </button>
         )}
       </div>
-    </FormField>
+    </div>
   );
 });
 
 CustomerSearchInput.displayName = 'CustomerSearchInput';
 
 export default CustomerSearchInput;
-

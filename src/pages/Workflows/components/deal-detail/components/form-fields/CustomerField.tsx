@@ -87,7 +87,7 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
     <div ref={containerRef} className="relative">
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
-          <div>
+          <div className="w-full">
             <CustomerSearchInput
               ref={inputRef}
               searchTerm={searchTerm}
@@ -104,7 +104,7 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
         </PopoverTrigger>
         
         <PopoverContent 
-          className="p-0 w-[300px] max-h-[300px] overflow-auto customer-search-popover bg-background"
+          className="p-0 w-[300px] max-h-[300px] overflow-auto bg-background border shadow-lg rounded-md z-50"
           align="start"
           alignOffset={0}
           sideOffset={5}

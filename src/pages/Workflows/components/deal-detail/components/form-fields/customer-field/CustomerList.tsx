@@ -42,7 +42,7 @@ const CustomerList: React.FC<CustomerListProps> = ({
     );
   }
   
-  if (searchTerm) {
+  if (searchTerm && searchTerm.length >= 2) {
     return (
       <div className="p-4 text-center text-sm text-muted-foreground">
         Nenhum cliente encontrado
@@ -52,10 +52,9 @@ const CustomerList: React.FC<CustomerListProps> = ({
   
   return (
     <div className="p-4 text-center text-sm text-muted-foreground">
-      Digite para buscar clientes
+      Digite pelo menos 2 caracteres para buscar clientes
     </div>
   );
 };
 
 export default CustomerList;
-

@@ -22,6 +22,11 @@ export function useCustomerSearch() {
           }, 1, 10);
           
           setCustomers(result.customers);
+          
+          // Se houver resultados, certifique-se de que o popover está aberto
+          if (result.customers.length > 0) {
+            setIsOpen(true);
+          }
         } catch (error) {
           console.error('Erro ao buscar clientes:', error);
           setCustomers([]);
@@ -53,7 +58,6 @@ export function useCustomerSearch() {
     setCustomers([]);
     
     // Ensure the selection is processed before the popover closes
-    // Use requestAnimationFrame + timeout for more reliable event sequence
     requestAnimationFrame(() => {
       setTimeout(() => {
         setIsOpen(false);
