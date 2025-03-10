@@ -20,17 +20,22 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ value, onChange }) => {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
 
-  // Load customers when the search query changes
+  // Load customers only when dropdown is open and search changes
   useEffect(() => {
+    if (!open) return;
+    
     const fetchCustomers = async () => {
-      if (!open) return; // Only fetch when dropdown is open
-      
       try {
         setLoading(true);
-        // Call the customer service to get filtered customers
-        const result = filterCustomers({ search: searchQuery });
-        setCustomers(result.customers);
+        // Make sure we pass a proper search object to avoid undefined issues
+        const result = filterCustomers({ 
+          search: searchQuery || '', 
+          type: 'all',
+          status: 'all'
+        });
+        setCustomers(result.customers || []);
       } catch (error) {
         console.error('Error fetching customers:', error);
         toast.error('Erro ao buscar clientes. Tente novamente.');
@@ -43,17 +48,10 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ value, onChange }) => {
     fetchCustomers();
   }, [searchQuery, open]);
 
-  // Handle input change
+  // Handle input change without opening dropdown
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation();
     setSearchQuery(e.target.value);
-    if (!open) setOpen(true);
-  };
-
-  // Handle selection from dropdown
-  const handleSelect = (customerName: string, customerType: 'person' | 'organization') => {
-    onChange(customerName, customerType);
-    setSearchQuery('');
-    setOpen(false);
   };
 
   // Prevent click from closing popover by stopping propagation
@@ -62,28 +60,49 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ value, onChange }) => {
     if (!open) setOpen(true);
   };
 
-  // Handle button click to toggle dropdown
-  const handleButtonClick = (e: React.MouseEvent) => {
+  // Safe selection function that validates the customer type before calling onChange
+  const handleSelect = (customerName: string, customerType: 'person' | 'organization') => {
+    if (customerType !== 'person' && customerType !== 'organization') {
+      console.error('Invalid customer type:', customerType);
+      customerType = 'person'; // Default fallback
+    }
+    onChange(customerName, customerType);
+    setOpen(false);
+  };
+
+  // Handle dropdown toggle
+  const handleToggleDropdown = (e: React.MouseEvent) => {
     e.stopPropagation();
     setOpen(!open);
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover 
+      open={open} 
+      onOpenChange={(isOpen) => {
+        // Only allow explicit closing or when we select an item
+        if (!isOpen) setOpen(false);
+      }}
+    >
       <PopoverTrigger asChild>
-        <div className="relative w-full flex items-center">
+        <div 
+          className="relative w-full flex items-center" 
+          ref={triggerRef}
+          onClick={(e) => e.stopPropagation()}
+        >
           <Input
             ref={inputRef}
             placeholder="Buscar cliente..."
             value={value || searchQuery}
             onChange={handleInputChange}
-            className="w-full pr-10"
             onClick={handleInputClick}
+            className="w-full pr-10"
           />
           <button 
             type="button"
             className="absolute right-3 top-1/2 -translate-y-1/2"
-            onClick={handleButtonClick}
+            onClick={handleToggleDropdown}
+            tabIndex={-1}
           >
             <ChevronsUpDown className="h-4 w-4 text-muted-foreground" />
           </button>
@@ -91,28 +110,34 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ value, onChange }) => {
       </PopoverTrigger>
 
       <PopoverContent 
-        className="w-[var(--radix-popover-trigger-width)] p-0 bg-background border shadow-md z-[100]" 
+        className="w-full p-0 bg-background border shadow-md z-[100]" 
         align="start" 
         sideOffset={5}
-        style={{ width: inputRef.current?.offsetWidth }}
+        style={{ 
+          width: triggerRef.current?.offsetWidth || 300,
+          maxHeight: '300px',
+          overflow: 'hidden' 
+        }}
       >
         <Command className="rounded-lg border-0">
           <CommandInput 
             placeholder="Buscar cliente por nome..." 
             value={searchQuery}
-            onValueChange={setSearchQuery}
+            onValueChange={(value) => setSearchQuery(value)}
             className="h-9"
           />
+          
           <CommandEmpty className="py-6 text-center text-sm">
             Nenhum cliente encontrado.
           </CommandEmpty>
+          
           {loading ? (
             <div className="py-6 text-center text-sm text-muted-foreground">
               Carregando clientes...
             </div>
           ) : (
             <CommandGroup className="max-h-[200px] overflow-auto">
-              {customers.map((customer) => (
+              {Array.isArray(customers) && customers.map((customer) => (
                 <CommandItem
                   key={customer.id}
                   value={customer.name}
