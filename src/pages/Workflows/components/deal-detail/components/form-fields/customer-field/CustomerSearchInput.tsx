@@ -8,7 +8,7 @@ interface CustomerSearchInputProps {
   searchTerm: string;
   onChange: (value: string) => void;
   onFocus: () => void;
-  onBlur: (e: React.FocusEvent) => void; // Updated to accept a FocusEvent parameter
+  onBlur: (e: React.FocusEvent) => void;
   onClearSelection: (e: React.MouseEvent) => void;
   hasSelectedCustomer: boolean;
   customerName?: string;

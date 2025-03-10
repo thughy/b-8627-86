@@ -19,14 +19,12 @@ export function useCustomerSearch() {
             search: searchTerm,
             type: 'all',
             status: 'all'
-          }, 1, 10);
+          }, 1, 20); // Aumentado para 20 resultados
           
           setCustomers(result.customers);
           
-          // Ensure popover opens when we have results
-          if (result.customers.length > 0) {
-            setIsOpen(true);
-          }
+          // Ensure popover opens when we have results or are loading
+          setIsOpen(true);
         } catch (error) {
           console.error('Erro ao buscar clientes:', error);
           setCustomers([]);

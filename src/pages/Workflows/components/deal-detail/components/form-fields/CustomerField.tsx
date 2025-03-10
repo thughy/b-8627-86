@@ -1,5 +1,5 @@
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Customer } from '@/pages/Workflows/models/CustomerModel';
 import { useCustomerSearch } from '../../hooks/useCustomerSearch';
 import { 
@@ -35,8 +35,7 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   } = useCustomerSearch();
   
   const inputRef = useRef<HTMLInputElement>(null);
-  const [blurTimeoutId, setBlurTimeoutId] = useState<NodeJS.Timeout | null>(null);
-
+  
   // Update the input when external props change
   useEffect(() => {
     if (customerName && customerType) {
@@ -49,32 +48,21 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   };
 
   const handleBlur = (e: React.FocusEvent) => {
-    // Use a timeout to allow clicks on list items to register before closing the popover
-    const timeoutId = setTimeout(() => {
-      // Check if the related target is inside the popover
-      const relatedTarget = e.relatedTarget as Node;
-      if (relatedTarget instanceof Element) {
-        // Check if the clicked element is inside the popover content
-        const isInsidePopover = relatedTarget.closest('[role="listbox"]');
-        if (isInsidePopover) {
-          return; // Don't close if clicking inside popover
-        }
+    // Check if the related target is inside the popover
+    const relatedTarget = e.relatedTarget as Node;
+    if (relatedTarget instanceof Element) {
+      // Check if the clicked element is inside the popover content
+      const isInsidePopover = relatedTarget.closest('[role="listbox"]');
+      if (isInsidePopover) {
+        return; // Don't close if clicking inside popover
       }
-      
+    }
+    
+    // Small timeout to allow click events to register before closing
+    setTimeout(() => {
       setIsOpen(false);
     }, 150);
-    
-    setBlurTimeoutId(timeoutId);
   };
-
-  // Clear timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (blurTimeoutId) {
-        clearTimeout(blurTimeoutId);
-      }
-    };
-  }, [blurTimeoutId]);
 
   const handleCustomerSelect = (customer: Customer) => {
     selectCustomer(customer);

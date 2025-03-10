@@ -31,8 +31,8 @@ const CustomerList: React.FC<CustomerListProps> = ({
   
   if (customers.length > 0) {
     return (
-      <ScrollArea className="max-h-[300px]">
-        <div className="py-1">
+      <ScrollArea className="max-h-[240px]">
+        <div className="p-1">
           {customers.map((customer) => (
             <CustomerListItem 
               key={customer.id} 
