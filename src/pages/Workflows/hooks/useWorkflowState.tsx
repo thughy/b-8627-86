@@ -12,7 +12,6 @@ import { useDragAndDrop } from './useDragAndDrop';
 import { useSearch } from './useSearch';
 import { useWorkflowViews } from './useWorkflowViews';
 import { useWorkflowSelection } from './useWorkflowSelection';
-import { DealFilters } from '../components/AdvancedFiltersModal';
 
 export const useWorkflowState = () => {
   const [workflows] = useState<Workflow[]>(mockWorkflows);
@@ -44,13 +43,7 @@ export const useWorkflowState = () => {
   
   const { handleDragEnd } = useDragAndDrop(stages, deals, setDeals);
   
-  const { 
-    searchTerm, 
-    setSearchTerm, 
-    filteredDeals, 
-    advancedFilters, 
-    setAdvancedFilters 
-  } = useSearch(deals);
+  const { searchTerm, setSearchTerm, filteredDeals } = useSearch(deals);
   
   const { viewMode, setViewMode } = useWorkflowViews();
   
@@ -97,11 +90,6 @@ export const useWorkflowState = () => {
     ));
   };
 
-  // Handle applying advanced filters
-  const handleApplyAdvancedFilters = (filters: DealFilters) => {
-    setAdvancedFilters(filters);
-  };
-
   return {
     workflows,
     pipelines,
@@ -110,8 +98,6 @@ export const useWorkflowState = () => {
     filteredDeals,
     searchTerm,
     setSearchTerm,
-    advancedFilters,
-    handleApplyAdvancedFilters,
     selectedDeal,
     setSelectedDeal,
     isDealModalOpen,
