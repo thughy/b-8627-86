@@ -37,20 +37,20 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const hasSelectedCustomer = Boolean(customerName);
 
-  // When component mounts, check if we already have a customer name
+  // Quando o componente é montado, verifica se já temos um cliente selecionado
   useEffect(() => {
     if (customerName && customerType) {
-      // Update the UI to show we have a selected customer
+      // Atualiza a UI para mostrar que temos um cliente selecionado
       setSearchTerm('');
     }
-  }, [customerName, customerType]);
+  }, [customerName, customerType, setSearchTerm]);
 
   const handleFocus = () => {
     setIsOpen(true);
   };
 
   const handleBlur = () => {
-    // Use setTimeout to ensure click events are processed first
+    // Usa setTimeout para garantir que os eventos de clique sejam processados primeiro
     setTimeout(() => {
       if (
         !document.activeElement?.closest('.customer-search-popover') && 
@@ -62,9 +62,9 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   };
 
   const handleCustomerSelect = (customer: Customer) => {
-    // Update local state first
+    // Primeiro atualiza o estado local
     selectCustomer(customer);
-    // Then notify parent component
+    // Então notifica o componente pai
     onCustomerSelect(customer);
   };
 

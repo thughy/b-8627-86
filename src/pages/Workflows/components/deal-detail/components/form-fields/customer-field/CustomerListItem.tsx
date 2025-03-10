@@ -25,7 +25,7 @@ const CustomerListItem: React.FC<CustomerListItemProps> = ({ customer, onSelect 
     return "";
   };
   
-  // Ensure preventDefault to avoid losing focus on selection
+  // Garante preventDefault para evitar perder o foco na seleção
   const handleSelect = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
