@@ -121,7 +121,7 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
         
         <PopoverContent 
           role="listbox"
-          className="p-0 w-[300px] overflow-hidden bg-background border shadow-lg rounded-md z-50"
+          className="p-0 w-[300px] bg-background border rounded-md shadow-md z-50 overflow-hidden"
           align="start"
           alignOffset={0}
           sideOffset={5}
