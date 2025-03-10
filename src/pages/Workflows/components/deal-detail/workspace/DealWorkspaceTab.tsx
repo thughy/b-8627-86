@@ -1,12 +1,13 @@
+
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Asset, Deal } from '@/pages/Workflows/models/WorkflowModels';
-import ChatSection from './workspace/ChatSection';
-import FocusTabContent from './workspace/FocusTabContent';
-import HistoryTabContent from './workspace/HistoryTabContent';
-import WorkspaceActionButtons from './workspace/WorkspaceActionButtons';
-import { useChatState } from './workspace/hooks/useChatState';
+import ChatSection from '../workspace/ChatSection';
+import FocusTabContent from '../workspace/FocusTabContent';
+import HistoryTabContent from '../workspace/HistoryTabContent';
+import WorkspaceActionButtons from '../workspace/WorkspaceActionButtons';
+import { useChatState } from '../workspace/hooks/useChatState';
 
 interface DealWorkspaceTabProps {
   deal: Deal;
@@ -23,7 +24,7 @@ const filterOptions = [
   { id: 'tasks', label: 'Tarefas' },
   { id: 'emails', label: 'Emails' },
   { id: 'assets', label: 'Assets' },
-  { id: 'documents', label: 'Documentos' }
+  { id: 'documents', label: 'Anexos' }
 ];
 
 const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
@@ -70,45 +71,45 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
   };
 
   // Função wrapper para adapter o tipo para o ChatSection
-  const handleRemoveAttachment = (attachmentId: string) => {
-    const index = parseInt(attachmentId, 10);
-    if (!isNaN(index)) {
-      chatState.handleRemoveAttachment(index);
-    }
+  const handleRemoveAttachment = (index: number) => {
+    chatState.handleRemoveAttachment(index.toString());
   };
 
   return (
     <div className="p-4">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <div className="flex justify-between items-center mb-2">
+        <div className="flex justify-between items-center mb-4">
           <TabsList>
             <TabsTrigger value="chat">Chat</TabsTrigger>
             <TabsTrigger value="focus">Foco</TabsTrigger>
-            <TabsTrigger value="history">Histórico</TabsTrigger>
+            <TabsTrigger value="history">Registros</TabsTrigger>
           </TabsList>
           
-          <WorkspaceActionButtons 
-            dealId={deal.id}
-            onCreateNote={onCreateNote}
-            onCreateTask={onCreateTask}
-            onCreateAsset={onCreateAsset}
-            onCreateDocument={onCreateDocument}
-            onCreateEmail={onCreateEmail}
-          />
-        </div>
-        
-        {/* Filtros compartilhados entre as abas */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          {filterOptions.map(filterOption => (
-            <Button
-              key={filterOption.id}
-              variant={filter === filterOption.id ? "default" : "outline"}
-              size="sm"
-              onClick={() => setFilter(filterOption.id)}
-            >
-              {filterOption.label}
-            </Button>
-          ))}
+          {/* Filters moved inline with tabs, aligned to right */}
+          <div className="flex items-center gap-2">
+            <div className="flex flex-wrap gap-1">
+              {filterOptions.map(filterOption => (
+                <Button
+                  key={filterOption.id}
+                  variant={filter === filterOption.id ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setFilter(filterOption.id)}
+                  className="h-8 px-2 text-xs"
+                >
+                  {filterOption.label}
+                </Button>
+              ))}
+            </div>
+            
+            <WorkspaceActionButtons 
+              dealId={deal.id}
+              onCreateNote={onCreateNote}
+              onCreateTask={onCreateTask}
+              onCreateAsset={onCreateAsset}
+              onCreateDocument={onCreateDocument}
+              onCreateEmail={onCreateEmail}
+            />
+          </div>
         </div>
         
         <TabsContent value="chat" className="border-none p-0">
