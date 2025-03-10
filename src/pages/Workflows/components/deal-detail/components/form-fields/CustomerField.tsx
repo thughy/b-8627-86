@@ -49,15 +49,15 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
 
   const handleBlur = (e: React.FocusEvent) => {
     // Prevent closing if clicking inside the popover
-    const relatedTarget = e.relatedTarget as HTMLElement;
-    if (relatedTarget?.closest('[role="listbox"]')) {
+    if (e.relatedTarget instanceof Node && e.relatedTarget.closest?.('[role="listbox"]')) {
       e.preventDefault();
       return;
     }
     
     // Give time for click events to complete
     setTimeout(() => {
-      if (!document.activeElement?.closest('[role="listbox"]')) {
+      const activeElement = document.activeElement;
+      if (activeElement instanceof Node && !activeElement.closest?.('[role="listbox"]')) {
         setIsOpen(false);
       }
     }, 200);
@@ -113,7 +113,8 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
           sideOffset={5}
           onInteractOutside={(e) => {
             // Prevent closing when interacting with the list
-            if (e.target.closest('[role="listbox"]')) {
+            const target = e.target;
+            if (target instanceof Node && target.closest?.('[role="listbox"]')) {
               e.preventDefault();
             }
           }}
