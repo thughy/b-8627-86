@@ -1,91 +1,163 @@
 
 import React from "react";
-import { Organization } from "@/pages/Workflows/models/CustomerModel";
 import FormField from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useFormContext, Controller } from "react-hook-form";
+import { OrganizationFormValues } from "../../validations/customerSchema";
 
-interface CustomerOrganizationFormProps {
-  formData: Partial<Organization>;
-  onChange: (field: keyof Organization, value: any) => void;
-}
+const CustomerOrganizationForm: React.FC = () => {
+  const { control, formState: { errors } } = useFormContext<OrganizationFormValues>();
 
-const CustomerOrganizationForm: React.FC<CustomerOrganizationFormProps> = ({
-  formData,
-  onChange
-}) => {
   return (
     <div className="space-y-4">
       <FormField id="name" label="Razão Social" required>
-        <Input
-          id="name"
-          value={formData.name || ""}
-          onChange={(e) => onChange("name", e.target.value)}
-          placeholder="Digite a razão social"
+        <Controller
+          name="name"
+          control={control}
+          render={({ field }) => (
+            <>
+              <Input
+                id="name"
+                {...field}
+                placeholder="Digite a razão social"
+                className={errors.name ? "border-red-500" : ""}
+              />
+              {errors.name && (
+                <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+              )}
+            </>
+          )}
         />
       </FormField>
 
       <FormField id="tradingName" label="Nome Fantasia">
-        <Input
-          id="tradingName"
-          value={formData.tradingName || ""}
-          onChange={(e) => onChange("tradingName", e.target.value)}
-          placeholder="Digite o nome fantasia"
+        <Controller
+          name="tradingName"
+          control={control}
+          render={({ field }) => (
+            <>
+              <Input
+                id="tradingName"
+                {...field}
+                placeholder="Digite o nome fantasia"
+                className={errors.tradingName ? "border-red-500" : ""}
+              />
+              {errors.tradingName && (
+                <p className="text-red-500 text-sm mt-1">{errors.tradingName.message}</p>
+              )}
+            </>
+          )}
         />
       </FormField>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FormField id="email" label="Email">
-          <Input
-            id="email"
-            type="email"
-            value={formData.email || ""}
-            onChange={(e) => onChange("email", e.target.value)}
-            placeholder="email@exemplo.com"
+          <Controller
+            name="email"
+            control={control}
+            render={({ field }) => (
+              <>
+                <Input
+                  id="email"
+                  type="email"
+                  {...field}
+                  placeholder="email@exemplo.com"
+                  className={errors.email ? "border-red-500" : ""}
+                />
+                {errors.email && (
+                  <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                )}
+              </>
+            )}
           />
         </FormField>
 
         <FormField id="phone" label="Telefone">
-          <Input
-            id="phone"
-            value={formData.phone || ""}
-            onChange={(e) => onChange("phone", e.target.value)}
-            placeholder="(00) 00000-0000"
+          <Controller
+            name="phone"
+            control={control}
+            render={({ field }) => (
+              <>
+                <Input
+                  id="phone"
+                  {...field}
+                  placeholder="(00) 00000-0000"
+                  className={errors.phone ? "border-red-500" : ""}
+                />
+                {errors.phone && (
+                  <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
+                )}
+              </>
+            )}
           />
         </FormField>
       </div>
 
       <FormField id="cnpj" label="CNPJ">
-        <Input
-          id="cnpj"
-          value={formData.cnpj || ""}
-          onChange={(e) => onChange("cnpj", e.target.value)}
-          placeholder="00.000.000/0001-00"
+        <Controller
+          name="cnpj"
+          control={control}
+          render={({ field }) => (
+            <>
+              <Input
+                id="cnpj"
+                {...field}
+                placeholder="00.000.000/0001-00"
+                className={errors.cnpj ? "border-red-500" : ""}
+              />
+              {errors.cnpj && (
+                <p className="text-red-500 text-sm mt-1">{errors.cnpj.message}</p>
+              )}
+            </>
+          )}
         />
       </FormField>
 
       <FormField id="address" label="Endereço">
-        <Input
-          id="address"
-          value={formData.address || ""}
-          onChange={(e) => onChange("address", e.target.value)}
-          placeholder="Rua, número, bairro, cidade, estado"
+        <Controller
+          name="address"
+          control={control}
+          render={({ field }) => (
+            <>
+              <Input
+                id="address"
+                {...field}
+                placeholder="Rua, número, bairro, cidade, estado"
+                className={errors.address ? "border-red-500" : ""}
+              />
+              {errors.address && (
+                <p className="text-red-500 text-sm mt-1">{errors.address.message}</p>
+              )}
+            </>
+          )}
         />
       </FormField>
 
       <FormField id="status" label="Status">
-        <Select
-          value={formData.status || "active"}
-          onValueChange={(value) => onChange("status", value)}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Selecione o status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="active">Ativo</SelectItem>
-            <SelectItem value="inactive">Inativo</SelectItem>
-          </SelectContent>
-        </Select>
+        <Controller
+          name="status"
+          control={control}
+          render={({ field }) => (
+            <>
+              <Select
+                value={field.value || "active"}
+                onValueChange={field.onChange}
+              >
+                <SelectTrigger className={errors.status ? "border-red-500" : ""}>
+                  <SelectValue placeholder="Selecione o status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Ativo</SelectItem>
+                  <SelectItem value="inactive">Inativo</SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.status && (
+                <p className="text-red-500 text-sm mt-1">{errors.status.message}</p>
+              )}
+            </>
+          )}
+        />
       </FormField>
     </div>
   );

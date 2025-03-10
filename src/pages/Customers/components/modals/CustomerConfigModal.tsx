@@ -14,6 +14,15 @@ import { Customer, Person, Organization } from "@/pages/Workflows/models/Custome
 import CustomerPersonForm from "./CustomerPersonForm";
 import CustomerOrganizationForm from "./CustomerOrganizationForm";
 import { getOrganizations } from "@/pages/Customers/services/organizationService";
+import { useForm, FormProvider } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { 
+  customerSchema, 
+  personSchema, 
+  organizationSchema,
+  PersonFormValues,
+  OrganizationFormValues
+} from "../../validations/customerSchema";
 
 interface CustomerConfigModalProps {
   isOpen: boolean;
@@ -33,16 +42,70 @@ const CustomerConfigModal: React.FC<CustomerConfigModalProps> = ({
   const [activeTab, setActiveTab] = useState<"person" | "organization">(
     customer?.type || "person"
   );
-  const [formData, setFormData] = useState<Partial<Person | Organization>>(
-    customer || {
-      name: "",
-      type: "person",
-      email: "",
-      phone: "",
-      status: "active"
-    }
-  );
   const [organizations, setOrganizations] = useState<{id: string, name: string}[]>([]);
+  
+  // Initialize form with either person or organization schema based on active tab
+  const personMethods = useForm<PersonFormValues>({
+    resolver: zodResolver(personSchema),
+    defaultValues: {
+      type: "person",
+      name: customer?.name || "",
+      email: customer?.email || "",
+      phone: customer?.phone || "",
+      status: customer?.status || "active",
+      cpfCnpj: (customer as Person)?.cpfCnpj || "",
+      organizationId: (customer as Person)?.organizationId || "",
+      organizationName: (customer as Person)?.organizationName || "",
+      address: customer?.address || ""
+    }
+  });
+
+  const organizationMethods = useForm<OrganizationFormValues>({
+    resolver: zodResolver(organizationSchema),
+    defaultValues: {
+      type: "organization",
+      name: customer?.name || "",
+      email: customer?.email || "",
+      phone: customer?.phone || "",
+      status: customer?.status || "active",
+      tradingName: (customer as Organization)?.tradingName || "",
+      cnpj: (customer as Organization)?.cnpj || "",
+      address: customer?.address || ""
+    }
+  });
+
+  // Get the current form methods based on active tab
+  const currentMethods = activeTab === "person" ? personMethods : organizationMethods;
+  
+  useEffect(() => {
+    // Reset form when modal opens with customer data
+    if (customer) {
+      if (customer.type === "person") {
+        personMethods.reset({
+          type: "person",
+          name: customer.name,
+          email: customer.email || "",
+          phone: customer.phone || "",
+          status: customer.status,
+          cpfCnpj: (customer as Person).cpfCnpj || "",
+          organizationId: (customer as Person).organizationId || "",
+          organizationName: (customer as Person).organizationName || "",
+          address: customer.address || ""
+        });
+      } else {
+        organizationMethods.reset({
+          type: "organization",
+          name: customer.name,
+          email: customer.email || "",
+          phone: customer.phone || "",
+          status: customer.status,
+          tradingName: (customer as Organization).tradingName || "",
+          cnpj: (customer as Organization).cnpj || "",
+          address: customer.address || ""
+        });
+      }
+    }
+  }, [customer, isOpen]);
 
   useEffect(() => {
     // Load organizations for the dropdown in person form
@@ -53,32 +116,47 @@ const CustomerConfigModal: React.FC<CustomerConfigModalProps> = ({
     }
   }, [activeTab]);
 
-  const handleChange = (field: keyof (Person | Organization), value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
   const handleTypeChange = (type: "person" | "organization") => {
     setActiveTab(type);
-    // Reset the form when changing types
-    setFormData({
-      ...customer,
-      type,
-      name: customer?.name || "",
-      email: customer?.email || "",
-      phone: customer?.phone || "",
-      status: customer?.status || "active"
-    });
+    
+    // Reset forms when changing types
+    if (type === "person") {
+      personMethods.reset({
+        type: "person",
+        name: customer?.name || "",
+        email: customer?.email || "",
+        phone: customer?.phone || "",
+        status: customer?.status || "active",
+        cpfCnpj: (customer as Person)?.cpfCnpj || "",
+        organizationId: (customer as Person)?.organizationId || "",
+        organizationName: (customer as Person)?.organizationName || "",
+        address: customer?.address || ""
+      });
+    } else {
+      organizationMethods.reset({
+        type: "organization",
+        name: customer?.name || "",
+        email: customer?.email || "",
+        phone: customer?.phone || "",
+        status: customer?.status || "active",
+        tradingName: (customer as Organization)?.tradingName || "",
+        cnpj: (customer as Organization)?.cnpj || "",
+        address: customer?.address || ""
+      });
+    }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = currentMethods.handleSubmit((formData) => {
     const updatedCustomer = {
       ...formData,
-      type: activeTab,
+      id: customer?.id || crypto.randomUUID(),
+      createdAt: customer?.createdAt || new Date(),
+      updatedAt: new Date()
     } as Customer;
     
     onSave(updatedCustomer);
     onClose();
-  };
+  });
 
   const handleDelete = () => {
     if (customer?.id) {
@@ -112,18 +190,15 @@ const CustomerConfigModal: React.FC<CustomerConfigModalProps> = ({
           </TabsList>
 
           <TabsContent value="person" className="space-y-4 mt-4">
-            <CustomerPersonForm 
-              formData={formData as Partial<Person>} 
-              onChange={handleChange}
-              organizations={organizations}
-            />
+            <FormProvider {...personMethods}>
+              <CustomerPersonForm organizations={organizations} />
+            </FormProvider>
           </TabsContent>
 
           <TabsContent value="organization" className="space-y-4 mt-4">
-            <CustomerOrganizationForm 
-              formData={formData as Partial<Organization>} 
-              onChange={handleChange}
-            />
+            <FormProvider {...organizationMethods}>
+              <CustomerOrganizationForm />
+            </FormProvider>
           </TabsContent>
         </Tabs>
 
