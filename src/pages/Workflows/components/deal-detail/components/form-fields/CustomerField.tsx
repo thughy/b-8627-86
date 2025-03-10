@@ -31,7 +31,8 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
     clearSearch,
     isOpen,
     setIsOpen,
-    selectCustomer
+    selectCustomer,
+    openDropdown
   } = useCustomerSearch();
   
   const inputRef = useRef<HTMLInputElement>(null);
@@ -58,6 +59,22 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
     }
   };
 
+  const handleFocus = () => {
+    openDropdown();
+  };
+
+  const handleBlur = (e: React.FocusEvent) => {
+    // Check if the related target is inside our popover
+    const relatedTarget = e.relatedTarget as Node;
+    if (relatedTarget instanceof Element) {
+      const isInsidePopover = relatedTarget.closest('[role="listbox"]');
+      if (isInsidePopover) return;
+    }
+    
+    // Small delay to allow click events to register
+    setTimeout(() => setIsOpen(false), 200);
+  };
+
   return (
     <div className="w-full">
       <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -67,15 +84,8 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
               ref={inputRef}
               searchTerm={searchTerm}
               onChange={setSearchTerm}
-              onFocus={() => setIsOpen(true)}
-              onBlur={(e) => {
-                const relatedTarget = e.relatedTarget as Node;
-                if (relatedTarget instanceof Element) {
-                  const isInsidePopover = relatedTarget.closest('[role="listbox"]');
-                  if (isInsidePopover) return;
-                }
-                setTimeout(() => setIsOpen(false), 250);
-              }}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
               hasSelectedCustomer={Boolean(customerName)}
               customerName={customerName}
               customerOrganization={customerOrganization}

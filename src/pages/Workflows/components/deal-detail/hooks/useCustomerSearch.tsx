@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Customer } from '@/pages/Workflows/models/CustomerModel';
 import { filterCustomers } from '@/pages/Customers/services/customerFilterService';
 
@@ -10,36 +10,36 @@ export function useCustomerSearch() {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
 
-  useEffect(() => {
-    const fetchCustomers = async () => {
-      if (searchTerm.length >= 2) {
-        setIsLoading(true);
-        try {
-          const result = filterCustomers({ 
-            search: searchTerm,
-            type: 'all',
-            status: 'all'
-          }, 1, 30);
-          
-          setCustomers(result.customers);
-          setIsOpen(true);
-        } catch (error) {
-          console.error('Erro ao buscar clientes:', error);
-          setCustomers([]);
-        } finally {
-          setIsLoading(false);
-        }
-      } else {
+  const fetchCustomers = useCallback(async (term: string) => {
+    if (term.length >= 2) {
+      setIsLoading(true);
+      try {
+        const result = filterCustomers({ 
+          search: term,
+          type: 'all',
+          status: 'all'
+        }, 1, 30);
+        
+        setCustomers(result.customers);
+        setIsOpen(true);
+      } catch (error) {
+        console.error('Error searching customers:', error);
         setCustomers([]);
+      } finally {
+        setIsLoading(false);
       }
-    };
+    } else {
+      setCustomers([]);
+    }
+  }, []);
 
+  useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      fetchCustomers();
+      fetchCustomers(searchTerm);
     }, 200); // Reduced debounce for faster response
 
     return () => clearTimeout(delayDebounceFn);
-  }, [searchTerm]);
+  }, [searchTerm, fetchCustomers]);
 
   const clearSearch = () => {
     setSearchTerm('');
@@ -55,6 +55,13 @@ export function useCustomerSearch() {
     setIsOpen(false);
   };
 
+  const openDropdown = () => {
+    if (searchTerm.length >= 2) {
+      fetchCustomers(searchTerm);
+    }
+    setIsOpen(true);
+  };
+
   return {
     searchTerm,
     setSearchTerm,
@@ -64,6 +71,7 @@ export function useCustomerSearch() {
     isOpen,
     setIsOpen,
     selectedCustomer,
-    selectCustomer
+    selectCustomer,
+    openDropdown
   };
 }

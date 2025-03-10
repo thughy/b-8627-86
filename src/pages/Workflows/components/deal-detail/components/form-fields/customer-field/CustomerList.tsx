@@ -20,7 +20,7 @@ const CustomerList: React.FC<CustomerListProps> = ({
 }) => {
   if (isLoading) {
     return (
-      <div className="p-3 text-center text-sm text-muted-foreground">
+      <div className="p-4 text-center text-sm text-muted-foreground">
         <div className="flex items-center justify-center gap-2">
           <Loader2 className="h-4 w-4 animate-spin" />
           <span>Carregando clientes...</span>
@@ -31,8 +31,8 @@ const CustomerList: React.FC<CustomerListProps> = ({
   
   if (customers.length > 0) {
     return (
-      <ScrollArea className="max-h-[300px]"> {/* Aumentada a altura máxima para melhor visualização */}
-        <div className="p-1">
+      <ScrollArea className="max-h-[300px]">
+        <div className="p-2">
           {customers.map((customer) => (
             <CustomerListItem 
               key={customer.id} 
@@ -47,14 +47,14 @@ const CustomerList: React.FC<CustomerListProps> = ({
   
   if (searchTerm && searchTerm.length >= 2) {
     return (
-      <div className="p-3 text-center text-sm text-muted-foreground">
+      <div className="p-4 text-center text-sm text-muted-foreground">
         Nenhum cliente encontrado
       </div>
     );
   }
   
   return (
-    <div className="p-3 text-center text-sm text-muted-foreground">
+    <div className="p-4 text-center text-sm text-muted-foreground">
       Digite pelo menos 2 caracteres para buscar clientes
     </div>
   );
