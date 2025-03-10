@@ -4,7 +4,7 @@ import { Deal } from "@/pages/Workflows/models/WorkflowModels";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { User, DollarSign, Calendar, Tag, MessageSquare, Award, Building, FileText, CheckSquare, Mail, File, HeartPulse, Flag } from "lucide-react";
+import { User, DollarSign, Calendar, Tag, MessageSquare, Award, Building, FileText, ClipboardList, Mail, FolderKanban, HeartPulse, Flag } from "lucide-react";
 import { 
   formatCurrency, 
   formatDate, 
@@ -129,23 +129,23 @@ const DealCard: React.FC<DealCardProps> = ({
           {/* Content counters */}
           <div className="flex items-center justify-start gap-2 text-xs pt-1 text-muted-foreground">
             <div className="flex items-center gap-0.5">
-              <MessageSquare className="h-3 w-3" />
+              <MessageSquare className="h-3 w-3 text-indigo-500" />
               <span>3</span>
             </div>
             <div className="flex items-center gap-0.5">
-              <File className="h-3 w-3" />
+              <FolderKanban className="h-3 w-3 text-blue-500" />
               <span>2</span>
             </div>
             <div className="flex items-center gap-0.5">
-              <CheckSquare className="h-3 w-3" />
+              <ClipboardList className="h-3 w-3 text-green-500" />
               <span>4</span>
             </div>
             <div className="flex items-center gap-0.5">
-              <FileText className="h-3 w-3" />
+              <FileText className="h-3 w-3 text-yellow-500" />
               <span>1</span>
             </div>
             <div className="flex items-center gap-0.5">
-              <Mail className="h-3 w-3" />
+              <Mail className="h-3 w-3 text-red-500" />
               <span>2</span>
             </div>
           </div>
@@ -155,7 +155,7 @@ const DealCard: React.FC<DealCardProps> = ({
         {chatPreview && chatPreview.length > 0 && (
           <div className="mt-2 pt-2 border-t border-border/40">
             <div className="flex items-center text-xs space-x-1.5 mb-1">
-              <MessageSquare className="h-3 w-3 text-muted-foreground" />
+              <MessageSquare className="h-3 w-3 text-indigo-500" />
               <span className="font-medium">Últimas mensagens</span>
             </div>
             <div className="space-y-1">

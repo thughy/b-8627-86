@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Deal } from '@/pages/Workflows/models/WorkflowModels';
-import { CalendarDays, Clock, FileText, ClipboardList, Mail, Image, Paperclip } from 'lucide-react';
+import { CalendarDays, Clock, FileText, ClipboardList, Mail, FolderKanban, Paperclip } from 'lucide-react';
 
 interface HistoryTabContentProps {
   deal?: Deal;
@@ -42,11 +42,11 @@ const HistoryTabContent: React.FC<HistoryTabContentProps> = ({ deal, filter }) =
   // Função para obter o ícone baseado no tipo do registro
   const getItemIcon = (type: string) => {
     switch (type) {
-      case 'asset': return <Image className="h-4 w-4" />;
-      case 'task': return <ClipboardList className="h-4 w-4" />;
-      case 'note': return <FileText className="h-4 w-4" />;
-      case 'email': return <Mail className="h-4 w-4" />;
-      case 'document': return <Paperclip className="h-4 w-4" />;
+      case 'asset': return <FolderKanban className="h-4 w-4 text-blue-500" />;
+      case 'task': return <ClipboardList className="h-4 w-4 text-green-500" />;
+      case 'note': return <FileText className="h-4 w-4 text-yellow-500" />;
+      case 'email': return <Mail className="h-4 w-4 text-red-500" />;
+      case 'document': return <Paperclip className="h-4 w-4 text-purple-500" />;
       default: return <CalendarDays className="h-4 w-4" />;
     }
   };

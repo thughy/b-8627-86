@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
-import { Search, Filter, Columns, List, ChevronDown } from 'lucide-react';
+import { Search, Filter, Columns, List, ChevronDown, MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Workflow, Pipeline } from '@/pages/Workflows/models/WorkflowModels';
 import {
@@ -141,19 +141,29 @@ const WorkflowFilters: React.FC<WorkflowFiltersProps> = ({
         >
           <List className={`h-4 w-4 ${viewMode === 'list' ? 'text-primary' : ''}`} />
         </Button>
-        <Button 
-          variant="outline" 
-          size="icon" 
-          className="thin-border relative"
-          onClick={() => setIsFiltersModalOpen(true)}
-        >
-          <Filter className="h-4 w-4" />
-          {activeFiltersCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-primary text-xs w-4 h-4 rounded-full flex items-center justify-center text-white">
-              {activeFiltersCount}
-            </span>
-          )}
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="thin-border relative"
+            >
+              <MoreVertical className="h-4 w-4" />
+              {activeFiltersCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-primary text-xs w-4 h-4 rounded-full flex items-center justify-center text-white">
+                  {activeFiltersCount}
+                </span>
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setIsFiltersModalOpen(true)}>
+              <Filter className="h-4 w-4 mr-2" />
+              Filtros avançados
+            </DropdownMenuItem>
+            {/* Add more menu options here if needed */}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Advanced Filters Modal */}

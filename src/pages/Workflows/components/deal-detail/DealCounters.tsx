@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { MessageCircle, ClipboardList, FileText, Mail, Image, Paperclip } from 'lucide-react';
+import { MessageSquare, ClipboardList, FileText, Mail, FolderKanban, Paperclip } from 'lucide-react';
 
 interface CountersProps {
   counters: {
@@ -17,12 +17,12 @@ const DealCounters: React.FC<CountersProps> = ({ counters }) => {
   return (
     <div className="flex flex-wrap gap-3 mb-4">
       <div className="flex items-center gap-1 text-sm">
-        <MessageCircle className="h-4 w-4 text-muted-foreground" />
+        <MessageSquare className="h-4 w-4 text-indigo-500" />
         <span className="text-muted-foreground">Chat:</span>
         <span className="font-medium">{counters.chat}</span>
       </div>
       <div className="flex items-center gap-1 text-sm">
-        <Image className="h-4 w-4 text-blue-500" />
+        <FolderKanban className="h-4 w-4 text-blue-500" />
         <span className="text-muted-foreground">Assets:</span>
         <span className="font-medium">{counters.assets}</span>
       </div>

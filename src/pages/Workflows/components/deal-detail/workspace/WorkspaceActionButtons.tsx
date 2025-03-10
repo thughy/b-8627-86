@@ -8,10 +8,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { 
-  MoreHorizontal, 
+  MoreVertical, 
   FileText, 
   ClipboardList, 
-  Image, 
+  FolderKanban, 
   Mail, 
   Paperclip 
 } from 'lucide-react';
@@ -60,12 +60,12 @@ const WorkspaceActionButtons: React.FC<WorkspaceActionButtonsProps> = React.memo
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="sm">
-            <MoreHorizontal className="h-4 w-4" />
+            <MoreVertical className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-48">
+        <DropdownMenuContent align="end" className="w-48">
           <DropdownMenuItem onClick={handleCreateAsset}>
-            <Image className="h-4 w-4 mr-2 text-blue-500" />
+            <FolderKanban className="h-4 w-4 mr-2 text-blue-500" />
             Asset
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleCreateTask}>

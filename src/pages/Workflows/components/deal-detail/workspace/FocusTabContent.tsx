@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Deal, Asset } from '@/pages/Workflows/models/WorkflowModels';
-import { CalendarDays, FileText, ClipboardList, Image, Mail, Paperclip, Clock } from 'lucide-react';
+import { CalendarDays, FileText, ClipboardList, FolderKanban, Mail, Paperclip, Clock } from 'lucide-react';
 
 interface FocusTabContentProps {
   deal: Deal;
@@ -88,7 +88,7 @@ const FocusTabContent: React.FC<FocusTabContentProps> = ({
   // Função para renderizar o ícone baseado no tipo do item
   const getItemIcon = (type: string) => {
     switch (type) {
-      case 'asset': return <Image className="h-4 w-4 text-blue-500" />;
+      case 'asset': return <FolderKanban className="h-4 w-4 text-blue-500" />;
       case 'task': return <ClipboardList className="h-4 w-4 text-green-500" />;
       case 'note': return <FileText className="h-4 w-4 text-yellow-500" />;
       case 'email': return <Mail className="h-4 w-4 text-red-500" />;

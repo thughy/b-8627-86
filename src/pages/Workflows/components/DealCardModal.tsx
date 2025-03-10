@@ -20,7 +20,7 @@ import DealWorkspaceTab from './deal-detail/DealWorkspaceTab';
 import DealStatusBadge from './deal-detail/DealStatusBadge';
 import DealSummaryCards from './deal-detail/DealSummaryCards';
 import DealCounters from './deal-detail/DealCounters';
-import { MoreHorizontal } from 'lucide-react';
+import { MoreVertical } from 'lucide-react';
 import { getInterestGradient } from '@/components/workflows/utils/dealUtils';
 import { cn } from '@/lib/utils';
 
@@ -80,7 +80,7 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm">
-                    <MoreHorizontal className="h-4 w-4 mr-2" />
+                    <MoreVertical className="h-4 w-4 mr-2" />
                     Status
                   </Button>
                 </DropdownMenuTrigger>
