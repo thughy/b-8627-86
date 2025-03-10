@@ -46,19 +46,13 @@ const DealCard: React.FC<DealCardProps> = ({
     >
       <div className={`h-1.5 w-full ${topBarColor}`}></div>
       <CardContent className="p-3">
-        {/* Top row: Title and Type */}
-        <div className="flex items-center justify-between mb-2">
-          <h4 className="font-medium text-sm truncate pr-2">{deal.title}</h4>
-          <div className="flex items-center gap-1">
-            <Badge variant="outline" className={cn("text-xs font-semibold flex items-center px-2 py-0.5", typeBadge.color)}>
-              {deal.type === 'new' ? <Tag className="h-3 w-3 mr-1" /> : <Award className="h-3 w-3 mr-1" />}
-              {deal.type || "N/D"}
-            </Badge>
-          </div>
+        {/* Top row: Title */}
+        <div className="mb-2">
+          <h4 className="font-medium text-sm truncate">{deal.title}</h4>
         </div>
         
         <div className="space-y-2">
-          {/* Row: Customer and Interest */}
+          {/* Row: Customer and Type */}
           <div className="flex items-start justify-between gap-2">
             {/* Customer info */}
             <div className="flex items-start text-xs space-x-1.5 flex-1">
@@ -78,16 +72,24 @@ const DealCard: React.FC<DealCardProps> = ({
               </div>
             </div>
             
-            {/* Interest - With background color */}
-            {deal.interests && (
-              <div className="flex items-start text-xs space-x-1.5 flex-shrink-0">
-                <div className={`flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full ${interestBackground} mt-0.5`}>
-                  <HeartPulse className="h-3 w-3" />
-                </div>
-                <span className="truncate max-w-[80px]">{deal.interests}</span>
-              </div>
-            )}
+            {/* Type - Moved to right side */}
+            <div className="flex items-center text-xs space-x-1.5 flex-shrink-0">
+              <Badge variant="outline" className={cn("text-xs font-semibold flex items-center px-2 py-0.5", typeBadge.color)}>
+                {deal.type === 'new' ? <Tag className="h-3 w-3 mr-1" /> : <Award className="h-3 w-3 mr-1" />}
+                {deal.type || "N/D"}
+              </Badge>
+            </div>
           </div>
+          
+          {/* Row: Interest */}
+          {deal.interests && (
+            <div className="flex items-start text-xs space-x-1.5">
+              <div className={`flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full ${interestBackground} mt-0.5`}>
+                <HeartPulse className="h-3 w-3" />
+              </div>
+              <span className="truncate">{deal.interests}</span>
+            </div>
+          )}
           
           {/* Row: Start Date and End Date */}
           <div className="flex items-start justify-between gap-2">
