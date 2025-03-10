@@ -45,6 +45,8 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
 
   const handleFocus = () => {
     setIsOpen(true);
+    // Se já tiver um termo de busca com pelo menos 2 caracteres, a lista já será mostrada
+    // Se não, precisamos garantir que o popover abra para mostrar a mensagem de instruções
   };
 
   const handleBlur = (e: React.FocusEvent) => {
