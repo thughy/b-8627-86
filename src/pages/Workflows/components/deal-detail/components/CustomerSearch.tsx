@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -18,30 +18,18 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ value, onChange }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // Mock customers for demonstration (if the API is not working)
-  const mockCustomers: Customer[] = [
-    { id: '1', name: 'João Silva', type: 'person', email: 'joao@email.com', status: 'active' } as Person,
-    { id: '2', name: 'Maria Santos', type: 'person', email: 'maria@email.com', status: 'active', organization: 'Empresa ABC' } as Person,
-    { id: '3', name: 'Empresa ABC', type: 'organization', email: 'contato@empresaabc.com', status: 'active' } as Organization,
-    { id: '4', name: 'Carlos Pereira', type: 'person', email: 'carlos@email.com', status: 'active' } as Person,
-    { id: '5', name: 'Tech Solutions', type: 'organization', email: 'contato@techsolutions.com', status: 'active' } as Organization,
-  ];
-
-  // Search for customers when the query changes
+  // Load customers when the search query changes
   useEffect(() => {
     try {
       setLoading(true);
-      // Try to use the service first
-      const { customers } = filterCustomers({ search: searchQuery });
-      setCustomers(customers.length > 0 ? customers : mockCustomers);
+      // Call the customer service to get filtered customers
+      const { customers: filteredCustomers } = filterCustomers({ search: searchQuery });
+      setCustomers(filteredCustomers);
+      console.log('Filtered customers:', filteredCustomers);
     } catch (error) {
-      // Fallback to mock data if the service fails
-      console.log('Using mock customer data');
-      const filtered = mockCustomers.filter(customer => 
-        customer.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setCustomers(filtered);
+      console.error('Error fetching customers:', error);
     } finally {
       setLoading(false);
     }
@@ -52,18 +40,25 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ value, onChange }) => {
       <PopoverTrigger asChild>
         <div className="relative w-full flex items-center">
           <Input
+            ref={inputRef}
             placeholder="Buscar cliente..."
             value={value || ''}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pr-10"
             onClick={() => setOpen(true)}
           />
-          <ChevronsUpDown className="absolute right-3 h-4 w-4 text-muted-foreground cursor-pointer" 
+          <ChevronsUpDown 
+            className="absolute right-3 h-4 w-4 text-muted-foreground cursor-pointer" 
             onClick={() => setOpen(!open)} 
           />
         </div>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0 bg-popover" align="start" sideOffset={5}>
+
+      <PopoverContent 
+        className="w-[var(--radix-popover-trigger-width)] p-0 bg-background shadow-md" 
+        align="start" 
+        sideOffset={5}
+      >
         <Command>
           <CommandInput 
             placeholder="Buscar cliente por nome..." 
@@ -98,9 +93,9 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ value, onChange }) => {
                         <Building className="h-4 w-4 text-muted-foreground" />
                       )}
                       <span>{customer.name}</span>
-                      {customer.type === 'person' && (customer as Person).organization && (
+                      {customer.type === 'person' && (customer as Person).organizationName && (
                         <span className="text-xs text-muted-foreground">
-                          ({(customer as Person).organization})
+                          ({(customer as Person).organizationName})
                         </span>
                       )}
                     </div>
