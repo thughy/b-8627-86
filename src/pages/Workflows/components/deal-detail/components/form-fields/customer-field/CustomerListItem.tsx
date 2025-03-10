@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Customer } from '@/pages/Workflows/models/CustomerModel';
+import { Customer, Person, Organization } from '@/pages/Workflows/models/CustomerModel';
 import { User, Building2 } from 'lucide-react';
 
 interface CustomerListItemProps {
@@ -10,7 +10,20 @@ interface CustomerListItemProps {
 
 const CustomerListItem: React.FC<CustomerListItemProps> = ({ customer, onSelect }) => {
   const isPerson = customer.type === 'person';
-  const person = customer as any;
+  
+  // Type the customer correctly based on its type
+  const person = isPerson ? customer as Person : null;
+  const organization = !isPerson ? customer as Organization : null;
+  
+  // Get the secondary display text based on customer type
+  const getSecondaryText = () => {
+    if (isPerson && person) {
+      return person.organizationName || (person.cpfCnpj ? `CPF: ${person.cpfCnpj}` : person.email || "");
+    } else if (organization) {
+      return organization.tradingName || organization.cnpj || organization.email || "";
+    }
+    return "";
+  };
   
   return (
     <div 
@@ -28,9 +41,7 @@ const CustomerListItem: React.FC<CustomerListItemProps> = ({ customer, onSelect 
       <div className="overflow-hidden flex-grow">
         <div className="font-medium truncate">{customer.name}</div>
         <div className="text-xs text-muted-foreground truncate">
-          {isPerson
-            ? person.organizationName || (person.cpfCnpj ? `CPF: ${person.cpfCnpj}` : "")
-            : customer.email || ""}
+          {getSecondaryText()}
         </div>
       </div>
     </div>

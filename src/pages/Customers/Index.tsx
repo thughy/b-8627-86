@@ -4,7 +4,10 @@ import { useToast } from "@/hooks/use-toast";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Customer, CustomerFilter } from "@/pages/Workflows/models/CustomerModel";
-import { filterCustomers } from "./services/customerService";
+import { filterCustomers } from "./services/customerFilterService";
+import { createPerson, updatePerson } from "./services/personService";
+import { createOrganization, updateOrganization } from "./services/organizationService";
+import { deleteCustomer } from "./services/customerBaseService";
 import CustomerHeader from "./components/CustomerHeader";
 import CustomerSearch from "./components/CustomerSearch";
 import CustomerList from "./components/CustomerList";
@@ -47,21 +50,51 @@ const CustomersPage = () => {
   };
 
   const handleDeleteCustomer = (customerId: string) => {
-    // Aqui implementaríamos a lógica real de exclusão
-    toast({
-      title: "Cliente excluído",
-      description: "O cliente foi excluído com sucesso."
-    });
-    loadCustomers();
+    if (deleteCustomer(customerId)) {
+      toast({
+        title: "Cliente excluído",
+        description: "O cliente foi excluído com sucesso."
+      });
+      loadCustomers();
+    } else {
+      toast({
+        title: "Erro",
+        description: "Não foi possível excluir o cliente.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleSaveCustomer = (customer: Customer) => {
-    // Aqui implementaríamos a lógica real de salvar
-    toast({
-      title: selectedCustomer ? "Cliente atualizado" : "Cliente criado",
-      description: `O cliente ${customer.name} foi ${selectedCustomer ? "atualizado" : "criado"} com sucesso.`
-    });
-    loadCustomers();
+    try {
+      if (customer.type === "person") {
+        const personData = customer as any;
+        if (selectedCustomer) {
+          updatePerson(selectedCustomer.id, personData);
+        } else {
+          createPerson(personData);
+        }
+      } else {
+        const organizationData = customer as any;
+        if (selectedCustomer) {
+          updateOrganization(selectedCustomer.id, organizationData);
+        } else {
+          createOrganization(organizationData);
+        }
+      }
+      
+      toast({
+        title: selectedCustomer ? "Cliente atualizado" : "Cliente criado",
+        description: `O cliente ${customer.name} foi ${selectedCustomer ? "atualizado" : "criado"} com sucesso.`
+      });
+      loadCustomers();
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Ocorreu um erro ao salvar o cliente.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleSearchChange = (value: string) => {

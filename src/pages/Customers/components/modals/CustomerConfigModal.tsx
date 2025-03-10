@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Customer, Person, Organization } from "@/pages/Workflows/models/CustomerModel";
 import CustomerPersonForm from "./CustomerPersonForm";
 import CustomerOrganizationForm from "./CustomerOrganizationForm";
-import { filterCustomers } from "@/pages/Customers/services/customerService";
+import { getOrganizations } from "@/pages/Customers/services/organizationService";
 
 interface CustomerConfigModalProps {
   isOpen: boolean;
@@ -47,10 +47,8 @@ const CustomerConfigModal: React.FC<CustomerConfigModalProps> = ({
   useEffect(() => {
     // Load organizations for the dropdown in person form
     if (activeTab === "person") {
-      const result = filterCustomers({ type: "organization" });
-      const orgList = result.customers
-        .filter(c => c.type === "organization")
-        .map(org => ({ id: org.id, name: org.name }));
+      const orgs = getOrganizations();
+      const orgList = orgs.map(org => ({ id: org.id, name: org.name }));
       setOrganizations(orgList);
     }
   }, [activeTab]);
