@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Customer, Person, Organization } from '@/pages/Workflows/models/CustomerModel';
 import { Input } from '@/components/ui/input';
 import FormField from '@/components/ui/form-field';
@@ -9,8 +9,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Search, User, Building2 } from 'lucide-react';
+import { Search, User, Building2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 interface CustomerFieldProps {
   customerName: string | undefined;
@@ -25,18 +26,58 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   customerType,
   onCustomerSelect
 }) => {
-  const { searchTerm, setSearchTerm, customers, isLoading } = useCustomerSearch();
+  const { searchTerm, setSearchTerm, customers, isLoading, clearSearch } = useCustomerSearch();
   const [isOpen, setIsOpen] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  
+  // Determinar se o campo tem um cliente selecionado
+  const hasSelectedCustomer = Boolean(customerName);
+
+  // Gerenciar o foco e abertura/fechamento do popover
+  const handleFocus = () => {
+    setIsFocused(true);
+    setIsOpen(true);
+  };
+
+  const handleBlur = () => {
+    setIsFocused(false);
+    // Delay para permitir a seleção de cliente antes de fechar
+    setTimeout(() => {
+      if (!document.activeElement?.closest('.customer-search-popover')) {
+        setIsOpen(false);
+      }
+    }, 200);
+  };
 
   const handleCustomerSelect = (customer: Customer) => {
     onCustomerSelect(customer);
+    clearSearch();
     setIsOpen(false);
-    setSearchTerm('');
+    if (inputRef.current) {
+      inputRef.current.blur();
+    }
   };
 
-  const displayValue = customerName || '';
-  const displaySubText = customerOrganization || '';
+  // Limpar a seleção atual
+  const handleClearSelection = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onCustomerSelect({ 
+      id: '', 
+      name: '', 
+      type: 'person', 
+      status: 'active', 
+      createdAt: new Date(), 
+      updatedAt: new Date() 
+    });
+    clearSearch();
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
+
+  // Escolher o ícone apropriado com base no tipo de cliente
+  const CustomerIcon = customerType === 'organization' ? Building2 : User;
 
   return (
     <FormField id="customer" label="Cliente">
@@ -44,33 +85,57 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
         <PopoverTrigger asChild>
           <div className="relative">
             <Search className="absolute left-2.5 top-3 h-4 w-4 text-muted-foreground" />
+            
             <Input
               ref={inputRef}
               id="customer-search"
               placeholder="Buscar cliente..."
-              className="pl-8 thin-border"
+              className={cn(
+                "pl-8 pr-8 thin-border",
+                hasSelectedCustomer && !isFocused ? "text-transparent caret-current" : ""
+              )}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              onFocus={() => setIsOpen(true)}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
             />
-            {displayValue && !searchTerm && (
+            
+            {/* Exibir o cliente selecionado quando não estiver em foco */}
+            {hasSelectedCustomer && !isFocused && !searchTerm && (
               <div className="absolute inset-0 flex items-center px-8 pointer-events-none">
-                <span>{displayValue}</span>
-                {displaySubText && (
-                  <span className="text-muted-foreground text-xs ml-2">
-                    ({displaySubText})
-                  </span>
-                )}
+                <div className="flex items-center gap-2 max-w-full overflow-hidden">
+                  <CustomerIcon className="h-4 w-4 flex-shrink-0 text-primary" />
+                  <span className="font-medium truncate">{customerName}</span>
+                  {customerOrganization && customerType === 'person' && (
+                    <span className="text-muted-foreground text-xs truncate">
+                      ({customerOrganization})
+                    </span>
+                  )}
+                </div>
               </div>
+            )}
+
+            {/* Botão para limpar a seleção */}
+            {hasSelectedCustomer && (
+              <button
+                type="button"
+                onClick={handleClearSelection}
+                className="absolute right-2.5 top-3 h-4 w-4 text-muted-foreground hover:text-foreground"
+                aria-label="Limpar seleção"
+              >
+                <X className="h-4 w-4" />
+              </button>
             )}
           </div>
         </PopoverTrigger>
+        
         <PopoverContent 
-          className="p-0 w-[300px] max-h-[300px] overflow-auto bg-background" 
+          className="p-0 w-[300px] max-h-[300px] overflow-auto bg-background customer-search-popover" 
           align="start"
+          sideOffset={5}
         >
           {isLoading ? (
-            <div className="p-2 text-center text-sm text-muted-foreground">
+            <div className="p-4 text-center text-sm text-muted-foreground">
               Carregando...
             </div>
           ) : customers.length > 0 ? (
@@ -85,6 +150,7 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
                     key={customer.id}
                     className="flex items-center px-3 py-2 cursor-pointer hover:bg-accent"
                     onClick={() => handleCustomerSelect(customer)}
+                    onMouseDown={(e) => e.preventDefault()} // Evita problemas de foco
                   >
                     <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-primary/10 mr-2">
                       {isPerson ? (
@@ -93,7 +159,7 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
                         <Building2 className="h-4 w-4 text-primary" />
                       )}
                     </div>
-                    <div className="overflow-hidden">
+                    <div className="overflow-hidden flex-grow">
                       <div className="font-medium truncate">{customer.name}</div>
                       <div className="text-xs text-muted-foreground truncate">
                         {isPerson
@@ -106,11 +172,11 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
               })}
             </div>
           ) : searchTerm ? (
-            <div className="p-2 text-center text-sm text-muted-foreground">
+            <div className="p-4 text-center text-sm text-muted-foreground">
               Nenhum cliente encontrado
             </div>
           ) : (
-            <div className="p-2 text-center text-sm text-muted-foreground">
+            <div className="p-4 text-center text-sm text-muted-foreground">
               Digite para buscar clientes
             </div>
           )}

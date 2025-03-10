@@ -9,26 +9,42 @@ export function useCustomerSearch() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (searchTerm.length > 0) {
-      setIsLoading(true);
-      // Use the existing customer service to filter customers
-      const { customers: filteredCustomers } = filterCustomers({ 
-        search: searchTerm,
-        type: 'all',
-        status: 'all'
-      }, 1, 10);
-      
-      setCustomers(filteredCustomers);
-      setIsLoading(false);
-    } else {
-      setCustomers([]);
-    }
+    const fetchCustomers = async () => {
+      if (searchTerm.length > 0) {
+        setIsLoading(true);
+        // Usar o serviço existente para filtrar clientes
+        const { customers: filteredCustomers } = filterCustomers({ 
+          search: searchTerm,
+          type: 'all',
+          status: 'all'
+        }, 1, 10);
+        
+        setCustomers(filteredCustomers);
+        setIsLoading(false);
+      } else {
+        setCustomers([]);
+      }
+    };
+
+    // Usar um pequeno delay para evitar muitas chamadas durante digitação
+    const delayDebounceFn = setTimeout(() => {
+      fetchCustomers();
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
   }, [searchTerm]);
+
+  // Função para limpar a busca
+  const clearSearch = () => {
+    setSearchTerm('');
+    setCustomers([]);
+  };
 
   return {
     searchTerm,
     setSearchTerm,
     customers,
-    isLoading
+    isLoading,
+    clearSearch
   };
 }
