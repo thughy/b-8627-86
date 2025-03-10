@@ -63,6 +63,9 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
     }
   ];
 
+  // Use assets from the deal if available, otherwise use the dummy assets
+  const assets = deal.assets || dummyAssets;
+
   // Send message function that takes no parameters but uses messageText from state
   const handleSendMessage = () => {
     if (chatState.messageText.trim()) {
@@ -124,7 +127,7 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
         <TabsContent value="focus" className="border-none p-0">
           <FocusTabContent 
             deal={deal} 
-            assets={dummyAssets}
+            assets={assets}
             filter={filter}
             onCreateAsset={onCreateAsset}
           />

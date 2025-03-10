@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { Deal, Asset } from '@/pages/Workflows/models/WorkflowModels';
 import { Button } from '@/components/ui/button';
 import { CalendarDays, FileText, ClipboardList, FolderKanban, Mail, Paperclip, Clock, Plus } from 'lucide-react';
-import AssetCardModal from '../../AssetCardModal';
 
 interface FocusTabContentProps {
   deal: Deal;
@@ -28,9 +27,6 @@ const FocusTabContent: React.FC<FocusTabContentProps> = ({
   filter,
   onCreateAsset 
 }) => {
-  const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
-  const [isAssetModalOpen, setIsAssetModalOpen] = useState(false);
-
   // Convertemos assets para o formato de timeline
   const assetItems: TimelineItem[] = assets.map(asset => ({
     id: asset.id,
@@ -115,18 +111,10 @@ const FocusTabContent: React.FC<FocusTabContentProps> = ({
     }
   };
 
-  const handleOpenAssetModal = (asset?: Asset) => {
-    if (asset) {
-      setSelectedAsset(asset);
-    } else {
-      setSelectedAsset(null);
-    }
-    setIsAssetModalOpen(true);
-  };
-
   const handleAssetClick = (item: TimelineItem) => {
     if (item.type === 'asset' && item.metadata?.asset) {
-      handleOpenAssetModal(item.metadata.asset as Asset);
+      console.log("Asset clicked:", item.metadata.asset);
+      // The parent component should handle this click and open the modal
     }
   };
 
@@ -134,16 +122,6 @@ const FocusTabContent: React.FC<FocusTabContentProps> = ({
     if (onCreateAsset) {
       onCreateAsset(deal.id);
     }
-  };
-
-  const handleEditAsset = (asset: Asset) => {
-    console.log('Editar asset:', asset);
-    setIsAssetModalOpen(false);
-  };
-
-  const handleDeleteAsset = (assetId: string) => {
-    console.log('Excluir asset:', assetId);
-    setIsAssetModalOpen(false);
   };
 
   return (
@@ -208,17 +186,6 @@ const FocusTabContent: React.FC<FocusTabContentProps> = ({
           Nenhum item disponível para este filtro.
         </div>
       )}
-
-      {/* Modal de Asset */}
-      <AssetCardModal
-        isOpen={isAssetModalOpen}
-        onClose={() => setIsAssetModalOpen(false)}
-        asset={selectedAsset}
-        onEditAsset={handleEditAsset}
-        onDeleteAsset={handleDeleteAsset}
-        onCreateNote={(assetId) => console.log('Criar nota para asset:', assetId)}
-        onCreateDocument={(assetId) => console.log('Criar documento para asset:', assetId)}
-      />
     </div>
   );
 };

@@ -23,6 +23,7 @@ import DealCounters from './deal-detail/DealCounters';
 import { MoreVertical } from 'lucide-react';
 import { getInterestGradient } from '@/components/workflows/utils/dealUtils';
 import { cn } from '@/lib/utils';
+import AssetCardModal from './AssetCardModal';
 
 interface DealCardModalProps {
   isOpen: boolean;
@@ -38,6 +39,16 @@ interface DealCardModalProps {
   onCreateNote?: (dealId: string) => void;
   onCreateDocument?: (dealId: string) => void;
   onCreateEmail?: (dealId: string) => void;
+  // Asset modal props
+  isAssetModalOpen?: boolean;
+  onCloseAssetModal?: () => void;
+  selectedAsset?: Asset | null;
+  onEditAsset?: (asset: Asset) => void;
+  onDeleteAsset?: (assetId: string) => void;
+  onCompleteAsset?: (assetId: string) => void;
+  onCancelAsset?: (assetId: string) => void;
+  onCreateNoteForAsset?: (assetId: string) => void;
+  onCreateDocumentForAsset?: (assetId: string) => void;
 }
 
 const DealCardModal: React.FC<DealCardModalProps> = ({
@@ -53,7 +64,17 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
   onCreateTask,
   onCreateNote,
   onCreateDocument,
-  onCreateEmail
+  onCreateEmail,
+  // Asset modal props
+  isAssetModalOpen = false,
+  onCloseAssetModal,
+  selectedAsset,
+  onEditAsset,
+  onDeleteAsset,
+  onCompleteAsset,
+  onCancelAsset,
+  onCreateNoteForAsset,
+  onCreateDocumentForAsset
 }) => {
   if (!deal) return null;
 
@@ -71,78 +92,95 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className={cn("max-w-6xl max-h-[90vh] p-0 flex flex-col", interestGradient)}>
-        <DialogHeader className="p-6 pb-2 flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-xl font-bold">{deal.title}</DialogTitle>
-            <div className="flex items-center gap-2">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm">
-                    <MoreVertical className="h-4 w-4 mr-2" />
-                    Ações
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {onCancelDeal && (
-                    <DropdownMenuItem onClick={() => onCancelDeal(deal.id)}>
-                      Cancelar
-                    </DropdownMenuItem>
-                  )}
-                  {onDeleteDeal && (
-                    <DropdownMenuItem 
-                      className="text-red-500 focus:text-red-500" 
-                      onClick={() => onDeleteDeal(deal.id)}
-                    >
-                      Excluir
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
+    <>
+      <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+        <DialogContent className={cn("max-w-6xl max-h-[90vh] p-0 flex flex-col", interestGradient)}>
+          <DialogHeader className="p-6 pb-2 flex-shrink-0">
+            <div className="flex items-center justify-between">
+              <DialogTitle className="text-xl font-bold">{deal.title}</DialogTitle>
+              <div className="flex items-center gap-2">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm">
+                      <MoreVertical className="h-4 w-4 mr-2" />
+                      Ações
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    {onCancelDeal && (
+                      <DropdownMenuItem onClick={() => onCancelDeal(deal.id)}>
+                        Cancelar
+                      </DropdownMenuItem>
+                    )}
+                    {onDeleteDeal && (
+                      <DropdownMenuItem 
+                        className="text-red-500 focus:text-red-500" 
+                        onClick={() => onDeleteDeal(deal.id)}
+                      >
+                        Excluir
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
-          </div>
-        </DialogHeader>
+          </DialogHeader>
 
-        {/* Informações Resumidas - Não rolável */}
-        <div className="px-6 pt-2 pb-4 flex-shrink-0">
-          <DealSummaryCards deal={deal} />
-          <DealCounters counters={counters} />
-        </div>
+          {/* Informações Resumidas - Não rolável */}
+          <div className="px-6 pt-2 pb-4 flex-shrink-0">
+            <DealSummaryCards deal={deal} />
+            <DealCounters counters={counters} />
+          </div>
 
-        {/* Conteúdo principal em colunas - Cada coluna com sua própria área de rolagem */}
-        <div className="flex-1 grid grid-cols-12 gap-6 px-6 pb-6 overflow-hidden">
-          {/* Coluna de Parâmetros com ScrollArea independente */}
-          <div className="col-span-4 flex flex-col overflow-hidden">
-            <h3 className="text-lg font-medium mb-3">Parâmetros</h3>
-            <div className="border rounded-md flex-1 overflow-hidden bg-background/80 backdrop-blur-sm">
-              <ScrollArea className="h-[calc(80vh-200px)]">
-                <div className="p-4">
-                  <DealParametersTab deal={deal} onEditDeal={onEditDeal} />
-                </div>
-              </ScrollArea>
+          {/* Conteúdo principal em colunas - Cada coluna com sua própria área de rolagem */}
+          <div className="flex-1 grid grid-cols-12 gap-6 px-6 pb-6 overflow-hidden">
+            {/* Coluna de Parâmetros com ScrollArea independente */}
+            <div className="col-span-4 flex flex-col overflow-hidden">
+              <h3 className="text-lg font-medium mb-3">Parâmetros</h3>
+              <div className="border rounded-md flex-1 overflow-hidden bg-background/80 backdrop-blur-sm">
+                <ScrollArea className="h-[calc(80vh-200px)]">
+                  <div className="p-4">
+                    <DealParametersTab deal={deal} onEditDeal={onEditDeal} />
+                  </div>
+                </ScrollArea>
+              </div>
+            </div>
+            
+            {/* Coluna de Workspace com ScrollArea independente */}
+            <div className="col-span-8 flex flex-col overflow-hidden">
+              <h3 className="text-lg font-medium mb-3 pl-4">Workspace</h3>
+              <div className="pl-4 border rounded-md flex-1 overflow-hidden bg-background/80 backdrop-blur-sm">
+                <ScrollArea className="h-[calc(80vh-200px)]">
+                  <DealWorkspaceTab 
+                    deal={deal} 
+                    onCreateAsset={onCreateAsset}
+                    onCreateTask={onCreateTask}
+                    onCreateNote={onCreateNote}
+                    onCreateDocument={onCreateDocument}
+                    onCreateEmail={onCreateEmail}
+                  />
+                </ScrollArea>
+              </div>
             </div>
           </div>
-          
-          {/* Coluna de Workspace com ScrollArea independente */}
-          <div className="col-span-8 flex flex-col overflow-hidden">
-            <h3 className="text-lg font-medium mb-3 pl-4">Workspace</h3>
-            <div className="pl-4 border rounded-md flex-1 overflow-hidden bg-background/80 backdrop-blur-sm">
-              <ScrollArea className="h-[calc(80vh-200px)]">
-                <DealWorkspaceTab 
-                  deal={deal} 
-                  onCreateAsset={onCreateAsset}
-                  onCreateTask={onCreateTask}
-                  onCreateNote={onCreateNote}
-                  onCreateDocument={onCreateDocument}
-                  onCreateEmail={onCreateEmail}
-                />
-              </ScrollArea>
-            </div>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+
+      {/* Asset Card Modal */}
+      {selectedAsset && (
+        <AssetCardModal
+          isOpen={isAssetModalOpen}
+          onClose={onCloseAssetModal ? onCloseAssetModal : () => {}}
+          asset={selectedAsset}
+          onEditAsset={onEditAsset}
+          onDeleteAsset={onDeleteAsset}
+          onCancelAsset={onCancelAsset}
+          onCompleteAsset={onCompleteAsset}
+          onCreateNote={onCreateNoteForAsset}
+          onCreateDocument={onCreateDocumentForAsset}
+        />
+      )}
+    </>
   );
 };
 

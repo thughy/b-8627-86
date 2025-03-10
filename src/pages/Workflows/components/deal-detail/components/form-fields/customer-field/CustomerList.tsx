@@ -19,12 +19,16 @@ const CustomerList: React.FC<CustomerListProps> = ({
   onSelectCustomer 
 }) => {
   const preventBubbling = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
   };
   
   if (isLoading) {
     return (
-      <div className="p-4 text-center text-sm text-muted-foreground" onClick={preventBubbling}>
+      <div 
+        className="p-4 text-center text-sm text-muted-foreground bg-background shadow-md rounded-md" 
+        onClick={preventBubbling}
+      >
         <div className="flex items-center justify-center gap-2">
           <Loader2 className="h-4 w-4 animate-spin" />
           <span>Carregando clientes...</span>
@@ -35,7 +39,10 @@ const CustomerList: React.FC<CustomerListProps> = ({
   
   if (customers.length > 0) {
     return (
-      <ScrollArea className="max-h-[300px]" onClick={preventBubbling}>
+      <ScrollArea 
+        className="max-h-[300px] bg-background shadow-md rounded-md" 
+        onClick={preventBubbling}
+      >
         <div className="p-2" role="listbox">
           {customers.map((customer) => (
             <CustomerListItem 
@@ -51,14 +58,20 @@ const CustomerList: React.FC<CustomerListProps> = ({
   
   if (searchTerm && searchTerm.length >= 2) {
     return (
-      <div className="p-4 text-center text-sm text-muted-foreground" onClick={preventBubbling}>
+      <div 
+        className="p-4 text-center text-sm text-muted-foreground bg-background shadow-md rounded-md" 
+        onClick={preventBubbling}
+      >
         Nenhum cliente encontrado
       </div>
     );
   }
   
   return (
-    <div className="p-4 text-center text-sm text-muted-foreground" onClick={preventBubbling}>
+    <div 
+      className="p-4 text-center text-sm text-muted-foreground bg-background shadow-md rounded-md" 
+      onClick={preventBubbling}
+    >
       Digite pelo menos 2 caracteres para buscar clientes
     </div>
   );
