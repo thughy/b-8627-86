@@ -1,5 +1,5 @@
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { Customer } from '@/pages/Workflows/models/CustomerModel';
 import { useCustomerSearch } from '../../hooks/useCustomerSearch';
 import { 
@@ -36,38 +36,9 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   
   const inputRef = useRef<HTMLInputElement>(null);
   
-  // Update the input when external props change
-  useEffect(() => {
-    if (customerName && customerType) {
-      setSearchTerm('');
-    }
-  }, [customerName, customerType, setSearchTerm]);
-
-  const handleFocus = () => {
-    setIsOpen(true);
-  };
-
-  const handleBlur = (e: React.FocusEvent) => {
-    // Check if the related target is inside the popover
-    const relatedTarget = e.relatedTarget as Node;
-    if (relatedTarget instanceof Element) {
-      // Check if the clicked element is inside the popover content
-      const isInsidePopover = relatedTarget.closest('[role="listbox"]');
-      if (isInsidePopover) {
-        return; // Don't close if clicking inside popover
-      }
-    }
-    
-    // Small timeout to allow click events to register before closing
-    setTimeout(() => {
-      setIsOpen(false);
-    }, 200); // Increased timeout slightly for better usability
-  };
-
   const handleCustomerSelect = (customer: Customer) => {
     selectCustomer(customer);
     onCustomerSelect(customer);
-    setIsOpen(false);
   };
 
   const handleClearSelection = (e: React.MouseEvent) => {
@@ -88,7 +59,7 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   };
 
   return (
-    <div className="relative w-full">
+    <div className="w-full">
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <div className="w-full">
@@ -96,8 +67,15 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
               ref={inputRef}
               searchTerm={searchTerm}
               onChange={setSearchTerm}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
+              onFocus={() => setIsOpen(true)}
+              onBlur={(e) => {
+                const relatedTarget = e.relatedTarget as Node;
+                if (relatedTarget instanceof Element) {
+                  const isInsidePopover = relatedTarget.closest('[role="listbox"]');
+                  if (isInsidePopover) return;
+                }
+                setTimeout(() => setIsOpen(false), 250);
+              }}
               hasSelectedCustomer={Boolean(customerName)}
               customerName={customerName}
               customerOrganization={customerOrganization}
@@ -109,10 +87,10 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
         
         <PopoverContent 
           role="listbox"
-          className="p-0 w-[300px] bg-background border rounded-md shadow-md z-50 overflow-hidden"
+          className="p-0 w-[300px] bg-background border rounded-md shadow-lg z-50 overflow-hidden"
           align="start"
           alignOffset={0}
-          sideOffset={8} // Increased to give more space from the input
+          sideOffset={8}
         >
           <CustomerList
             customers={customers}

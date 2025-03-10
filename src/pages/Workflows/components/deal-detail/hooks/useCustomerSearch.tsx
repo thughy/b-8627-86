@@ -19,11 +19,9 @@ export function useCustomerSearch() {
             search: searchTerm,
             type: 'all',
             status: 'all'
-          }, 1, 30); // Aumentado para 30 resultados para mostrar mais opções
+          }, 1, 30);
           
           setCustomers(result.customers);
-          
-          // Ensure popover opens when we have results or are loading
           setIsOpen(true);
         } catch (error) {
           console.error('Erro ao buscar clientes:', error);
@@ -38,7 +36,7 @@ export function useCustomerSearch() {
 
     const delayDebounceFn = setTimeout(() => {
       fetchCustomers();
-    }, 250); // Diminuído um pouco para resposta mais rápida
+    }, 200); // Reduced debounce for faster response
 
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm]);

@@ -30,20 +30,16 @@ const CustomerSearchInput = forwardRef<HTMLInputElement, CustomerSearchInputProp
   const CustomerIcon = customerType === 'organization' ? Building2 : User;
 
   return (
-    <div className="space-y-2">
-      <label htmlFor="customer-search" className="block text-sm font-medium text-foreground mb-2">
-        Cliente
-      </label>
+    <div className="relative w-full">
       <div className="relative">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
         
         <Input
           ref={ref}
-          id="customer-search"
           type="search"
           placeholder={hasSelectedCustomer ? '' : "Buscar cliente..."}
           className={cn(
-            "pl-8 pr-8",
+            "pl-8 pr-8 h-10", // Increased height
             hasSelectedCustomer ? "cursor-pointer" : ""
           )}
           value={searchTerm}
