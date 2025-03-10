@@ -1,7 +1,13 @@
 
 import React from 'react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { Plus, FileText, CheckSquare, Image, Mail, File } from 'lucide-react';
+import { MoreHorizontal, FileText, CheckSquare, Image, Mail, File } from 'lucide-react';
 import { Asset } from '@/pages/Workflows/models/WorkflowModels';
 
 interface WorkspaceActionButtonsProps {
@@ -43,52 +49,36 @@ const WorkspaceActionButtons: React.FC<WorkspaceActionButtonsProps> = React.memo
   }, [onCreateEmail, dealId]);
 
   return (
-    <div className="flex gap-2 overflow-x-auto">
-      <Button 
-        size="sm" 
-        variant="outline" 
-        onClick={handleCreateAsset} 
-        className="whitespace-nowrap"
-      >
-        <Image className="h-4 w-4 mr-1" />
-        Asset
-      </Button>
-      <Button 
-        size="sm" 
-        variant="outline" 
-        onClick={handleCreateTask} 
-        className="whitespace-nowrap"
-      >
-        <CheckSquare className="h-4 w-4 mr-1" />
-        Tarefa
-      </Button>
-      <Button 
-        size="sm" 
-        variant="outline" 
-        onClick={handleCreateNote} 
-        className="whitespace-nowrap"
-      >
-        <FileText className="h-4 w-4 mr-1" />
-        Nota
-      </Button>
-      <Button 
-        size="sm" 
-        variant="outline" 
-        onClick={handleCreateDocument} 
-        className="whitespace-nowrap"
-      >
-        <File className="h-4 w-4 mr-1" />
-        Documento
-      </Button>
-      <Button 
-        size="sm" 
-        variant="outline" 
-        onClick={handleCreateEmail} 
-        className="whitespace-nowrap"
-      >
-        <Mail className="h-4 w-4 mr-1" />
-        Email
-      </Button>
+    <div className="flex items-center">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="sm">
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="w-48">
+          <DropdownMenuItem onClick={handleCreateAsset}>
+            <Image className="h-4 w-4 mr-2" />
+            Asset
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleCreateTask}>
+            <CheckSquare className="h-4 w-4 mr-2" />
+            Tarefa
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleCreateNote}>
+            <FileText className="h-4 w-4 mr-2" />
+            Nota
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleCreateDocument}>
+            <File className="h-4 w-4 mr-2" />
+            Documento
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleCreateEmail}>
+            <Mail className="h-4 w-4 mr-2" />
+            Email
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 });
@@ -96,3 +86,4 @@ const WorkspaceActionButtons: React.FC<WorkspaceActionButtonsProps> = React.memo
 WorkspaceActionButtons.displayName = 'WorkspaceActionButtons';
 
 export default WorkspaceActionButtons;
+
