@@ -19,7 +19,7 @@ export function useCustomerSearch() {
             search: searchTerm,
             type: 'all',
             status: 'all'
-          }, 1, 20); // Aumentado para 20 resultados
+          }, 1, 30); // Aumentado para 30 resultados para mostrar mais opções
           
           setCustomers(result.customers);
           
@@ -38,7 +38,7 @@ export function useCustomerSearch() {
 
     const delayDebounceFn = setTimeout(() => {
       fetchCustomers();
-    }, 300);
+    }, 250); // Diminuído um pouco para resposta mais rápida
 
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm]);

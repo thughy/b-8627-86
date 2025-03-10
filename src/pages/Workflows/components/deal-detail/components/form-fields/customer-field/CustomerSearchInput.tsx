@@ -31,7 +31,7 @@ const CustomerSearchInput = forwardRef<HTMLInputElement, CustomerSearchInputProp
 
   return (
     <div className="space-y-2">
-      <label htmlFor="customer-search" className="block text-sm font-medium text-foreground mb-1">
+      <label htmlFor="customer-search" className="block text-sm font-medium text-foreground mb-2">
         Cliente
       </label>
       <div className="relative">

@@ -45,8 +45,6 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
 
   const handleFocus = () => {
     setIsOpen(true);
-    // Se já tiver um termo de busca com pelo menos 2 caracteres, a lista já será mostrada
-    // Se não, precisamos garantir que o popover abra para mostrar a mensagem de instruções
   };
 
   const handleBlur = (e: React.FocusEvent) => {
@@ -63,7 +61,7 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
     // Small timeout to allow click events to register before closing
     setTimeout(() => {
       setIsOpen(false);
-    }, 150);
+    }, 200); // Increased timeout slightly for better usability
   };
 
   const handleCustomerSelect = (customer: Customer) => {
@@ -114,7 +112,7 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
           className="p-0 w-[300px] bg-background border rounded-md shadow-md z-50 overflow-hidden"
           align="start"
           alignOffset={0}
-          sideOffset={5}
+          sideOffset={8} // Increased to give more space from the input
         >
           <CustomerList
             customers={customers}
