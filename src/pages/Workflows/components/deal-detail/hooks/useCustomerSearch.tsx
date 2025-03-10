@@ -7,20 +7,27 @@ export function useCustomerSearch() {
   const [searchTerm, setSearchTerm] = useState('');
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const fetchCustomers = async () => {
       if (searchTerm.length > 0) {
         setIsLoading(true);
-        // Usar o serviço existente para filtrar clientes
-        const { customers: filteredCustomers } = filterCustomers({ 
-          search: searchTerm,
-          type: 'all',
-          status: 'all'
-        }, 1, 10);
-        
-        setCustomers(filteredCustomers);
-        setIsLoading(false);
+        try {
+          // Usar o serviço existente para filtrar clientes
+          const { customers: filteredCustomers } = filterCustomers({ 
+            search: searchTerm,
+            type: 'all',
+            status: 'all'
+          }, 1, 10);
+          
+          setCustomers(filteredCustomers);
+        } catch (error) {
+          console.error('Erro ao buscar clientes:', error);
+          setCustomers([]);
+        } finally {
+          setIsLoading(false);
+        }
       } else {
         setCustomers([]);
       }
@@ -45,6 +52,8 @@ export function useCustomerSearch() {
     setSearchTerm,
     customers,
     isLoading,
-    clearSearch
+    clearSearch,
+    isOpen,
+    setIsOpen
   };
 }
