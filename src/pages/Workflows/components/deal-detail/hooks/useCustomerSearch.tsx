@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { Customer } from '@/pages/Workflows/models/CustomerModel';
-import { filterCustomers } from '@/pages/Customers/services/customerService';
+import { filterCustomers } from '@/pages/Customers/services/customerFilterService';
 
 export function useCustomerSearch() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -65,4 +65,3 @@ export function useCustomerSearch() {
     selectCustomer
   };
 }
-

@@ -38,4 +38,3 @@ const CustomerListItem: React.FC<CustomerListItemProps> = ({ customer, onSelect 
 };
 
 export default CustomerListItem;
-
