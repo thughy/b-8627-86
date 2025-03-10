@@ -23,7 +23,7 @@ export function useCustomerSearch() {
           
           setCustomers(result.customers);
           
-          // Se houver resultados, certifique-se de que o popover está aberto
+          // Ensure popover opens when we have results
           if (result.customers.length > 0) {
             setIsOpen(true);
           }
@@ -56,13 +56,7 @@ export function useCustomerSearch() {
     setSelectedCustomer(customer);
     setSearchTerm('');
     setCustomers([]);
-    
-    // Ensure the selection is processed before the popover closes
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        setIsOpen(false);
-      }, 50);
-    });
+    setIsOpen(false);
   };
 
   return {

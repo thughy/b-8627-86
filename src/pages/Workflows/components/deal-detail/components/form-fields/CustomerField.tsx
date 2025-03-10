@@ -35,8 +35,6 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   } = useCustomerSearch();
   
   const inputRef = useRef<HTMLInputElement>(null);
-  const hasSelectedCustomer = Boolean(customerName);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   // Update the input when external props change
   useEffect(() => {
@@ -49,25 +47,29 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
     setIsOpen(true);
   };
 
-  const handleBlur = () => {
-    // Give a small delay before closing the popover to allow click events to complete
+  const handleBlur = (e: React.FocusEvent) => {
+    // Prevent closing if clicking inside the popover
+    const relatedTarget = e.relatedTarget as HTMLElement;
+    if (relatedTarget?.closest('[role="listbox"]')) {
+      e.preventDefault();
+      return;
+    }
+    
+    // Give time for click events to complete
     setTimeout(() => {
-      if (document.activeElement !== inputRef.current && 
-          !containerRef.current?.contains(document.activeElement)) {
+      if (!document.activeElement?.closest('[role="listbox"]')) {
         setIsOpen(false);
       }
     }, 200);
   };
 
   const handleCustomerSelect = (customer: Customer) => {
-    // First update local state
     selectCustomer(customer);
-    
-    // Then propagate selection to parent component
     onCustomerSelect(customer);
   };
 
   const handleClearSelection = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     clearSearch();
     onCustomerSelect({ 
@@ -84,7 +86,7 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   };
 
   return (
-    <div ref={containerRef} className="relative">
+    <div className="relative w-full">
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <div className="w-full">
@@ -95,7 +97,7 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
               onFocus={handleFocus}
               onBlur={handleBlur}
               onClearSelection={handleClearSelection}
-              hasSelectedCustomer={hasSelectedCustomer}
+              hasSelectedCustomer={Boolean(customerName)}
               customerName={customerName}
               customerOrganization={customerOrganization}
               customerType={customerType}
@@ -104,10 +106,17 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
         </PopoverTrigger>
         
         <PopoverContent 
+          role="listbox"
           className="p-0 w-[300px] max-h-[300px] overflow-auto bg-background border shadow-lg rounded-md z-50"
           align="start"
           alignOffset={0}
           sideOffset={5}
+          onInteractOutside={(e) => {
+            // Prevent closing when interacting with the list
+            if (e.target.closest('[role="listbox"]')) {
+              e.preventDefault();
+            }
+          }}
         >
           <CustomerList
             customers={customers}
