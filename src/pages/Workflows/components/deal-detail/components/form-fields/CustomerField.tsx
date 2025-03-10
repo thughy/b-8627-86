@@ -64,8 +64,17 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
     openDropdown();
   };
 
+  const handleBlur = (e: React.FocusEvent) => {
+    // Delayed closing to allow for click events on the list items
+    setTimeout(() => {
+      if (!document.activeElement?.closest('.customer-list-container')) {
+        setIsOpen(false);
+      }
+    }, 150);
+  };
+
   return (
-    <div className="w-full relative isolate" style={{ zIndex: 50 }}>
+    <div className="w-full z-[9999]" style={{ position: 'relative', isolation: 'isolate' }}>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <div className="w-full">
@@ -74,7 +83,7 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
               searchTerm={searchTerm}
               onChange={setSearchTerm}
               onFocus={handleFocus}
-              onBlur={() => {}}
+              onBlur={handleBlur}
               hasSelectedCustomer={Boolean(customerName)}
               customerName={customerName}
               customerOrganization={customerOrganization}
@@ -85,12 +94,13 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
         </PopoverTrigger>
         
         <PopoverContent 
-          className="p-0 w-[300px] bg-popover border-2 border-input-border rounded-md shadow-xl overflow-hidden"
+          className="customer-list-container p-0 w-[300px] bg-background border border-input rounded-md shadow-xl overflow-hidden"
           align="start"
           alignOffset={0}
           sideOffset={8}
           forceMount={true}
-          style={{ zIndex: 99999 }}
+          avoidCollisions={true}
+          style={{ zIndex: 99999, position: 'relative' }}
         >
           <CustomerList
             customers={customers}

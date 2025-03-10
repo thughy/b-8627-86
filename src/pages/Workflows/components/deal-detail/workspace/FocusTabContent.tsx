@@ -1,7 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Deal, Asset } from '@/pages/Workflows/models/WorkflowModels';
-import { CalendarDays, FileText, ClipboardList, FolderKanban, Mail, Paperclip, Clock } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { CalendarDays, FileText, ClipboardList, FolderKanban, Mail, Paperclip, Clock, Plus } from 'lucide-react';
+import AssetCardModal from '../../AssetCardModal';
 
 interface FocusTabContentProps {
   deal: Deal;
@@ -26,6 +28,9 @@ const FocusTabContent: React.FC<FocusTabContentProps> = ({
   filter,
   onCreateAsset 
 }) => {
+  const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
+  const [isAssetModalOpen, setIsAssetModalOpen] = useState(false);
+
   // Convertemos assets para o formato de timeline
   const assetItems: TimelineItem[] = assets.map(asset => ({
     id: asset.id,
@@ -34,7 +39,7 @@ const FocusTabContent: React.FC<FocusTabContentProps> = ({
     description: asset.description,
     status: asset.status,
     date: asset.updatedAt || asset.createdAt,
-    metadata: { assetType: asset.type }
+    metadata: { assetType: asset.type, asset: asset }
   }));
 
   // Dados simulados para outros tipos de itens (em um cenário real, viriam da API)
@@ -110,19 +115,65 @@ const FocusTabContent: React.FC<FocusTabContentProps> = ({
     }
   };
 
+  const handleOpenAssetModal = (asset?: Asset) => {
+    if (asset) {
+      setSelectedAsset(asset);
+    } else {
+      setSelectedAsset(null);
+    }
+    setIsAssetModalOpen(true);
+  };
+
+  const handleAssetClick = (item: TimelineItem) => {
+    if (item.type === 'asset' && item.metadata?.asset) {
+      handleOpenAssetModal(item.metadata.asset as Asset);
+    }
+  };
+
+  const handleCreateAsset = () => {
+    if (onCreateAsset) {
+      onCreateAsset(deal.id);
+    }
+  };
+
+  const handleEditAsset = (asset: Asset) => {
+    console.log('Editar asset:', asset);
+    setIsAssetModalOpen(false);
+  };
+
+  const handleDeleteAsset = (assetId: string) => {
+    console.log('Excluir asset:', assetId);
+    setIsAssetModalOpen(false);
+  };
+
   return (
-    <div className="space-y-2">
+    <div className="space-y-4">
+      <div className="flex justify-end mb-4">
+        <Button 
+          size="sm" 
+          onClick={handleCreateAsset}
+          className="flex items-center gap-1"
+        >
+          <Plus className="h-4 w-4 mr-1" />
+          Novo Asset
+        </Button>
+      </div>
+
       {filteredItems.length > 0 ? (
         <div className="relative pl-6 border-l-2 border-gray-200 dark:border-gray-800">
           {filteredItems.map((item, index) => (
-            <div key={item.id} className="mb-6 relative">
+            <div 
+              key={item.id} 
+              className="mb-6 relative"
+              onClick={() => handleAssetClick(item)}
+            >
               {/* Marcador de tempo na timeline */}
               <div className="absolute -left-[17px] p-1 rounded-full bg-background border-2 border-gray-200 dark:border-gray-800">
                 {getItemIcon(item.type)}
               </div>
               
               {/* Conteúdo do item */}
-              <div className="p-3 border rounded-md ml-2 hover:bg-accent/10 transition-colors">
+              <div className={`p-3 border rounded-md ml-2 hover:bg-accent/10 transition-colors ${item.type === 'asset' ? 'cursor-pointer' : ''}`}>
                 <div className="flex justify-between items-start">
                   <div className="font-medium">{item.title}</div>
                   <div className="text-xs text-muted-foreground flex items-center">
@@ -140,6 +191,7 @@ const FocusTabContent: React.FC<FocusTabContentProps> = ({
                 <div className="flex justify-between mt-2">
                   <span className="text-xs bg-primary/10 px-2 py-1 rounded">
                     {item.type === 'document' ? 'anexo' : item.type}
+                    {item.metadata?.assetType && ` - ${item.metadata.assetType}`}
                   </span>
                   {item.status && (
                     <span className="text-xs bg-primary/10 px-2 py-1 rounded">
@@ -156,6 +208,17 @@ const FocusTabContent: React.FC<FocusTabContentProps> = ({
           Nenhum item disponível para este filtro.
         </div>
       )}
+
+      {/* Modal de Asset */}
+      <AssetCardModal
+        isOpen={isAssetModalOpen}
+        onClose={() => setIsAssetModalOpen(false)}
+        asset={selectedAsset}
+        onEditAsset={handleEditAsset}
+        onDeleteAsset={handleDeleteAsset}
+        onCreateNote={(assetId) => console.log('Criar nota para asset:', assetId)}
+        onCreateDocument={(assetId) => console.log('Criar documento para asset:', assetId)}
+      />
     </div>
   );
 };

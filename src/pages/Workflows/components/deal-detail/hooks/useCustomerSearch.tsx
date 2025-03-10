@@ -30,13 +30,16 @@ export function useCustomerSearch() {
       }
     } else {
       setCustomers([]);
+      if (term.length === 0) {
+        setIsOpen(false);
+      }
     }
   }, []);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       fetchCustomers(searchTerm);
-    }, 100);
+    }, 300); // Increased debounce time for better UX
 
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm, fetchCustomers]);
@@ -52,6 +55,7 @@ export function useCustomerSearch() {
     setSelectedCustomer(customer);
     setSearchTerm('');
     setCustomers([]);
+    setIsOpen(false);
   };
 
   const openDropdown = () => {

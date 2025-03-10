@@ -32,11 +32,11 @@ const CustomerSearchInput = forwardRef<HTMLInputElement, CustomerSearchInputProp
   return (
     <div className="relative w-full">
       <div className="relative">
-        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground pointer-events-none" />
         
         <Input
           ref={ref}
-          type="search"
+          type="text"
           placeholder={hasSelectedCustomer ? '' : "Buscar cliente..."}
           className={cn(
             "pl-8 pr-8 h-10", // Increased height
@@ -46,6 +46,7 @@ const CustomerSearchInput = forwardRef<HTMLInputElement, CustomerSearchInputProp
           onChange={(e) => onChange(e.target.value)}
           onFocus={onFocus}
           onBlur={onBlur}
+          autoComplete="off"
         />
         
         {hasSelectedCustomer && !searchTerm && (
