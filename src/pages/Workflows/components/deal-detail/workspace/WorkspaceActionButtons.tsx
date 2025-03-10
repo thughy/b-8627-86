@@ -13,7 +13,7 @@ interface WorkspaceActionButtonsProps {
   dealId: string;
 }
 
-const WorkspaceActionButtons: React.FC<WorkspaceActionButtonsProps> = ({ 
+const WorkspaceActionButtons: React.FC<WorkspaceActionButtonsProps> = React.memo(({ 
   onCreateAsset,
   onCreateTask,
   onCreateNote,
@@ -21,12 +21,33 @@ const WorkspaceActionButtons: React.FC<WorkspaceActionButtonsProps> = ({
   onCreateEmail,
   dealId
 }) => {
+  // Create stable callback functions to prevent re-renders
+  const handleCreateAsset = React.useCallback(() => {
+    onCreateAsset?.(dealId);
+  }, [onCreateAsset, dealId]);
+  
+  const handleCreateTask = React.useCallback(() => {
+    onCreateTask?.(dealId);
+  }, [onCreateTask, dealId]);
+  
+  const handleCreateNote = React.useCallback(() => {
+    onCreateNote?.(dealId);
+  }, [onCreateNote, dealId]);
+  
+  const handleCreateDocument = React.useCallback(() => {
+    onCreateDocument?.(dealId);
+  }, [onCreateDocument, dealId]);
+  
+  const handleCreateEmail = React.useCallback(() => {
+    onCreateEmail?.(dealId);
+  }, [onCreateEmail, dealId]);
+
   return (
     <div className="flex gap-2 overflow-x-auto">
       <Button 
         size="sm" 
         variant="outline" 
-        onClick={() => onCreateAsset?.(dealId)} 
+        onClick={handleCreateAsset} 
         className="whitespace-nowrap"
       >
         <Image className="h-4 w-4 mr-1" />
@@ -35,7 +56,7 @@ const WorkspaceActionButtons: React.FC<WorkspaceActionButtonsProps> = ({
       <Button 
         size="sm" 
         variant="outline" 
-        onClick={() => onCreateTask?.(dealId)} 
+        onClick={handleCreateTask} 
         className="whitespace-nowrap"
       >
         <CheckSquare className="h-4 w-4 mr-1" />
@@ -44,7 +65,7 @@ const WorkspaceActionButtons: React.FC<WorkspaceActionButtonsProps> = ({
       <Button 
         size="sm" 
         variant="outline" 
-        onClick={() => onCreateNote?.(dealId)} 
+        onClick={handleCreateNote} 
         className="whitespace-nowrap"
       >
         <FileText className="h-4 w-4 mr-1" />
@@ -53,7 +74,7 @@ const WorkspaceActionButtons: React.FC<WorkspaceActionButtonsProps> = ({
       <Button 
         size="sm" 
         variant="outline" 
-        onClick={() => onCreateDocument?.(dealId)} 
+        onClick={handleCreateDocument} 
         className="whitespace-nowrap"
       >
         <File className="h-4 w-4 mr-1" />
@@ -62,7 +83,7 @@ const WorkspaceActionButtons: React.FC<WorkspaceActionButtonsProps> = ({
       <Button 
         size="sm" 
         variant="outline" 
-        onClick={() => onCreateEmail?.(dealId)} 
+        onClick={handleCreateEmail} 
         className="whitespace-nowrap"
       >
         <Mail className="h-4 w-4 mr-1" />
@@ -70,6 +91,8 @@ const WorkspaceActionButtons: React.FC<WorkspaceActionButtonsProps> = ({
       </Button>
     </div>
   );
-};
+});
+
+WorkspaceActionButtons.displayName = 'WorkspaceActionButtons';
 
 export default WorkspaceActionButtons;
