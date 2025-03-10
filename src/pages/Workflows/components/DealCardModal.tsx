@@ -21,6 +21,8 @@ import DealStatusBadge from './deal-detail/DealStatusBadge';
 import DealSummaryCards from './deal-detail/DealSummaryCards';
 import DealCounters from './deal-detail/DealCounters';
 import { MoreHorizontal } from 'lucide-react';
+import { getInterestGradient } from '@/components/workflows/utils/dealUtils';
+import { cn } from '@/lib/utils';
 
 interface DealCardModalProps {
   isOpen: boolean;
@@ -55,6 +57,9 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
 }) => {
   if (!deal) return null;
 
+  // Get the interest gradient for the modal background
+  const interestGradient = getInterestGradient(deal.interests);
+
   // Exemplo de contadores (em um cenário real, viriam da API)
   const counters = {
     chat: 3,
@@ -67,7 +72,7 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-6xl max-h-[90vh] p-0 flex flex-col">
+      <DialogContent className={cn("max-w-6xl max-h-[90vh] p-0 flex flex-col", interestGradient)}>
         <DialogHeader className="p-6 pb-2 flex-shrink-0">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl font-bold">{deal.title}</DialogTitle>
@@ -125,7 +130,7 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
           {/* Coluna de Parâmetros com ScrollArea independente */}
           <div className="col-span-4 flex flex-col overflow-hidden">
             <h3 className="text-lg font-medium mb-3">Parâmetros</h3>
-            <div className="border rounded-md flex-1 overflow-hidden">
+            <div className="border rounded-md flex-1 overflow-hidden bg-background/80 backdrop-blur-sm">
               <ScrollArea className="h-[calc(80vh-200px)]">
                 <div className="p-4">
                   <DealParametersTab deal={deal} onEditDeal={onEditDeal} />
@@ -137,7 +142,7 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
           {/* Coluna de Workspace com ScrollArea independente */}
           <div className="col-span-8 flex flex-col overflow-hidden">
             <h3 className="text-lg font-medium mb-3 pl-4">Workspace</h3>
-            <div className="pl-4 border rounded-md flex-1 overflow-hidden">
+            <div className="pl-4 border rounded-md flex-1 overflow-hidden bg-background/80 backdrop-blur-sm">
               <ScrollArea className="h-[calc(80vh-200px)]">
                 <DealWorkspaceTab 
                   deal={deal} 
