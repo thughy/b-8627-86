@@ -1,13 +1,12 @@
-
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Asset, Deal } from '@/pages/Workflows/models/WorkflowModels';
-import ChatSection from '../workspace/ChatSection';
-import FocusTabContent from '../workspace/FocusTabContent';
-import HistoryTabContent from '../workspace/HistoryTabContent';
-import WorkspaceActionButtons from '../workspace/WorkspaceActionButtons';
-import { useChatState } from '../workspace/hooks/useChatState';
+import ChatSection from './ChatSection';
+import FocusTabContent from './FocusTabContent';
+import HistoryTabContent from './HistoryTabContent';
+import WorkspaceActionButtons from './WorkspaceActionButtons';
+import { useChatState } from './hooks/useChatState';
 
 interface DealWorkspaceTabProps {
   deal: Deal;
@@ -39,7 +38,6 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
   const [filter, setFilter] = React.useState('all');
   const chatState = useChatState(deal.id);
 
-  // Exemplo de assets para este deal (em um cenário real, viriam da API)
   const dummyAssets: Asset[] = [
     {
       id: 'asset-1',
@@ -63,16 +61,14 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
     }
   ];
 
-  // Função wrapper para adapter o tipo para o ChatSection
   const handleSendMessage = () => {
     if (chatState.messageText.trim()) {
       chatState.sendMessage(chatState.messageText);
     }
   };
 
-  // Função wrapper para adapter o tipo para o ChatSection
   const handleRemoveAttachment = (index: number) => {
-    chatState.handleRemoveAttachment(index.toString());
+    chatState.handleRemoveAttachment(index);
   };
 
   return (
@@ -85,7 +81,6 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
             <TabsTrigger value="history">Registros</TabsTrigger>
           </TabsList>
           
-          {/* Filters moved inline with tabs, aligned to right */}
           <div className="flex items-center gap-2">
             <div className="flex flex-wrap gap-1">
               {filterOptions.map(filterOption => (
