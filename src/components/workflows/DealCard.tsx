@@ -31,7 +31,6 @@ const DealCard: React.FC<DealCardProps> = ({
 }) => {
   // Use interest for the primary gradient instead of deal type
   const interestGradient = getInterestGradient(deal.interests);
-  const topBarColor = getTopBarColor(deal.type || 'default');
   const typeBadge = getDealTypeBadge(deal.type || 'default');
   const statusBackground = getStatusBackgroundColor(deal.status);
   const interestBackground = getInterestBackgroundColor(deal.interests);
@@ -46,7 +45,6 @@ const DealCard: React.FC<DealCardProps> = ({
       )} 
       onClick={() => onDealClick(deal)}
     >
-      <div className={`h-1.5 w-full ${topBarColor}`}></div>
       <CardContent className="p-3">
         {/* Top row: Title and Type */}
         <div className="flex items-center justify-between mb-2">
