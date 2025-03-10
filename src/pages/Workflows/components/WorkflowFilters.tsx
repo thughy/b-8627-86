@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Search, Filter, Columns, List, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import AdvancedFiltersModal, { DealFilters } from './AdvancedFiltersModal';
+import { Badge } from '@/components/ui/badge';
 
 interface WorkflowFiltersProps {
   searchTerm: string;
@@ -43,6 +46,25 @@ const WorkflowFilters: React.FC<WorkflowFiltersProps> = ({
   // Find selected workflow and pipeline names for display
   const selectedWorkflowName = workflows.find(w => w.id === selectedWorkflow)?.title || "Selecionar Department";
   const selectedPipelineName = pipelines.find(p => p.id === selectedPipeline)?.title || "Selecionar Pipeline";
+  
+  // State for advanced filters modal
+  const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState<DealFilters>({});
+  
+  // Count active filters for the badge
+  const activeFiltersCount = Object.keys(advancedFilters).filter(key => {
+    const value = advancedFilters[key as keyof DealFilters];
+    if (Array.isArray(value)) return value.length > 0;
+    if (typeof value === 'boolean') return value;
+    return value !== undefined && value !== '';
+  }).length;
+
+  const handleApplyFilters = (filters: DealFilters) => {
+    setAdvancedFilters(filters);
+    // Here you would typically apply these filters to your deals list
+    // This would likely involve a parent component function
+    console.log('Applied filters:', filters);
+  };
 
   return (
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
@@ -119,10 +141,28 @@ const WorkflowFilters: React.FC<WorkflowFiltersProps> = ({
         >
           <List className={`h-4 w-4 ${viewMode === 'list' ? 'text-primary' : ''}`} />
         </Button>
-        <Button variant="outline" size="icon" className="thin-border">
+        <Button 
+          variant="outline" 
+          size="icon" 
+          className="thin-border relative"
+          onClick={() => setIsFiltersModalOpen(true)}
+        >
           <Filter className="h-4 w-4" />
+          {activeFiltersCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-primary text-xs w-4 h-4 rounded-full flex items-center justify-center text-white">
+              {activeFiltersCount}
+            </span>
+          )}
         </Button>
       </div>
+
+      {/* Advanced Filters Modal */}
+      <AdvancedFiltersModal 
+        isOpen={isFiltersModalOpen}
+        onClose={() => setIsFiltersModalOpen(false)}
+        onApplyFilters={handleApplyFilters}
+        currentFilters={advancedFilters}
+      />
     </div>
   );
 };
