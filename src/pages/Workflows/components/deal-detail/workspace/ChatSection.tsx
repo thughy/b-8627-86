@@ -3,16 +3,13 @@ import React from 'react';
 import { 
   Send, 
   Paperclip, 
-  Mic, 
-  XCircle,
-  Plus
+  XCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
-import { Deal } from '@/pages/Workflows/models/WorkflowModels';
 
 type Attachment = {
   id: string;
@@ -27,6 +24,8 @@ type Message = {
   sender: 'user' | 'agent';
   timestamp: Date;
   attachments?: Attachment[];
+  senderName?: string;
+  content?: string;
 };
 
 export interface ChatSectionProps {
@@ -34,7 +33,7 @@ export interface ChatSectionProps {
   messages: Message[];
   messageText: string;
   setMessageText: (text: string) => void;
-  sendMessage: (text: string) => void;
+  sendMessage: () => void;
   typing: boolean;
   attachments: Attachment[];
   handleAddAttachment: () => void;
@@ -42,7 +41,6 @@ export interface ChatSectionProps {
 }
 
 export const ChatSection: React.FC<ChatSectionProps> = ({ 
-  dealId,
   messages, 
   messageText, 
   setMessageText, 
@@ -55,7 +53,7 @@ export const ChatSection: React.FC<ChatSectionProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (messageText.trim()) {
-      sendMessage(messageText);
+      sendMessage();
     }
   };
 
@@ -67,9 +65,9 @@ export const ChatSection: React.FC<ChatSectionProps> = ({
       
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-4">
-          {messages.map((message, index) => (
+          {messages.map((message) => (
             <div 
-              key={index} 
+              key={message.id} 
               className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               <div className={`flex ${message.sender === 'user' ? 'flex-row-reverse' : 'flex-row'} items-start gap-2 max-w-[80%]`}>

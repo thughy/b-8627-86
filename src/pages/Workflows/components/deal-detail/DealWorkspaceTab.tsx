@@ -63,16 +63,11 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
     }
   ];
 
-  // Função wrapper para adapter o tipo para o ChatSection
+  // Send message function that takes no parameters but uses messageText from state
   const handleSendMessage = () => {
     if (chatState.messageText.trim()) {
       chatState.sendMessage(chatState.messageText);
     }
-  };
-
-  // Função wrapper para adapter o tipo para o ChatSection
-  const handleRemoveAttachment = (index: number) => {
-    chatState.handleRemoveAttachment(index);
   };
 
   return (
@@ -122,7 +117,7 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
             typing={chatState.typing}
             attachments={chatState.attachments}
             handleAddAttachment={chatState.handleAddAttachment}
-            handleRemoveAttachment={handleRemoveAttachment}
+            handleRemoveAttachment={chatState.handleRemoveAttachment}
           />
         </TabsContent>
         
