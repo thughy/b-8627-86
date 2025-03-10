@@ -38,6 +38,7 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   const hasSelectedCustomer = Boolean(customerName);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Update the input when external props change
   useEffect(() => {
     if (customerName && customerType) {
       setSearchTerm('');
@@ -59,7 +60,10 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   };
 
   const handleCustomerSelect = (customer: Customer) => {
+    // First update local state
     selectCustomer(customer);
+    
+    // Then propagate selection to parent component
     onCustomerSelect(customer);
   };
 
@@ -80,7 +84,7 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   };
 
   return (
-    <div ref={containerRef}>
+    <div ref={containerRef} className="relative">
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <div>

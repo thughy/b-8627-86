@@ -52,8 +52,8 @@ export function useCustomerSearch() {
     setSearchTerm('');
     setCustomers([]);
     
-    // Use requestAnimationFrame to defer closing the popover
-    // This ensures the selection is processed before the popover closes
+    // Ensure the selection is processed before the popover closes
+    // Use requestAnimationFrame + timeout for more reliable event sequence
     requestAnimationFrame(() => {
       setTimeout(() => {
         setIsOpen(false);
