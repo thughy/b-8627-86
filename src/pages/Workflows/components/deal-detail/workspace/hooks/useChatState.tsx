@@ -109,7 +109,6 @@ export const useChatState = (dealId: string) => {
     setAttachments(prev => [...prev, mockAttachment]);
   };
 
-  // Ensure this function accepts a number parameter
   const handleRemoveAttachment = (index: number) => {
     setAttachments(prev => prev.filter((_, i) => i !== index));
   };
