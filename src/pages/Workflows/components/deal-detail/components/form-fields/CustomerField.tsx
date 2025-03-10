@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Customer } from '@/pages/Workflows/models/CustomerModel';
 import { useCustomerSearch } from '../../hooks/useCustomerSearch';
 import { 
@@ -37,11 +37,20 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const hasSelectedCustomer = Boolean(customerName);
 
+  // When component mounts, check if we already have a customer name
+  useEffect(() => {
+    if (customerName && customerType) {
+      // Update the UI to show we have a selected customer
+      setSearchTerm('');
+    }
+  }, [customerName, customerType]);
+
   const handleFocus = () => {
     setIsOpen(true);
   };
 
   const handleBlur = () => {
+    // Use setTimeout to ensure click events are processed first
     setTimeout(() => {
       if (
         !document.activeElement?.closest('.customer-search-popover') && 
@@ -53,9 +62,10 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   };
 
   const handleCustomerSelect = (customer: Customer) => {
+    // Update local state first
     selectCustomer(customer);
+    // Then notify parent component
     onCustomerSelect(customer);
-    setIsOpen(false);
   };
 
   const handleClearSelection = (e: React.MouseEvent) => {
@@ -109,4 +119,3 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
 };
 
 export default CustomerField;
-

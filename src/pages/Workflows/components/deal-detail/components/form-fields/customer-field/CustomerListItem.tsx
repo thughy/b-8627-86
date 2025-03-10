@@ -25,10 +25,17 @@ const CustomerListItem: React.FC<CustomerListItemProps> = ({ customer, onSelect 
     return "";
   };
   
+  // Ensure preventDefault to avoid losing focus on selection
+  const handleSelect = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onSelect(customer);
+  };
+  
   return (
     <div 
       className="flex items-center px-3 py-2 cursor-pointer hover:bg-accent transition-colors"
-      onClick={() => onSelect(customer)}
+      onClick={handleSelect}
       onMouseDown={(e) => e.preventDefault()} // Previne problemas de foco
     >
       <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-primary/10 mr-2">
