@@ -60,9 +60,9 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
   // Get the interest gradient for the modal background
   const interestGradient = getInterestGradient(deal.interests);
 
-  // Exemplo de contadores estáticos (em um cenário real, viriam da API)
+  // Define counters based on Deal properties
   const counters = {
-    chat: 0,
+    chat: 0, // Chat will be managed elsewhere
     assets: deal.assets?.length || 0,
     tasks: deal.tasks?.length || 0,
     notes: deal.notes?.length || 0,

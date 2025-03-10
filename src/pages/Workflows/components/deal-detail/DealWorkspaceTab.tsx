@@ -71,11 +71,8 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
   };
 
   // Função wrapper para adapter o tipo para o ChatSection
-  const handleRemoveAttachment = (attachmentId: string) => {
-    const index = parseInt(attachmentId, 10);
-    if (!isNaN(index)) {
-      chatState.handleRemoveAttachment(index);
-    }
+  const handleRemoveAttachment = (index: number) => {
+    chatState.handleRemoveAttachment(index);
   };
 
   return (
