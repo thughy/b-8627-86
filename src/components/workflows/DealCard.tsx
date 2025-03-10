@@ -14,7 +14,8 @@ import {
   getDealTypeGradient, 
   getTopBarColor,
   getStatusBackgroundColor,
-  getInterestBackgroundColor
+  getInterestBackgroundColor,
+  getInterestGradient
 } from "./utils/dealUtils";
 
 interface DealCardProps {
@@ -28,7 +29,8 @@ const DealCard: React.FC<DealCardProps> = ({
   onDealClick,
   chatPreview = []
 }) => {
-  const dealTypeGradient = getDealTypeGradient(deal.type || 'default');
+  // Use interest for the primary gradient instead of deal type
+  const interestGradient = getInterestGradient(deal.interests);
   const topBarColor = getTopBarColor(deal.type || 'default');
   const typeBadge = getDealTypeBadge(deal.type || 'default');
   const statusBackground = getStatusBackgroundColor(deal.status);
@@ -40,7 +42,7 @@ const DealCard: React.FC<DealCardProps> = ({
       className={cn(
         "cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md overflow-hidden", 
         "hover:-translate-y-1 border", 
-        dealTypeGradient
+        interestGradient
       )} 
       onClick={() => onDealClick(deal)}
     >

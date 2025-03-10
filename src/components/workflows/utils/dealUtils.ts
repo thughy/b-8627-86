@@ -75,6 +75,28 @@ export const getDealTypeGradient = (type: string) => {
   return gradients[type] || gradients.default;
 };
 
+// New function to get gradient background based on interest
+export const getInterestGradient = (interest?: string) => {
+  if (!interest) return 'bg-gradient-to-r from-slate-500/10 to-gray-400/10 border-slate-500/20';
+  
+  // Map interests to different gradients
+  if (interest.includes('undecided')) {
+    return 'bg-gradient-to-r from-slate-500/10 to-gray-400/10 border-slate-500/20';
+  }
+  if (interest.includes('interested')) {
+    return 'bg-gradient-to-r from-blue-500/10 to-cyan-400/10 border-blue-500/20';
+  }
+  if (interest.includes('negotiate')) {
+    return 'bg-gradient-to-r from-amber-500/10 to-yellow-400/10 border-amber-500/20';
+  }
+  if (interest.includes('buy')) {
+    return 'bg-gradient-to-r from-green-500/10 to-emerald-400/10 border-green-500/20';
+  }
+  
+  // Default gradient for other interests
+  return 'bg-gradient-to-r from-pink-500/10 to-fuchsia-400/10 border-pink-500/20';
+};
+
 // Function to get the top bar color based on deal type
 export const getTopBarColor = (type: string) => {
   const colors = {
@@ -92,8 +114,6 @@ export const getTopBarColor = (type: string) => {
 export const getDealsByStage = (deals: Deal[], stageId: string) => {
   return deals.filter(deal => deal.stageId === stageId);
 };
-
-// New functions for status and interest background colors
 
 // Function to get status background color
 export const getStatusBackgroundColor = (status: string) => {
