@@ -2,6 +2,7 @@
 import React from 'react';
 import { Customer, Person, Organization } from '@/pages/Workflows/models/CustomerModel';
 import { User, Building2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface CustomerListItemProps {
   customer: Customer;
@@ -23,7 +24,7 @@ const CustomerListItem: React.FC<CustomerListItemProps> = ({ customer, onSelect 
     return "";
   };
   
-  const handleSelect = (e: React.MouseEvent) => {
+  const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     onSelect(customer);
@@ -32,10 +33,12 @@ const CustomerListItem: React.FC<CustomerListItemProps> = ({ customer, onSelect 
   return (
     <button 
       type="button"
-      className="w-full text-left flex items-center px-3 py-2 cursor-pointer hover:bg-accent transition-colors"
-      onClick={handleSelect}
-      // Prevent blur events from firing before click is processed
-      onMouseDown={(e) => e.preventDefault()}
+      className={cn(
+        "w-full text-left flex items-center px-3 py-2 hover:bg-accent transition-colors",
+        "focus:outline-none focus:bg-accent"
+      )}
+      onClick={handleClick}
+      role="option"
     >
       <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-primary/10 mr-2">
         {isPerson ? (

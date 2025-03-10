@@ -47,25 +47,10 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
     setIsOpen(true);
   };
 
-  const handleBlur = (e: React.FocusEvent) => {
-    // Prevent closing if clicking inside the popover
-    if (e.relatedTarget instanceof Element && e.relatedTarget.closest('[role="listbox"]')) {
-      e.preventDefault();
-      return;
-    }
-    
-    // Give time for click events to complete
-    setTimeout(() => {
-      const activeElement = document.activeElement;
-      if (activeElement instanceof Element && !activeElement.closest('[role="listbox"]')) {
-        setIsOpen(false);
-      }
-    }, 200);
-  };
-
   const handleCustomerSelect = (customer: Customer) => {
     selectCustomer(customer);
     onCustomerSelect(customer);
+    setIsOpen(false);
   };
 
   const handleClearSelection = (e: React.MouseEvent) => {
@@ -95,29 +80,21 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
               searchTerm={searchTerm}
               onChange={setSearchTerm}
               onFocus={handleFocus}
-              onBlur={handleBlur}
-              onClearSelection={handleClearSelection}
               hasSelectedCustomer={Boolean(customerName)}
               customerName={customerName}
               customerOrganization={customerOrganization}
               customerType={customerType}
+              onClearSelection={handleClearSelection}
             />
           </div>
         </PopoverTrigger>
         
         <PopoverContent 
           role="listbox"
-          className="p-0 w-[300px] max-h-[300px] overflow-auto bg-background border shadow-lg rounded-md z-50"
+          className="p-0 w-[300px] overflow-hidden bg-background border shadow-lg rounded-md z-50"
           align="start"
           alignOffset={0}
           sideOffset={5}
-          onInteractOutside={(e) => {
-            // Prevent closing when interacting with the list
-            const target = e.target;
-            if (target instanceof Element && target.closest('[role="listbox"]')) {
-              e.preventDefault();
-            }
-          }}
         >
           <CustomerList
             customers={customers}
