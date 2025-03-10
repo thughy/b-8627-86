@@ -19,7 +19,8 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ value, onChange }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(false);
-  const triggerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Load customers when the search query changes
   useEffect(() => {
@@ -53,16 +54,24 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ value, onChange }) => {
     setOpen(false);
   };
 
+  // Função para prevenir que o clique feche a popover
+  const handleInputClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setOpen(true);
+  };
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <div ref={triggerRef} className="relative w-full flex items-center">
+        <div className="relative w-full flex items-center">
           <Input
+            ref={inputRef}
             placeholder="Buscar cliente..."
             value={value || searchQuery}
             onChange={handleInputChange}
             className="w-full pr-10"
-            onClick={() => setOpen(true)}
+            onClick={handleInputClick}
           />
           <ChevronsUpDown 
             className="absolute right-3 h-4 w-4 text-muted-foreground cursor-pointer" 
@@ -72,10 +81,10 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ value, onChange }) => {
       </PopoverTrigger>
 
       <PopoverContent 
-        className="w-[var(--radix-popover-trigger-width)] p-0 bg-background border shadow-md z-50" 
+        className="w-[var(--radix-popover-trigger-width)] p-0 bg-background border shadow-md z-[100]" 
         align="start" 
         sideOffset={5}
-        style={{ minWidth: triggerRef.current?.offsetWidth }}
+        style={{ minWidth: triggerRef.current?.offsetWidth || inputRef.current?.offsetWidth }}
       >
         <Command className="rounded-lg">
           <CommandInput 
