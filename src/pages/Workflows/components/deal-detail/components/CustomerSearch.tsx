@@ -7,6 +7,7 @@ import { Check, ChevronsUpDown, User, Building } from 'lucide-react';
 import { Customer, Person, Organization } from '@/pages/Workflows/models/CustomerModel';
 import { filterCustomers } from '@/pages/Customers/services/customerService';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface CustomerSearchProps {
   value?: string;
@@ -18,34 +19,47 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ value, onChange }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
 
   // Load customers when the search query changes
   useEffect(() => {
-    try {
-      setLoading(true);
-      // Call the customer service to get filtered customers
-      const { customers: filteredCustomers } = filterCustomers({ search: searchQuery });
-      setCustomers(filteredCustomers);
-      console.log('Filtered customers:', filteredCustomers);
-    } catch (error) {
-      console.error('Error fetching customers:', error);
-    } finally {
-      setLoading(false);
+    const fetchCustomers = () => {
+      try {
+        setLoading(true);
+        // Call the customer service to get filtered customers
+        const result = filterCustomers({ search: searchQuery });
+        setCustomers(result.customers);
+        console.log('Filtered customers:', result.customers);
+      } catch (error) {
+        console.error('Error fetching customers:', error);
+        toast.error('Erro ao buscar clientes. Tente novamente.');
+        setCustomers([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Only fetch if there's a search query or we're opening the dropdown
+    if (searchQuery || open) {
+      fetchCustomers();
     }
-  }, [searchQuery]);
+  }, [searchQuery, open]);
+
+  const handleInputClick = () => {
+    // Always open the dropdown when clicking the input
+    setOpen(true);
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <div className="relative w-full flex items-center">
+        <div ref={triggerRef} className="relative w-full flex items-center">
           <Input
-            ref={inputRef}
             placeholder="Buscar cliente..."
-            value={value || ''}
+            value={value || searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pr-10"
-            onClick={() => setOpen(true)}
+            onClick={handleInputClick}
           />
           <ChevronsUpDown 
             className="absolute right-3 h-4 w-4 text-muted-foreground cursor-pointer" 
@@ -55,9 +69,10 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ value, onChange }) => {
       </PopoverTrigger>
 
       <PopoverContent 
-        className="w-[var(--radix-popover-trigger-width)] p-0 bg-background shadow-md" 
+        className="w-[var(--radix-popover-trigger-width)] p-0 bg-background shadow-md z-50" 
         align="start" 
         sideOffset={5}
+        style={{ minWidth: triggerRef.current?.offsetWidth }}
       >
         <Command>
           <CommandInput 
@@ -82,6 +97,7 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ value, onChange }) => {
                     value={customer.name}
                     onSelect={() => {
                       onChange(customer.name, customer.type);
+                      setSearchQuery(''); // Reset search after selection
                       setOpen(false);
                     }}
                     className="flex items-center"
