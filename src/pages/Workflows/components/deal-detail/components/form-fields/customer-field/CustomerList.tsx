@@ -18,6 +18,13 @@ const CustomerList: React.FC<CustomerListProps> = ({
   searchTerm, 
   onSelectCustomer 
 }) => {
+  // Create a handler that stops propagation and prevents default
+  const handleSelect = (customer: Customer) => (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    onSelectCustomer(customer);
+  };
+  
   if (isLoading) {
     return (
       <div className="p-4 text-center text-sm text-muted-foreground">
@@ -31,13 +38,13 @@ const CustomerList: React.FC<CustomerListProps> = ({
   
   if (customers.length > 0) {
     return (
-      <ScrollArea className="max-h-[300px]">
+      <ScrollArea className="max-h-[300px] relative z-[100]">
         <div className="p-2" role="listbox">
           {customers.map((customer) => (
             <CustomerListItem 
               key={customer.id} 
               customer={customer} 
-              onSelect={onSelectCustomer} 
+              onSelect={handleSelect(customer)} 
             />
           ))}
         </div>

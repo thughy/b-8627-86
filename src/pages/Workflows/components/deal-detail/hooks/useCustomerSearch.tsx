@@ -36,7 +36,7 @@ export function useCustomerSearch() {
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       fetchCustomers(searchTerm);
-    }, 100); // Reduced debounce time
+    }, 100);
 
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm, fetchCustomers]);

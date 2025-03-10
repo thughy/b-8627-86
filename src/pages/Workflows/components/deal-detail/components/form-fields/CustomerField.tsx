@@ -45,6 +45,7 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
 
   const handleClearSelection = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     clearSearch();
     onCustomerSelect({ 
       id: '', 
@@ -64,7 +65,7 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   };
 
   return (
-    <div className="w-full relative" style={{ zIndex: 9999 }}>
+    <div className="w-full relative isolate" style={{ zIndex: 50 }}>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <div className="w-full">
@@ -84,11 +85,12 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
         </PopoverTrigger>
         
         <PopoverContent 
-          className="p-0 w-[300px] bg-background border-2 border-input-border rounded-md shadow-xl overflow-hidden"
+          className="p-0 w-[300px] bg-popover border-2 border-input-border rounded-md shadow-xl overflow-hidden"
           align="start"
           alignOffset={0}
           sideOffset={8}
-          style={{ zIndex: 9999 }}
+          forceMount={true}
+          style={{ zIndex: 99999 }}
         >
           <CustomerList
             customers={customers}

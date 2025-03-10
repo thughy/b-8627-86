@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 
 interface CustomerListItemProps {
   customer: Customer;
-  onSelect: (customer: Customer) => void;
+  onSelect: (e: React.MouseEvent) => void;
 }
 
 const CustomerListItem: React.FC<CustomerListItemProps> = ({ customer, onSelect }) => {
@@ -24,19 +24,15 @@ const CustomerListItem: React.FC<CustomerListItemProps> = ({ customer, onSelect 
     return "";
   };
   
-  const handleClick = (e: React.MouseEvent) => {
-    onSelect(customer);
-  };
-  
   return (
     <div 
       className={cn(
-        "w-full text-left flex items-center px-3 py-2 rounded-sm transition-all cursor-pointer",
+        "w-full text-left flex items-center px-3 py-2 rounded-sm transition-all cursor-pointer relative z-[101]",
         "hover:bg-accent hover:text-accent-foreground hover:scale-[1.02] hover:shadow-sm",
         "focus:bg-accent focus:text-accent-foreground outline-none focus:scale-[1.02] focus:shadow-sm",
         "active:scale-[0.99]"
       )}
-      onClick={handleClick}
+      onClick={onSelect}
       role="option"
       tabIndex={0}
       aria-selected={false}
