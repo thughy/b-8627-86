@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Search, Filter, Columns, List, ChevronDown } from 'lucide-react';
@@ -10,6 +9,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface WorkflowFiltersProps {
   searchTerm: string;
@@ -37,7 +41,7 @@ const WorkflowFilters: React.FC<WorkflowFiltersProps> = ({
   pipelines
 }) => {
   // Find selected workflow and pipeline names for display
-  const selectedWorkflowName = workflows.find(w => w.id === selectedWorkflow)?.title || "Selecionar Workflow";
+  const selectedWorkflowName = workflows.find(w => w.id === selectedWorkflow)?.title || "Selecionar Department";
   const selectedPipelineName = pipelines.find(p => p.id === selectedPipeline)?.title || "Selecionar Pipeline";
 
   return (
@@ -53,26 +57,28 @@ const WorkflowFilters: React.FC<WorkflowFiltersProps> = ({
           />
         </div>
 
-        {/* Department/Workflow Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+        {/* Department Dropdown */}
+        <Popover>
+          <PopoverTrigger asChild>
             <Button variant="outline" className="w-full md:w-56 justify-between thin-border">
               <span>{selectedWorkflowName}</span>
               <ChevronDown className="h-4 w-4 ml-2" />
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-56 bg-[#222222] thin-border">
-            {workflows.map(workflow => (
-              <DropdownMenuItem 
-                key={workflow.id} 
-                onClick={() => onWorkflowChange(workflow.id)}
-                className="cursor-pointer"
-              >
-                {workflow.title}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+          </PopoverTrigger>
+          <PopoverContent className="w-56 p-0" align="start">
+            <div className="bg-popover rounded-md border-0 p-1 shadow-md">
+              {workflows.map(workflow => (
+                <div 
+                  key={workflow.id} 
+                  className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
+                  onClick={() => onWorkflowChange(workflow.id)}
+                >
+                  {workflow.title}
+                </div>
+              ))}
+            </div>
+          </PopoverContent>
+        </Popover>
 
         {/* Pipeline Dropdown */}
         <DropdownMenu>
