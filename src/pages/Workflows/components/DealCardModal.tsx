@@ -60,14 +60,14 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
   // Get the interest gradient for the modal background
   const interestGradient = getInterestGradient(deal.interests);
 
-  // Exemplo de contadores (em um cenário real, viriam da API)
+  // Exemplo de contadores estáticos (em um cenário real, viriam da API)
   const counters = {
-    chat: 3,
-    assets: 2,
-    tasks: 5,
-    notes: 1,
-    emails: 2,
-    documents: 3
+    chat: 0,
+    assets: deal.assets?.length || 0,
+    tasks: deal.tasks?.length || 0,
+    notes: deal.notes?.length || 0,
+    emails: deal.emails?.length || 0,
+    documents: deal.documents?.length || 0
   };
 
   return (
@@ -81,26 +81,11 @@ const DealCardModal: React.FC<DealCardModalProps> = ({
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm">
                     <MoreVertical className="h-4 w-4 mr-2" />
-                    Status
+                    Ações
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  {deal.status !== 'open' && (
-                    <DropdownMenuItem onClick={() => onEditDeal?.({ ...deal, status: 'open' })}>
-                      Marcar como Aberto
-                    </DropdownMenuItem>
-                  )}
-                  {deal.status !== 'won' && onWinDeal && (
-                    <DropdownMenuItem onClick={() => onWinDeal(deal.id)}>
-                      Marcar como Ganho
-                    </DropdownMenuItem>
-                  )}
-                  {deal.status !== 'lost' && onLoseDeal && (
-                    <DropdownMenuItem onClick={() => onLoseDeal(deal.id)}>
-                      Marcar como Perdido
-                    </DropdownMenuItem>
-                  )}
-                  {deal.status !== 'lost' && deal.status !== 'won' && onCancelDeal && (
+                  {onCancelDeal && (
                     <DropdownMenuItem onClick={() => onCancelDeal(deal.id)}>
                       Cancelar
                     </DropdownMenuItem>

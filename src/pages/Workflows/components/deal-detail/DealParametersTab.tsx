@@ -37,13 +37,13 @@ const DealParametersTab: React.FC<DealParametersTabProps> = ({ deal, onEditDeal 
               formState={formState}
               handleChange={handleChange}
               typeOptions={typeOptions}
+              statusOptions={statusOptions}
               customerTypeOptions={customerTypeOptions}
             />
 
             <DealStatusFields 
               formState={formState}
               handleChange={handleChange}
-              statusOptions={statusOptions}
               reasonForLossOptions={reasonForLossOptions}
               interestsOptions={interestsOptions}
             />

@@ -10,6 +10,7 @@ interface DealBasicInfoFieldsProps {
   formState: Partial<Deal>;
   handleChange: (field: keyof Deal, value: any) => void;
   typeOptions: Array<{ value: string; label: string }>;
+  statusOptions: Array<{ value: string; label: string }>;
   customerTypeOptions: Array<{ value: string; label: string }>;
 }
 
@@ -17,6 +18,7 @@ const DealBasicInfoFields: React.FC<DealBasicInfoFieldsProps> = ({
   formState,
   handleChange,
   typeOptions,
+  statusOptions,
   customerTypeOptions
 }) => {
   const handleCustomerSelect = (customerName: string, customerType: 'person' | 'organization') => {
@@ -37,6 +39,17 @@ const DealBasicInfoFields: React.FC<DealBasicInfoFieldsProps> = ({
           id="title"
           value={formState.title || ''} 
           onChange={(e) => handleChange('title', e.target.value)} 
+        />
+      </FormField>
+
+      <FormField id="status" label="Status">
+        <SelectField
+          id="status"
+          label=""
+          value={formState.status || ''}
+          onChange={(value) => handleChange('status', value)}
+          options={statusOptions}
+          placeholder="Selecione o status"
         />
       </FormField>
 
