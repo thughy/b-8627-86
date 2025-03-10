@@ -87,18 +87,20 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <CustomerSearchInput
-          ref={inputRef}
-          searchTerm={searchTerm}
-          onChange={setSearchTerm}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          onClearSelection={handleClearSelection}
-          hasSelectedCustomer={hasSelectedCustomer}
-          customerName={customerName}
-          customerOrganization={customerOrganization}
-          customerType={customerType}
-        />
+        <div onClick={() => setIsOpen(true)}>
+          <CustomerSearchInput
+            ref={inputRef}
+            searchTerm={searchTerm}
+            onChange={setSearchTerm}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            onClearSelection={handleClearSelection}
+            hasSelectedCustomer={hasSelectedCustomer}
+            customerName={customerName}
+            customerOrganization={customerOrganization}
+            customerType={customerType}
+          />
+        </div>
       </PopoverTrigger>
       
       <PopoverContent 

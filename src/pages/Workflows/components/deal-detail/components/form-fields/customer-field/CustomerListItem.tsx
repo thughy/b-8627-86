@@ -29,7 +29,11 @@ const CustomerListItem: React.FC<CustomerListItemProps> = ({ customer, onSelect 
   const handleSelect = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    onSelect(customer);
+    
+    // Adicionando atraso para garantir que o evento de seleção seja processado depois do clique
+    setTimeout(() => {
+      onSelect(customer);
+    }, 50);
   };
   
   return (

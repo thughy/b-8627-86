@@ -49,9 +49,9 @@ export function useCustomerSearch() {
 
   const selectCustomer = (customer: Customer) => {
     setSelectedCustomer(customer);
-    setSearchTerm(''); // Limpa o termo de busca após a seleção
-    setCustomers([]); // Limpa os resultados da busca
-    setIsOpen(false); // Fecha o popover
+    setSearchTerm('');
+    setCustomers([]);
+    setIsOpen(false);
   };
 
   return {
