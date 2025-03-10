@@ -8,20 +8,23 @@ export function useCustomerSearch() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
 
   useEffect(() => {
     const fetchCustomers = async () => {
       if (searchTerm.length > 0) {
         setIsLoading(true);
         try {
+          console.log('Buscando clientes com termo:', searchTerm);
           // Usar o serviço existente para filtrar clientes
-          const { customers: filteredCustomers } = filterCustomers({ 
+          const result = filterCustomers({ 
             search: searchTerm,
             type: 'all',
             status: 'all'
           }, 1, 10);
           
-          setCustomers(filteredCustomers);
+          console.log('Clientes encontrados:', result.customers);
+          setCustomers(result.customers);
         } catch (error) {
           console.error('Erro ao buscar clientes:', error);
           setCustomers([]);
@@ -45,6 +48,14 @@ export function useCustomerSearch() {
   const clearSearch = () => {
     setSearchTerm('');
     setCustomers([]);
+    setSelectedCustomer(null);
+  };
+
+  // Função para selecionar um cliente
+  const selectCustomer = (customer: Customer) => {
+    setSelectedCustomer(customer);
+    setSearchTerm(''); // Limpar o termo de busca
+    setCustomers([]); // Limpar os resultados
   };
 
   return {
@@ -54,6 +65,8 @@ export function useCustomerSearch() {
     isLoading,
     clearSearch,
     isOpen,
-    setIsOpen
+    setIsOpen,
+    selectedCustomer,
+    selectCustomer
   };
 }
