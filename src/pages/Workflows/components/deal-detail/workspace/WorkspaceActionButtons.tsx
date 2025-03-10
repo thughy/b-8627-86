@@ -22,7 +22,7 @@ const WorkspaceActionButtons: React.FC<WorkspaceActionButtonsProps> = ({
   dealId
 }) => {
   return (
-    <div className="flex gap-2 overflow-x-auto pb-2">
+    <div className="flex gap-2 overflow-x-auto">
       <Button 
         size="sm" 
         variant="outline" 

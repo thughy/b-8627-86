@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 import { Asset, Deal } from '@/pages/Workflows/models/WorkflowModels';
 import ChatSection from './workspace/ChatSection';
 import FocusTabContent from './workspace/FocusTabContent';
@@ -17,6 +18,15 @@ interface DealWorkspaceTabProps {
   onCreateEmail?: (dealId: string) => void;
 }
 
+const filterOptions = [
+  { id: 'all', label: 'Todos' },
+  { id: 'notes', label: 'Notas' },
+  { id: 'tasks', label: 'Tarefas' },
+  { id: 'emails', label: 'Emails' },
+  { id: 'assets', label: 'Assets' },
+  { id: 'documents', label: 'Documentos' }
+];
+
 const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
   deal,
   onCreateAsset,
@@ -26,6 +36,7 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
   onCreateEmail
 }) => {
   const [activeTab, setActiveTab] = React.useState('chat');
+  const [filter, setFilter] = React.useState('all');
   const chatState = useChatState(deal.id);
 
   // Exemplo de assets para este deal (em um cenário real, viriam da API)
@@ -52,23 +63,54 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
     }
   ];
 
+  // Função wrapper para adapter o tipo para o ChatSection
+  const handleSendMessage = () => {
+    if (chatState.messageText.trim()) {
+      chatState.sendMessage(chatState.messageText);
+    }
+  };
+
+  // Função wrapper para adapter o tipo para o ChatSection
+  const handleRemoveAttachment = (attachmentId: string) => {
+    const index = parseInt(attachmentId, 10);
+    if (!isNaN(index)) {
+      chatState.handleRemoveAttachment(index);
+    }
+  };
+
   return (
     <div className="p-4">
-      <WorkspaceActionButtons 
-        dealId={deal.id}
-        onCreateNote={() => onCreateNote?.(deal.id)}
-        onCreateTask={() => onCreateTask?.(deal.id)}
-        onCreateAsset={() => onCreateAsset?.(deal.id)}
-        onCreateDocument={() => onCreateDocument?.(deal.id)}
-        onCreateEmail={() => onCreateEmail?.(deal.id)}
-      />
-      
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mt-4">
-        <TabsList className="mb-4">
-          <TabsTrigger value="chat">Chat</TabsTrigger>
-          <TabsTrigger value="focus">Foco</TabsTrigger>
-          <TabsTrigger value="history">Histórico</TabsTrigger>
-        </TabsList>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <div className="flex justify-between items-center mb-2">
+          <TabsList>
+            <TabsTrigger value="chat">Chat</TabsTrigger>
+            <TabsTrigger value="focus">Foco</TabsTrigger>
+            <TabsTrigger value="history">Histórico</TabsTrigger>
+          </TabsList>
+          
+          <WorkspaceActionButtons 
+            dealId={deal.id}
+            onCreateNote={onCreateNote}
+            onCreateTask={onCreateTask}
+            onCreateAsset={onCreateAsset}
+            onCreateDocument={onCreateDocument}
+            onCreateEmail={onCreateEmail}
+          />
+        </div>
+        
+        {/* Filtros compartilhados entre as abas */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          {filterOptions.map(filterOption => (
+            <Button
+              key={filterOption.id}
+              variant={filter === filterOption.id ? "default" : "outline"}
+              size="sm"
+              onClick={() => setFilter(filterOption.id)}
+            >
+              {filterOption.label}
+            </Button>
+          ))}
+        </div>
         
         <TabsContent value="chat" className="border-none p-0">
           <ChatSection 
@@ -76,11 +118,11 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
             messages={chatState.messages}
             messageText={chatState.messageText}
             setMessageText={chatState.setMessageText}
-            sendMessage={chatState.sendMessage}
+            sendMessage={handleSendMessage}
             typing={chatState.typing}
             attachments={chatState.attachments}
             handleAddAttachment={chatState.handleAddAttachment}
-            handleRemoveAttachment={chatState.handleRemoveAttachment}
+            handleRemoveAttachment={handleRemoveAttachment}
           />
         </TabsContent>
         
@@ -88,12 +130,16 @@ const DealWorkspaceTab: React.FC<DealWorkspaceTabProps> = ({
           <FocusTabContent 
             deal={deal} 
             assets={dummyAssets}
+            filter={filter}
             onCreateAsset={onCreateAsset}
           />
         </TabsContent>
         
         <TabsContent value="history" className="border-none p-0">
-          <HistoryTabContent deal={deal} />
+          <HistoryTabContent 
+            deal={deal} 
+            filter={filter}
+          />
         </TabsContent>
       </Tabs>
     </div>
