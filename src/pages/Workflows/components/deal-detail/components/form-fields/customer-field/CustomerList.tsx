@@ -59,8 +59,14 @@ const CustomerList: React.FC<CustomerListProps> = ({
   
   if (customers.length > 0) {
     return (
-      <ScrollArea className="max-h-[300px]">
-        <div ref={listRef} className="p-2" role="listbox" tabIndex={-1}>
+      <ScrollArea className="max-h-[300px] relative z-50" onClick={(e) => e.stopPropagation()}>
+        <div 
+          ref={listRef} 
+          className="p-2" 
+          role="listbox" 
+          tabIndex={-1}
+          onClick={(e) => e.stopPropagation()}
+        >
           {customers.map((customer) => (
             <CustomerListItem 
               key={customer.id} 

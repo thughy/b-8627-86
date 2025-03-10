@@ -24,13 +24,17 @@ const CustomerListItem: React.FC<CustomerListItemProps> = ({ customer, onSelect 
     return "";
   };
   
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent) => {
+    // Stop event propagation to prevent it from reaching elements behind
+    e.stopPropagation();
+    e.preventDefault();
     onSelect(customer);
   };
   
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
+      e.stopPropagation();
       onSelect(customer);
     }
   };

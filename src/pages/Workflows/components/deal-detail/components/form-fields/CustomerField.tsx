@@ -41,6 +41,7 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   const handleCustomerSelect = (customer: Customer) => {
     selectCustomer(customer);
     onCustomerSelect(customer);
+    // Close dropdown after selection
     setIsOpen(false);
   };
 
@@ -70,12 +71,17 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
     const relatedTarget = e.relatedTarget as Node;
     if (relatedTarget instanceof Element) {
       const isInsidePopover = relatedTarget.closest('[role="listbox"]') || 
-                              relatedTarget.closest('[role="option"]');
+                             relatedTarget.closest('[role="option"]');
       if (isInsidePopover) return;
     }
     
-    // Use a longer delay to allow click events to register
+    // Use a longer delay to allow click events to register fully
     setTimeout(() => setIsOpen(false), 300);
+  };
+
+  // Prevent clicks from passing through
+  const handlePopoverClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
   };
 
   return (
@@ -101,10 +107,11 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
         <PopoverContent 
           ref={popoverRef}
           role="presentation"
-          className="p-0 w-[300px] bg-background border rounded-md shadow-lg z-50 overflow-hidden"
+          className="p-0 w-[300px] bg-background border rounded-md shadow-lg z-[100] overflow-hidden"
           align="start"
           alignOffset={0}
           sideOffset={8}
+          onClick={handlePopoverClick}
         >
           <CustomerList
             customers={customers}
