@@ -53,7 +53,6 @@ export interface Deal {
   interests?: string;
   reasonForLoss?: string;
   createdAt: Date;
-  // Adding missing properties
   assets?: Asset[];
   tasks?: any[];
   notes?: any[];
