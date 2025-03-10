@@ -21,8 +21,7 @@ const DealParametersTab: React.FC<DealParametersTabProps> = ({ deal, onEditDeal 
     statusOptions, 
     typeOptions, 
     interestsOptions, 
-    reasonForLossOptions, 
-    customerTypeOptions 
+    reasonForLossOptions
   } = useDealOptions();
 
   return (
@@ -37,7 +36,6 @@ const DealParametersTab: React.FC<DealParametersTabProps> = ({ deal, onEditDeal 
               handleChange={handleChange}
               typeOptions={typeOptions}
               statusOptions={statusOptions}
-              customerTypeOptions={customerTypeOptions}
             />
 
             <DealStatusFields 

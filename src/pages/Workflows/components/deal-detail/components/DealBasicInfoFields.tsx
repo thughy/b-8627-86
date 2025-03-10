@@ -1,9 +1,9 @@
 
 import React from 'react';
-import { Input } from '@/components/ui/input';
-import SelectField from '@/components/ui/select-field';
-import FormField from '@/components/ui/form-field';
 import { Deal } from '@/pages/Workflows/models/WorkflowModels';
+import TitleField from './form-fields/TitleField';
+import TypeField from './form-fields/TypeField';
+import StatusField from './form-fields/StatusField';
 
 interface DealBasicInfoFieldsProps {
   formState: Partial<Deal>;
@@ -20,35 +20,22 @@ const DealBasicInfoFields: React.FC<DealBasicInfoFieldsProps> = ({
 }) => {
   return (
     <div className="grid gap-4">
-      <FormField id="title" label="Título" required>
-        <Input
-          id="title"
-          value={formState.title || ''}
-          onChange={(e) => handleChange('title', e.target.value)}
-        />
-      </FormField>
-
-      <FormField id="type" label="Tipo">
-        <SelectField
-          id="type"
-          label=""
-          value={formState.type || ''}
-          onChange={(value) => handleChange('type', value)}
-          options={typeOptions}
-          placeholder="Selecione o tipo"
-        />
-      </FormField>
-
-      <FormField id="status" label="Status">
-        <SelectField
-          id="status"
-          label=""
-          value={formState.status || ''}
-          onChange={(value) => handleChange('status', value)}
-          options={statusOptions}
-          placeholder="Selecione o status"
-        />
-      </FormField>
+      <TitleField 
+        value={formState.title || ''} 
+        onChange={(value) => handleChange('title', value)} 
+      />
+      
+      <TypeField 
+        value={formState.type || ''} 
+        onChange={(value) => handleChange('type', value)} 
+        options={typeOptions} 
+      />
+      
+      <StatusField 
+        value={formState.status || ''} 
+        onChange={(value) => handleChange('status', value)} 
+        options={statusOptions} 
+      />
     </div>
   );
 };
