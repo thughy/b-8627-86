@@ -38,7 +38,7 @@ const Login = () => {
         });
         
         // Redirecionamento baseado no tipo de usuário
-        // Se for Master (ou primeiro usuário), vai direto para o dashboard
+        // Se for Master, vai direto para o dashboard
         // Se for usuário comum, vai para o dashboard também
         navigate("/dashboard");
       }, 1000);
