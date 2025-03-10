@@ -9,7 +9,6 @@ import { useDealOptions } from './hooks/useDealOptions';
 import DealBasicInfoFields from './components/DealBasicInfoFields';
 import DealStatusFields from './components/DealStatusFields';
 import DealFinancialFields from './components/DealFinancialFields';
-import DealDescriptionField from './components/DealDescriptionField';
 
 interface DealParametersTabProps {
   deal: Deal;
@@ -60,16 +59,6 @@ const DealParametersTab: React.FC<DealParametersTabProps> = ({ deal, onEditDeal 
               Salvar Alterações
             </Button>
           </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardContent className="p-6">
-          <h3 className="text-lg font-medium mb-4">Descrição</h3>
-          <DealDescriptionField 
-            formState={formState}
-            handleChange={handleChange}
-          />
         </CardContent>
       </Card>
     </div>

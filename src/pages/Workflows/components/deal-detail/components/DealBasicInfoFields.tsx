@@ -71,14 +71,16 @@ const DealBasicInfoFields: React.FC<DealBasicInfoFieldsProps> = ({
         />
       </FormField>
 
-      <FormField id="customerOrganization" label="Organização">
-        <Input 
-          id="customerOrganization"
-          value={formState.customerOrganization || ''} 
-          onChange={(e) => handleChange('customerOrganization', e.target.value)} 
-          disabled={formState.customerType === 'organization'}
-        />
-      </FormField>
+      {/* Only show the organization input field if the customer type is person */}
+      {formState.customerType === 'person' && (
+        <FormField id="customerOrganization" label="Organização">
+          <Input 
+            id="customerOrganization"
+            value={formState.customerOrganization || ''} 
+            onChange={(e) => handleChange('customerOrganization', e.target.value)} 
+          />
+        </FormField>
+      )}
     </div>
   );
 };
