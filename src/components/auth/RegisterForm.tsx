@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { User, Mail, LockKeyhole, Building, Phone, Eye, EyeOff } from "lucide-react";
 import FormInput from "./FormInput";
+import InputMask from "react-input-mask";
+import { Input } from "@/components/ui/input";
 
 interface RegisterFormData {
   name: string;
@@ -103,15 +105,26 @@ const RegisterForm = () => {
         required
       />
       
-      <FormInput
-        type="tel"
-        name="phone"
-        placeholder="Telefone"
-        value={formData.phone}
-        onChange={handleChange}
-        icon={Phone}
-        required
-      />
+      <div className="space-y-2">
+        <div className="relative">
+          <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+          <InputMask
+            mask="(99) 99999-9999"
+            value={formData.phone}
+            onChange={handleChange}
+            name="phone"
+          >
+            {(inputProps: any) => (
+              <Input
+                {...inputProps}
+                placeholder="(00) 00000-0000"
+                className="pl-10"
+                required
+              />
+            )}
+          </InputMask>
+        </div>
+      </div>
       
       <FormInput
         type={showPassword ? "text" : "password"}

@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useFormContext, Controller } from "react-hook-form";
 import { OrganizationFormValues } from "../../validations/customerSchema";
+import InputMask from "react-input-mask";
 
 const CustomerOrganizationForm: React.FC = () => {
   const { control, formState: { errors } } = useFormContext<OrganizationFormValues>();
@@ -79,12 +80,21 @@ const CustomerOrganizationForm: React.FC = () => {
             control={control}
             render={({ field }) => (
               <>
-                <Input
-                  id="phone"
-                  {...field}
-                  placeholder="(00) 00000-0000"
-                  className={errors.phone ? "border-red-500" : ""}
-                />
+                <InputMask
+                  mask="(99) 99999-9999"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                >
+                  {(inputProps: any) => (
+                    <Input
+                      id="phone"
+                      {...inputProps}
+                      placeholder="(00) 00000-0000"
+                      className={errors.phone ? "border-red-500" : ""}
+                    />
+                  )}
+                </InputMask>
                 {errors.phone && (
                   <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
                 )}
@@ -100,12 +110,21 @@ const CustomerOrganizationForm: React.FC = () => {
           control={control}
           render={({ field }) => (
             <>
-              <Input
-                id="cnpj"
-                {...field}
-                placeholder="00.000.000/0001-00"
-                className={errors.cnpj ? "border-red-500" : ""}
-              />
+              <InputMask
+                mask="99.999.999/9999-99"
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+              >
+                {(inputProps: any) => (
+                  <Input
+                    id="cnpj"
+                    {...inputProps}
+                    placeholder="00.000.000/0001-00"
+                    className={errors.cnpj ? "border-red-500" : ""}
+                  />
+                )}
+              </InputMask>
               {errors.cnpj && (
                 <p className="text-red-500 text-sm mt-1">{errors.cnpj.message}</p>
               )}

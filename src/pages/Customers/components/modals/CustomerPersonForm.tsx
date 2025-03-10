@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useFormContext, Controller } from "react-hook-form";
 import { PersonFormValues } from "../../validations/customerSchema";
+import InputMask from "react-input-mask";
 
 interface CustomerPersonFormProps {
   organizations?: { id: string; name: string }[];
@@ -66,12 +67,21 @@ const CustomerPersonForm: React.FC<CustomerPersonFormProps> = ({
             control={control}
             render={({ field }) => (
               <>
-                <Input
-                  id="phone"
-                  {...field}
-                  placeholder="(00) 00000-0000"
-                  className={errors.phone ? "border-red-500" : ""}
-                />
+                <InputMask
+                  mask="(99) 99999-9999"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                >
+                  {(inputProps: any) => (
+                    <Input
+                      id="phone"
+                      {...inputProps}
+                      placeholder="(00) 00000-0000"
+                      className={errors.phone ? "border-red-500" : ""}
+                    />
+                  )}
+                </InputMask>
                 {errors.phone && (
                   <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
                 )}
@@ -87,12 +97,21 @@ const CustomerPersonForm: React.FC<CustomerPersonFormProps> = ({
           control={control}
           render={({ field }) => (
             <>
-              <Input
-                id="cpfCnpj"
-                {...field}
-                placeholder="000.000.000-00"
-                className={errors.cpfCnpj ? "border-red-500" : ""}
-              />
+              <InputMask
+                mask="999.999.999-99"
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+              >
+                {(inputProps: any) => (
+                  <Input
+                    id="cpfCnpj"
+                    {...inputProps}
+                    placeholder="000.000.000-00"
+                    className={errors.cpfCnpj ? "border-red-500" : ""}
+                  />
+                )}
+              </InputMask>
               {errors.cpfCnpj && (
                 <p className="text-red-500 text-sm mt-1">{errors.cpfCnpj.message}</p>
               )}
