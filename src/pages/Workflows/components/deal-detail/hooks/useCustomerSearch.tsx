@@ -12,18 +12,15 @@ export function useCustomerSearch() {
 
   useEffect(() => {
     const fetchCustomers = async () => {
-      if (searchTerm.length > 0) {
+      if (searchTerm.length >= 2) {
         setIsLoading(true);
         try {
-          console.log('Buscando clientes com termo:', searchTerm);
-          // Usar o serviço existente para filtrar clientes
           const result = filterCustomers({ 
             search: searchTerm,
             type: 'all',
             status: 'all'
           }, 1, 10);
           
-          console.log('Clientes encontrados:', result.customers);
           setCustomers(result.customers);
         } catch (error) {
           console.error('Erro ao buscar clientes:', error);
@@ -36,7 +33,6 @@ export function useCustomerSearch() {
       }
     };
 
-    // Usar um pequeno delay para evitar muitas chamadas durante digitação
     const delayDebounceFn = setTimeout(() => {
       fetchCustomers();
     }, 300);
@@ -44,7 +40,6 @@ export function useCustomerSearch() {
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm]);
 
-  // Função para limpar a busca
   const clearSearch = () => {
     setSearchTerm('');
     setCustomers([]);
@@ -52,11 +47,10 @@ export function useCustomerSearch() {
     setIsOpen(false);
   };
 
-  // Função para selecionar um cliente
   const selectCustomer = (customer: Customer) => {
     setSelectedCustomer(customer);
-    setSearchTerm(''); // Limpar o termo de busca
-    setCustomers([]); // Limpar os resultados
+    setSearchTerm('');
+    setCustomers([]);
   };
 
   return {
@@ -71,3 +65,4 @@ export function useCustomerSearch() {
     selectCustomer
   };
 }
+

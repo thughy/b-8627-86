@@ -1,8 +1,9 @@
 
-import React, { useRef, forwardRef } from 'react';
+import React, { forwardRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Search, X, User, Building2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import FormField from '@/components/ui/form-field';
 
 interface CustomerSearchInputProps {
   searchTerm: string;
@@ -16,29 +17,27 @@ interface CustomerSearchInputProps {
   customerType?: string;
 }
 
-const CustomerSearchInput = forwardRef<HTMLInputElement, CustomerSearchInputProps>(
-  ({ 
-    searchTerm, 
-    onChange, 
-    onFocus, 
-    onBlur, 
-    onClearSelection, 
-    hasSelectedCustomer, 
-    customerName, 
-    customerOrganization, 
-    customerType 
-  }, ref) => {
-    
-    // Ícone do cliente baseado no tipo
-    const CustomerIcon = customerType === 'organization' ? Building2 : User;
+const CustomerSearchInput = forwardRef<HTMLInputElement, CustomerSearchInputProps>(({
+  searchTerm,
+  onChange,
+  onFocus,
+  onBlur,
+  onClearSelection,
+  hasSelectedCustomer,
+  customerName,
+  customerOrganization,
+  customerType
+}, ref) => {
+  const CustomerIcon = customerType === 'organization' ? Building2 : User;
 
-    return (
+  return (
+    <FormField id="customer-search" label="Cliente">
       <div className="relative">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
         
         <Input
           ref={ref}
-          id="customer-search"
+          type="search"
           placeholder={hasSelectedCustomer ? '' : "Buscar cliente..."}
           className={cn(
             "pl-8 pr-8",
@@ -50,7 +49,6 @@ const CustomerSearchInput = forwardRef<HTMLInputElement, CustomerSearchInputProp
           onBlur={onBlur}
         />
         
-        {/* Exibir o cliente selecionado */}
         {hasSelectedCustomer && !searchTerm && (
           <div className="absolute left-8 top-0 flex items-center h-full pointer-events-none">
             <div className="flex items-center gap-2 max-w-full overflow-hidden">
@@ -65,7 +63,6 @@ const CustomerSearchInput = forwardRef<HTMLInputElement, CustomerSearchInputProp
           </div>
         )}
 
-        {/* Botão para limpar seleção */}
         {(hasSelectedCustomer || searchTerm) && (
           <button
             type="button"
@@ -77,10 +74,11 @@ const CustomerSearchInput = forwardRef<HTMLInputElement, CustomerSearchInputProp
           </button>
         )}
       </div>
-    );
-  }
-);
+    </FormField>
+  );
+});
 
 CustomerSearchInput.displayName = 'CustomerSearchInput';
 
 export default CustomerSearchInput;
+

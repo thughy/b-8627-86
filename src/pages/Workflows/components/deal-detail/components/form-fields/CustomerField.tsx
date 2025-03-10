@@ -35,9 +35,6 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   } = useCustomerSearch();
   
   const inputRef = useRef<HTMLInputElement>(null);
-  const popoverContentRef = useRef<HTMLDivElement>(null);
-  
-  // Determinar se o campo tem um cliente selecionado
   const hasSelectedCustomer = Boolean(customerName);
 
   const handleFocus = () => {
@@ -45,7 +42,6 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   };
 
   const handleBlur = () => {
-    // Pequeno delay para permitir cliques no popover
     setTimeout(() => {
       if (
         !document.activeElement?.closest('.customer-search-popover') && 
@@ -62,15 +58,14 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
     setIsOpen(false);
   };
 
-  // Limpar a seleção atual
   const handleClearSelection = (e: React.MouseEvent) => {
     e.stopPropagation();
     clearSearch();
     onCustomerSelect({ 
       id: '', 
       name: '', 
-      type: 'person', 
-      status: 'active', 
+      type: 'person',
+      status: 'active',
       createdAt: new Date(), 
       updatedAt: new Date() 
     });
@@ -79,60 +74,39 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
     }
   };
 
-  // Gerenciar o fechamento do popover com a tecla ESC
-  React.useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        setIsOpen(false);
-        if (inputRef.current) {
-          inputRef.current.blur();
-        }
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, setIsOpen]);
-
   return (
-    <div className="space-y-1.5">
-      <label htmlFor="customer-search" className="text-sm font-medium leading-none block mb-1.5">
-        Cliente
-      </label>
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
+      <PopoverTrigger asChild>
+        <CustomerSearchInput
+          ref={inputRef}
+          searchTerm={searchTerm}
+          onChange={setSearchTerm}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          onClearSelection={handleClearSelection}
+          hasSelectedCustomer={hasSelectedCustomer}
+          customerName={customerName}
+          customerOrganization={customerOrganization}
+          customerType={customerType}
+        />
+      </PopoverTrigger>
       
-      <Popover open={isOpen} onOpenChange={setIsOpen}>
-        <PopoverTrigger asChild>
-          <CustomerSearchInput
-            ref={inputRef}
-            searchTerm={searchTerm}
-            onChange={setSearchTerm}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-            onClearSelection={handleClearSelection}
-            hasSelectedCustomer={hasSelectedCustomer}
-            customerName={customerName}
-            customerOrganization={customerOrganization}
-            customerType={customerType}
-          />
-        </PopoverTrigger>
-        
-        <PopoverContent 
-          ref={popoverContentRef}
-          className="p-0 w-[300px] max-h-[300px] overflow-auto customer-search-popover"
-          align="start"
-          alignOffset={0}
-          sideOffset={5}
-        >
-          <CustomerList
-            customers={customers}
-            isLoading={isLoading}
-            searchTerm={searchTerm}
-            onSelectCustomer={handleCustomerSelect}
-          />
-        </PopoverContent>
-      </Popover>
-    </div>
+      <PopoverContent 
+        className="p-0 w-[300px] max-h-[300px] overflow-auto customer-search-popover"
+        align="start"
+        alignOffset={0}
+        sideOffset={5}
+      >
+        <CustomerList
+          customers={customers}
+          isLoading={isLoading}
+          searchTerm={searchTerm}
+          onSelectCustomer={handleCustomerSelect}
+        />
+      </PopoverContent>
+    </Popover>
   );
 };
 
 export default CustomerField;
+

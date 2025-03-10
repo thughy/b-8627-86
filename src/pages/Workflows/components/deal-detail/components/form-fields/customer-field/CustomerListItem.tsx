@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Customer, Person, Organization } from '@/pages/Workflows/models/CustomerModel';
+import { Customer } from '@/pages/Workflows/models/CustomerModel';
 import { User, Building2 } from 'lucide-react';
 
 interface CustomerListItemProps {
@@ -10,8 +10,7 @@ interface CustomerListItemProps {
 
 const CustomerListItem: React.FC<CustomerListItemProps> = ({ customer, onSelect }) => {
   const isPerson = customer.type === 'person';
-  const person = customer as Person;
-  const organization = customer as Organization;
+  const person = customer as any;
   
   return (
     <div 
@@ -31,7 +30,7 @@ const CustomerListItem: React.FC<CustomerListItemProps> = ({ customer, onSelect 
         <div className="text-xs text-muted-foreground truncate">
           {isPerson
             ? person.organizationName || (person.cpfCnpj ? `CPF: ${person.cpfCnpj}` : "")
-            : organization.tradingName || (organization.cnpj ? `CNPJ: ${organization.cnpj}` : "")}
+            : customer.email || ""}
         </div>
       </div>
     </div>
@@ -39,3 +38,4 @@ const CustomerListItem: React.FC<CustomerListItemProps> = ({ customer, onSelect 
 };
 
 export default CustomerListItem;
+
