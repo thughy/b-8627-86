@@ -48,13 +48,11 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
     setIsOpen(true);
   };
 
-  const handleBlur = (e: React.FocusEvent) => {
-    // Check if the related target is within our component
-    if (!containerRef.current?.contains(e.relatedTarget as Node)) {
-      setTimeout(() => {
-        setIsOpen(false);
-      }, 200);
-    }
+  const handleBlur = () => {
+    // Check if the related target is within our component after a short delay
+    setTimeout(() => {
+      setIsOpen(false);
+    }, 200);
   };
 
   const handleCustomerSelect = (customer: Customer) => {
