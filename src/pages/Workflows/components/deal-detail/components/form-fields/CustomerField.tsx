@@ -1,5 +1,5 @@
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Customer } from '@/pages/Workflows/models/CustomerModel';
 import { useCustomerSearch } from '../../hooks/useCustomerSearch';
 import { 
@@ -35,6 +35,7 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   } = useCustomerSearch();
   
   const inputRef = useRef<HTMLInputElement>(null);
+  const [blurTimeoutId, setBlurTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
   // Update the input when external props change
   useEffect(() => {
@@ -46,6 +47,34 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
   const handleFocus = () => {
     setIsOpen(true);
   };
+
+  const handleBlur = (e: React.FocusEvent) => {
+    // Use a timeout to allow clicks on list items to register before closing the popover
+    const timeoutId = setTimeout(() => {
+      // Check if the related target is inside the popover
+      const relatedTarget = e.relatedTarget as Node;
+      if (relatedTarget instanceof Element) {
+        // Check if the clicked element is inside the popover content
+        const isInsidePopover = relatedTarget.closest('[role="listbox"]');
+        if (isInsidePopover) {
+          return; // Don't close if clicking inside popover
+        }
+      }
+      
+      setIsOpen(false);
+    }, 150);
+    
+    setBlurTimeoutId(timeoutId);
+  };
+
+  // Clear timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (blurTimeoutId) {
+        clearTimeout(blurTimeoutId);
+      }
+    };
+  }, [blurTimeoutId]);
 
   const handleCustomerSelect = (customer: Customer) => {
     selectCustomer(customer);
@@ -80,6 +109,7 @@ const CustomerField: React.FC<CustomerFieldProps> = ({
               searchTerm={searchTerm}
               onChange={setSearchTerm}
               onFocus={handleFocus}
+              onBlur={handleBlur}
               hasSelectedCustomer={Boolean(customerName)}
               customerName={customerName}
               customerOrganization={customerOrganization}
