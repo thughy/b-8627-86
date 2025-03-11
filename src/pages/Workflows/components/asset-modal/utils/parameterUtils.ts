@@ -41,6 +41,19 @@ export const arrayToParameters = (params: AssetParameter[]): Record<string, any>
   return result;
 };
 
+// This function converts parameters from the Settings format to the Workflow format
+export const parametersToObject = (params: any[]): Record<string, any> => {
+  const result: Record<string, any> = {};
+  
+  params.forEach(param => {
+    if (param.name && param.name.trim()) {
+      result[param.name] = formatParameterValue(param.value, param.type);
+    }
+  });
+  
+  return result;
+};
+
 // Format parameter value based on type
 export const formatParameterValue = (value: any, type: string): any => {
   switch (type) {
