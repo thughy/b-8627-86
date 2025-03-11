@@ -1,86 +1,90 @@
 
 import React from 'react';
-import { Asset } from '@/pages/Workflows/models/WorkflowModels';
-import {
-  getAssetTypeColor,
-  formatAssetAmount
-} from '@/pages/Workflows/components/asset-modal/utils/assetTypeUtils';
-import { LucideIcon, FileText, Package, Tool, User, FileCheck, Briefcase, Home, Car, Scale, File, Ticket, ShoppingCart, CreditCard, Box } from 'lucide-react';
+import { Asset } from '../models/WorkflowModels';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Button } from '@/components/ui/button';
+import { PlusCircle } from 'lucide-react';
+import { getAssetTypeColor, getAssetTypeIcon, formatAssetAmount } from './asset-modal/utils/assetTypeUtils';
+import { cn } from '@/lib/utils';
 
 interface AssetListProps {
-  assets?: Asset[];
-  onAssetClick?: (asset: Asset) => void;
+  assets: Asset[];
+  onAssetClick: (asset: Asset) => void;
+  onCreateAsset?: (dealId: string) => void;
+  dealId?: string;
+  className?: string;
+  maxHeight?: string;
 }
 
-// Helper function to get icon based on asset type
-const getIconForAssetType = (type: string): LucideIcon => {
-  const normalizedType = type.toLowerCase();
-  
-  if (normalizedType.includes('contract')) return FileText;
-  if (normalizedType.includes('product')) return Package;
-  if (normalizedType.includes('service')) return Tool;
-  if (normalizedType.includes('lead')) return User;
-  if (normalizedType.includes('proposal')) return FileCheck;
-  if (normalizedType.includes('project')) return Briefcase;
-  if (normalizedType.includes('property')) return Home;
-  if (normalizedType.includes('vehicle')) return Car;
-  if (normalizedType.includes('legal')) return Scale;
-  if (normalizedType.includes('document')) return File;
-  if (normalizedType.includes('ticket')) return Ticket;
-  if (normalizedType.includes('order')) return ShoppingCart;
-  if (normalizedType.includes('payment')) return CreditCard;
-  
-  return Box; // default icon
-};
-
-const AssetList: React.FC<AssetListProps> = ({ assets = [], onAssetClick }) => {
+const AssetList = ({
+  assets = [],
+  onAssetClick,
+  onCreateAsset,
+  dealId,
+  className,
+  maxHeight = '300px'
+}: AssetListProps) => {
   if (!assets || assets.length === 0) {
     return (
-      <div className="text-center py-6 text-muted-foreground">
-        Nenhum asset cadastrado.
+      <div className={cn("flex flex-col items-center justify-center p-4", className)}>
+        <p className="text-muted-foreground text-sm mb-4">Nenhum asset encontrado</p>
+        {onCreateAsset && dealId && (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => onCreateAsset(dealId)}
+            className="flex items-center"
+          >
+            <PlusCircle className="h-4 w-4 mr-2" />
+            Criar Asset
+          </Button>
+        )}
       </div>
     );
   }
 
   return (
-    <div className="space-y-2">
-      {assets.map((asset) => {
-        const Icon = getIconForAssetType(asset.type);
-        const assetTypeColor = getAssetTypeColor(asset.type);
-        
-        return (
-          <div
-            key={asset.id}
-            className="flex items-center p-3 rounded-md border hover:bg-accent/30 cursor-pointer"
-            onClick={() => onAssetClick && onAssetClick(asset)}
+    <div className={className}>
+      <ScrollArea className={`pr-4 ${maxHeight ? `max-h-[${maxHeight}]` : ''}`}>
+        <div className="space-y-2">
+          {assets.map((asset) => (
+            <div
+              key={asset.id}
+              className="flex items-center p-2 rounded-lg border border-border hover:bg-accent/50 cursor-pointer transition-colors"
+              onClick={() => onAssetClick(asset)}
+            >
+              <div className={cn("w-2 h-10 rounded-full mr-3", getAssetTypeColor(asset.type))}></div>
+              <div className="flex-1 min-w-0">
+                <div className="flex justify-between items-start">
+                  <h4 className="text-sm font-medium truncate">{asset.title}</h4>
+                  <span className="text-xs font-medium bg-muted px-2 py-0.5 rounded-full ml-2">
+                    {asset.type}
+                  </span>
+                </div>
+                <div className="flex items-center text-xs text-muted-foreground mt-1">
+                  <span>{formatAssetAmount(asset.amount)}</span>
+                  <span className="mx-2">•</span>
+                  <span className="capitalize">{asset.status}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </ScrollArea>
+      
+      {onCreateAsset && dealId && (
+        <div className="mt-4 flex justify-center">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => onCreateAsset(dealId)}
+            className="w-full flex items-center justify-center"
           >
-            <div className={`${assetTypeColor} text-white p-2 rounded-md mr-3`}>
-              <Icon className="h-5 w-5" />
-            </div>
-            
-            <div className="flex-1 min-w-0">
-              <div className="font-medium truncate">{asset.title}</div>
-              <div className="text-sm text-muted-foreground">
-                {asset.type} {asset.amount && `• ${formatAssetAmount(asset.amount)}`}
-              </div>
-            </div>
-            
-            <div className="flex items-center">
-              <div className={`
-                px-2 py-1 rounded-full text-xs 
-                ${asset.status === 'completed' ? 'bg-green-100 text-green-800' : 
-                  asset.status === 'cancelled' ? 'bg-red-100 text-red-800' :
-                  asset.status === 'processing' ? 'bg-blue-100 text-blue-800' :
-                  'bg-gray-100 text-gray-800'}
-              `}>
-                {asset.status === 'open' ? 'Aberto' : 
-                 asset.status === 'processing' ? 'Processando' :
-                 asset.status === 'completed' ? 'Concluído' : 'Cancelado'}
-              </div>
-            </div>
-          </div>
-        );
-      })}
+            <PlusCircle className="h-4 w-4 mr-2" />
+            Adicionar Asset
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

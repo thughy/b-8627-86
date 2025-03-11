@@ -82,19 +82,19 @@ export default function WorkflowsPage() {
   const handleCreateNoteWrapper = (assetId: string) => {
     // This function will be called with only assetId from the DealCardModal
     // We provide a default value for the note
-    handleCreateNoteForAsset(assetId, "Nova nota");
+    handleCreateNoteForAsset && handleCreateNoteForAsset(assetId, "Nova nota");
   };
 
   const handleCreateDocumentWrapper = (assetId: string) => {
     // This function will be called with only assetId from the DealCardModal
     // We provide default values for documentUrl and documentName
-    handleCreateDocumentForAsset(assetId, "https://example.com/document", "Novo documento");
+    handleCreateDocumentForAsset && handleCreateDocumentForAsset(assetId, "https://example.com/document", "Novo documento");
   };
 
   return (
     <DashboardLayout>
       <div className="container mx-auto py-4 px-4">
-        <WorkflowHeader onCreateDeal={() => openDealCreationModal()} />
+        <WorkflowHeader onCreateDeal={handleCreateDeal} />
 
         <WorkflowStats 
           deals={filteredDeals}
@@ -134,7 +134,7 @@ export default function WorkflowsPage() {
               deals={filteredDeals} 
               onDragEnd={handleDragEnd} 
               onDealClick={openDealModal}
-              onCreateDeal={() => openDealCreationModal()}
+              onCreateDeal={handleCreateDeal}
               selectedPipeline={selectedPipeline}
               pipelines={pipelines}
               onPipelineChange={setSelectedPipeline}
