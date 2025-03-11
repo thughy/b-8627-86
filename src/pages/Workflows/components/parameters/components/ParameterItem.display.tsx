@@ -52,7 +52,7 @@ const ParameterItemDisplay: React.FC<ParameterItemDisplayProps> = ({
       {!readOnly && onDelete && (
         <Button 
           variant="ghost" 
-          size={size === 'default' ? 'sm' : 'sm'} // Fixed: using only valid button sizes
+          size="sm"
           className="ml-2 text-muted-foreground hover:text-destructive" 
           onClick={onDelete}
         >

@@ -55,10 +55,10 @@ const ParameterDisplay: React.FC<ParameterDisplayProps> = ({
           if (paramData && typeof paramData === 'object') {
             return {
               name,
-              type: (paramData as any).type || 'text',
+              type: typeof (paramData as any).type === 'string' ? (paramData as any).type : 'text',
               value: (paramData as any).value,
-              options: (paramData as any).options,
-              ...(paramData as object)
+              options: Array.isArray((paramData as any).options) ? (paramData as any).options : undefined,
+              ...(paramData as object) as any
             } as AssetParameter;
           }
           // Default parameter if data is not in expected format

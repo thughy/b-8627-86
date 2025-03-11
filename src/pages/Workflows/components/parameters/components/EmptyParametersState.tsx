@@ -28,7 +28,7 @@ const EmptyParametersState: React.FC<EmptyParametersStateProps> = ({
       case 'settings': return <Settings className={iconSize} />;
       case 'document': return <FileText className={iconSize} />;
       case 'database': return <Database className={iconSize} />;
-      case 'parameters': return <LayoutList className={iconSize} />; // Using LayoutList instead of Gantt which doesn't exist
+      case 'parameters': return <LayoutList className={iconSize} />; // Using LayoutList instead of Gantt
       default: return <Settings className={iconSize} />;
     }
   };
@@ -54,7 +54,7 @@ const EmptyParametersState: React.FC<EmptyParametersStateProps> = ({
       {showAddButton && onAddParameter && (
         <Button 
           variant="outline" 
-          size="sm" 
+          size="sm"
           onClick={onAddParameter}
           className="flex items-center gap-2"
         >
