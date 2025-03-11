@@ -3,15 +3,20 @@ import React, { useState } from 'react';
 import { Asset } from '@/pages/Workflows/models/WorkflowModels';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { CalendarIcon } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { formatDate } from '@/components/workflows/utils/dealUtils';
-import { cn } from '@/lib/utils';
-import { format } from "date-fns";
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { CalendarIcon, Save } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { 
+  AssetParameter, 
+  parametersToArray, 
+  arrayToParameters 
+} from '@/pages/Workflows/components/asset-modal/utils/parameterUtils';
 
 interface AssetParametersTabProps {
   asset: Asset;
@@ -19,249 +24,335 @@ interface AssetParametersTabProps {
 }
 
 const AssetParametersTab: React.FC<AssetParametersTabProps> = ({ asset, onEditAsset }) => {
-  const [formState, setFormState] = useState<Partial<Asset>>({ ...asset });
   const [isEditing, setIsEditing] = useState(false);
+  const [title, setTitle] = useState(asset.title);
+  const [description, setDescription] = useState(asset.description || '');
+  const [type, setType] = useState(asset.type);
+  const [amount, setAmount] = useState(asset.amount || 0);
+  const [status, setStatus] = useState(asset.status);
+  const [startDate, setStartDate] = useState(asset.startDate ? new Date(asset.startDate) : undefined);
+  const [endDate, setEndDate] = useState(asset.endDate ? new Date(asset.endDate) : undefined);
+  const [parameters, setParameters] = useState<AssetParameter[]>(
+    parametersToArray(asset)
+  );
 
-  // Handle form input changes
-  const handleChange = (key: keyof Asset, value: any) => {
-    setFormState(prev => ({ ...prev, [key]: value }));
-  };
-
-  // Handle form submission
-  const handleSubmit = () => {
-    if (onEditAsset && formState) {
-      onEditAsset({ ...asset, ...formState });
-    }
+  const handleSave = () => {
+    if (!onEditAsset) return;
+    
+    const updatedAsset: Asset = {
+      ...asset,
+      title,
+      description,
+      type,
+      amount,
+      status,
+      startDate,
+      endDate,
+      parameters: arrayToParameters(parameters),
+      updatedAt: new Date()
+    };
+    
+    onEditAsset(updatedAsset);
     setIsEditing(false);
   };
-
-  // Handle cancel editing
+  
   const handleCancel = () => {
-    setFormState({ ...asset });
+    setTitle(asset.title);
+    setDescription(asset.description || '');
+    setType(asset.type);
+    setAmount(asset.amount || 0);
+    setStatus(asset.status);
+    setStartDate(asset.startDate ? new Date(asset.startDate) : undefined);
+    setEndDate(asset.endDate ? new Date(asset.endDate) : undefined);
+    setParameters(parametersToArray(asset));
     setIsEditing(false);
   };
-
-  const assetTypeOptions = [
-    { value: 'Contrato', label: 'Contrato' },
-    { value: 'Proposta', label: 'Proposta' },
-    { value: 'Imóvel', label: 'Imóvel' },
-    { value: 'Veículo', label: 'Veículo' },
-    { value: 'Produto', label: 'Produto' },
-    { value: 'Serviço', label: 'Serviço' },
-    { value: 'Projeto', label: 'Projeto' },
-    { value: 'Lead', label: 'Lead' },
-    { value: 'Paciente', label: 'Paciente' },
-    { value: 'Petição', label: 'Petição' },
-  ];
-
-  const assetStatusOptions = [
-    { value: 'open', label: 'Aberto' },
-    { value: 'processing', label: 'Processando' },
-    { value: 'completed', label: 'Concluído' },
-    { value: 'cancelled', label: 'Cancelado' },
-  ];
-
+  
+  const handleParameterChange = (index: number, value: any) => {
+    const updatedParams = [...parameters];
+    updatedParams[index].value = value;
+    setParameters(updatedParams);
+  };
+  
+  const renderParameterField = (param: AssetParameter, index: number) => {
+    switch (param.type) {
+      case 'text':
+        return (
+          <Input
+            id={`param-${index}`}
+            value={param.value || ''}
+            onChange={(e) => handleParameterChange(index, e.target.value)}
+            disabled={!isEditing}
+            className="max-w-md"
+          />
+        );
+      case 'number':
+        return (
+          <Input
+            id={`param-${index}`}
+            type="number"
+            value={param.value || 0}
+            onChange={(e) => handleParameterChange(index, e.target.valueAsNumber)}
+            disabled={!isEditing}
+            className="max-w-md"
+          />
+        );
+      case 'boolean':
+        return (
+          <Switch
+            id={`param-${index}`}
+            checked={Boolean(param.value)}
+            onCheckedChange={(checked) => handleParameterChange(index, checked)}
+            disabled={!isEditing}
+          />
+        );
+      case 'date':
+        return (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={`w-full max-w-md justify-start text-left font-normal ${
+                  !param.value ? "text-muted-foreground" : ""
+                }`}
+                disabled={!isEditing}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {param.value ? (
+                  format(new Date(param.value), 'PPP', { locale: ptBR })
+                ) : (
+                  <span>Selecione uma data</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={param.value ? new Date(param.value) : undefined}
+                onSelect={(date) => handleParameterChange(index, date)}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+        );
+      case 'select':
+        return (
+          <Select
+            value={String(param.value)}
+            onValueChange={(value) => handleParameterChange(index, value)}
+            disabled={!isEditing}
+          >
+            <SelectTrigger className="max-w-md">
+              <SelectValue placeholder="Selecione uma opção" />
+            </SelectTrigger>
+            <SelectContent>
+              {param.options?.map((option, optionIndex) => (
+                <SelectItem key={optionIndex} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        );
+      default:
+        return null;
+    }
+  };
+  
   return (
-    <div className="space-y-4">
-      {!isEditing ? (
-        <>
-          <div className="mb-6">
-            <Button onClick={() => setIsEditing(true)}>Editar Informações</Button>
-          </div>
-          
-          <div className="space-y-4">
-            <div>
-              <Label className="text-muted-foreground text-xs">Título</Label>
-              <div className="font-medium">{asset.title}</div>
-            </div>
-            
-            <div>
-              <Label className="text-muted-foreground text-xs">Descrição</Label>
-              <div>{asset.description || "Sem descrição"}</div>
-            </div>
-            
-            <div>
-              <Label className="text-muted-foreground text-xs">Tipo</Label>
-              <div className="font-medium">{asset.type}</div>
-            </div>
-            
-            <div>
-              <Label className="text-muted-foreground text-xs">Status</Label>
-              <div className="font-medium capitalize">
-                {asset.status === 'open' ? 'Aberto' : 
-                  asset.status === 'processing' ? 'Processando' : 
-                  asset.status === 'completed' ? 'Concluído' : 
-                  asset.status === 'cancelled' ? 'Cancelado' : asset.status}
-              </div>
-            </div>
-            
-            <div>
-              <Label className="text-muted-foreground text-xs">Valor</Label>
-              <div className="font-medium">
-                {asset.amount ? new Intl.NumberFormat('pt-BR', { 
-                  style: 'currency', 
-                  currency: 'BRL' 
-                }).format(asset.amount) : "Não definido"}
-              </div>
-            </div>
-            
-            <div>
-              <Label className="text-muted-foreground text-xs">Data de Início</Label>
-              <div>{formatDate(asset.startDate)}</div>
-            </div>
-            
-            <div>
-              <Label className="text-muted-foreground text-xs">Data de Término</Label>
-              <div>{formatDate(asset.endDate)}</div>
-            </div>
-            
-            {asset.parameters && Object.keys(asset.parameters).length > 0 && (
-              <div>
-                <Label className="text-muted-foreground text-xs mb-2 block">Parâmetros Adicionais</Label>
-                <div className="space-y-2 border p-3 rounded-md bg-muted/40">
-                  {Object.entries(asset.parameters).map(([key, value]) => (
-                    <div key={key} className="grid grid-cols-2 gap-2">
-                      <div className="text-sm font-medium">{key}:</div>
-                      <div className="text-sm">{String(value)}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-medium">Detalhes do Asset</h3>
+        {onEditAsset && (
+          <div className="flex gap-2">
+            {isEditing ? (
+              <>
+                <Button variant="outline" onClick={handleCancel}>
+                  Cancelar
+                </Button>
+                <Button onClick={handleSave}>
+                  <Save className="h-4 w-4 mr-2" />
+                  Salvar
+                </Button>
+              </>
+            ) : (
+              <Button onClick={() => setIsEditing(true)}>
+                Editar
+              </Button>
             )}
           </div>
-        </>
-      ) : (
-        <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="space-y-4">
-          <div className="space-y-4">
-            <div className="grid gap-2">
-              <Label htmlFor="title">Título</Label>
-              <Input 
-                id="title"
-                value={formState.title || ''}
-                onChange={(e) => handleChange('title', e.target.value)}
-                required
-              />
-            </div>
-            
-            <div className="grid gap-2">
-              <Label htmlFor="description">Descrição</Label>
-              <Textarea 
-                id="description"
-                value={formState.description || ''}
-                onChange={(e) => handleChange('description', e.target.value)}
-                rows={3}
-              />
-            </div>
-            
-            <div className="grid gap-2">
-              <Label htmlFor="type">Tipo</Label>
-              <Select 
-                value={formState.type || ''} 
-                onValueChange={(value) => handleChange('type', value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o tipo" />
-                </SelectTrigger>
-                <SelectContent>
-                  {assetTypeOptions.map(option => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                  <SelectItem value="custom">Outro (personalizado)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="grid gap-2">
-              <Label htmlFor="status">Status</Label>
-              <Select 
-                value={formState.status || 'open'} 
-                onValueChange={(value) => handleChange('status', value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o status" />
-                </SelectTrigger>
-                <SelectContent>
-                  {assetStatusOptions.map(option => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="grid gap-2">
-              <Label htmlFor="amount">Valor</Label>
-              <Input 
-                id="amount"
-                type="number"
-                value={formState.amount || ''}
-                onChange={(e) => handleChange('amount', parseFloat(e.target.value))}
-                placeholder="0,00"
-                step="0.01"
-              />
-            </div>
-            
-            <div className="grid gap-2">
-              <Label htmlFor="startDate">Data de Início</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !formState.startDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {formState.startDate ? format(new Date(formState.startDate), "PP") : <span>Selecionar data</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={formState.startDate ? new Date(formState.startDate) : undefined}
-                    onSelect={(date) => handleChange('startDate', date)}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-            
-            <div className="grid gap-2">
-              <Label htmlFor="endDate">Data de Término</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !formState.endDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {formState.endDate ? format(new Date(formState.endDate), "PP") : <span>Selecionar data</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={formState.endDate ? new Date(formState.endDate) : undefined}
-                    onSelect={(date) => handleChange('endDate', date)}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-            
-            <div className="flex gap-2 pt-4">
-              <Button type="submit" variant="default">Salvar</Button>
-              <Button type="button" variant="outline" onClick={handleCancel}>Cancelar</Button>
-            </div>
+        )}
+      </div>
+      
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="title">Título</Label>
+            <Input 
+              id="title" 
+              value={title} 
+              onChange={(e) => setTitle(e.target.value)}
+              disabled={!isEditing}
+            />
           </div>
-        </form>
+          
+          <div className="space-y-2">
+            <Label htmlFor="type">Tipo</Label>
+            <Select 
+              value={type} 
+              onValueChange={setType}
+              disabled={!isEditing}
+            >
+              <SelectTrigger id="type">
+                <SelectValue placeholder="Selecionar tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="contract">Contrato</SelectItem>
+                <SelectItem value="product">Produto</SelectItem>
+                <SelectItem value="service">Serviço</SelectItem>
+                <SelectItem value="lead">Lead</SelectItem>
+                <SelectItem value="proposal">Proposta</SelectItem>
+                <SelectItem value="project">Projeto</SelectItem>
+                <SelectItem value="property">Imóvel</SelectItem>
+                <SelectItem value="vehicle">Veículo</SelectItem>
+                <SelectItem value="legal">Jurídico</SelectItem>
+                <SelectItem value="document">Documento</SelectItem>
+                <SelectItem value="ticket">Ticket</SelectItem>
+                <SelectItem value="order">Pedido</SelectItem>
+                <SelectItem value="payment">Pagamento</SelectItem>
+                <SelectItem value="other">Outro</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="status">Status</Label>
+            <Select 
+              value={status} 
+              onValueChange={setStatus}
+              disabled={!isEditing}
+            >
+              <SelectTrigger id="status">
+                <SelectValue placeholder="Selecionar status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="open">Aberto</SelectItem>
+                <SelectItem value="processing">Processando</SelectItem>
+                <SelectItem value="completed">Concluído</SelectItem>
+                <SelectItem value="cancelled">Cancelado</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="amount">Valor</Label>
+            <Input 
+              id="amount" 
+              type="number" 
+              value={amount} 
+              onChange={(e) => setAmount(e.target.valueAsNumber)}
+              disabled={!isEditing}
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="startDate">Data de Início</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  id="startDate"
+                  variant="outline"
+                  className={`w-full justify-start text-left font-normal ${
+                    !startDate ? "text-muted-foreground" : ""
+                  }`}
+                  disabled={!isEditing}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {startDate ? (
+                    format(startDate, 'PPP', { locale: ptBR })
+                  ) : (
+                    <span>Selecione uma data</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={startDate}
+                  onSelect={setStartDate}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="endDate">Data de Término</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  id="endDate"
+                  variant="outline"
+                  className={`w-full justify-start text-left font-normal ${
+                    !endDate ? "text-muted-foreground" : ""
+                  }`}
+                  disabled={!isEditing}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {endDate ? (
+                    format(endDate, 'PPP', { locale: ptBR })
+                  ) : (
+                    <span>Selecione uma data</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={endDate}
+                  onSelect={setEndDate}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="description">Descrição</Label>
+          <Textarea 
+            id="description" 
+            value={description} 
+            onChange={(e) => setDescription(e.target.value)}
+            disabled={!isEditing}
+            className="min-h-[100px]"
+          />
+        </div>
+      </div>
+      
+      {parameters.length > 0 && (
+        <div className="space-y-4 pt-4 border-t">
+          <h3 className="text-lg font-medium">Parâmetros Personalizados</h3>
+          
+          {parameters.map((param, index) => (
+            <div key={index} className="space-y-2">
+              <Label htmlFor={`param-${index}`} className="flex items-center gap-2">
+                {param.name}
+                {param.required && (
+                  <span className="text-xs text-red-500">*</span>
+                )}
+              </Label>
+              
+              {param.description && (
+                <p className="text-xs text-muted-foreground mb-1">
+                  {param.description}
+                </p>
+              )}
+              
+              {renderParameterField(param, index)}
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );

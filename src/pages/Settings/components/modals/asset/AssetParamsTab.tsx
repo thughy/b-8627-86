@@ -1,113 +1,39 @@
 
-import React, { useState } from "react";
-import { Asset } from "@/pages/Workflows/models/WorkflowModels";
-import ParameterItem, { Parameter, ParameterType } from "./components/ParameterItem";
-import AddParameterForm from "./components/AddParameterForm";
-import { Info } from "lucide-react";
+import React, { useState } from 'react';
+import { Asset } from '@/pages/Workflows/models/WorkflowModels';
+import ParameterForm from '@/pages/Workflows/components/parameters/ParameterForm';
+import { AssetParameter, arrayToParameters, parametersToArray } from '@/pages/Workflows/components/asset-modal/utils/parameterUtils';
 
 interface AssetParamsTabProps {
   formData: Partial<Asset>;
   onChange: (key: string, value: any) => void;
 }
 
-const AssetParamsTab = ({ formData, onChange }: AssetParamsTabProps) => {
-  const [parameters, setParameters] = useState<Parameter[]>(
-    Object.entries(formData.parameters || {}).map(([name, value]) => ({
-      name,
-      type: typeof value === 'number' ? 'number' : 
-            typeof value === 'boolean' ? 'switch' : 
-            value instanceof Date ? 'date' : 
-            Array.isArray(value) ? 'dropdown' :
-            typeof value === 'object' && value !== null ? 'file' : 'text',
-      value
-    }))
+const AssetParamsTab: React.FC<AssetParamsTabProps> = ({ formData, onChange }) => {
+  const [parameters, setParameters] = useState<AssetParameter[]>(
+    formData.parameters ? parametersToArray(formData as Asset) : []
   );
-
-  const getDefaultValueForType = (type: ParameterType) => {
-    switch (type) {
-      case 'number':
-        return 0;
-      case 'date':
-        return new Date();
-      case 'switch':
-        return false;
-      case 'dropdown':
-        return ['Opção 1'];
-      case 'file':
-        return null;
-      default:
-        return '';
-    }
-  };
-
-  const updateParamsInAsset = (updatedParams: Parameter[]) => {
-    const paramObj = updatedParams.reduce((acc, param) => {
-      acc[param.name] = param.value;
-      return acc;
-    }, {} as Record<string, any>);
-    
-    onChange("parameters", paramObj);
-  };
-
-  const handleAddParameter = (name: string, type: ParameterType) => {
-    const defaultValue = getDefaultValueForType(type);
-    
-    const newParam: Parameter = {
-      name,
-      type,
-      value: defaultValue
-    };
-    
-    const updatedParams = [...parameters, newParam];
+  
+  const handleParametersChange = (updatedParams: AssetParameter[]) => {
     setParameters(updatedParams);
-    updateParamsInAsset(updatedParams);
+    const parametersObject = arrayToParameters(updatedParams);
+    onChange('parameters', parametersObject);
   };
-
-  const handleUpdateParameter = (index: number, updatedParameter: Parameter) => {
-    const updatedParams = [...parameters];
-    updatedParams[index] = updatedParameter;
-    
-    setParameters(updatedParams);
-    updateParamsInAsset(updatedParams);
-  };
-
-  const handleDeleteParameter = (index: number) => {
-    const updatedParams = parameters.filter((_, idx) => idx !== index);
-    setParameters(updatedParams);
-    updateParamsInAsset(updatedParams);
-  };
-
+  
   return (
     <div className="space-y-6">
-      <div className="p-3 bg-muted rounded-md flex items-start gap-3">
-        <Info className="h-5 w-5 mt-0.5 flex-shrink-0 text-blue-500" />
-        <div className="text-sm">
-          <p className="font-medium">Parâmetros de configuração</p>
-          <p className="text-muted-foreground">
-            Defina os parâmetros que os usuários poderão configurar para este asset. 
-            Os valores serão preenchidos pelo usuário em sua instância.
-          </p>
-        </div>
+      <div className="mb-6">
+        <h3 className="text-lg font-medium mb-2">Configuração de Parâmetros</h3>
+        <p className="text-sm text-muted-foreground">
+          Configure os parâmetros personalizados para este asset. Estes parâmetros serão solicitados
+          quando este asset for utilizado em um deal.
+        </p>
       </div>
       
-      <div className="space-y-4">
-        {parameters.length > 0 ? (
-          parameters.map((parameter, index) => (
-            <ParameterItem
-              key={index}
-              parameter={parameter}
-              onDelete={() => handleDeleteParameter(index)}
-              onUpdate={(updatedParam) => handleUpdateParameter(index, updatedParam)}
-            />
-          ))
-        ) : (
-          <div className="text-center py-6 text-muted-foreground">
-            Nenhum parâmetro configurado. Adicione um novo parâmetro abaixo.
-          </div>
-        )}
-      </div>
-
-      <AddParameterForm onAddParameter={handleAddParameter} />
+      <ParameterForm
+        parameters={parameters}
+        onChange={handleParametersChange}
+      />
     </div>
   );
 };

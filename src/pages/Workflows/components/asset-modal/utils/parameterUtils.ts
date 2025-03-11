@@ -6,6 +6,9 @@ export interface AssetParameter {
   type: 'text' | 'number' | 'date' | 'boolean' | 'select';
   value: any;
   options?: string[]; // For select type
+  description?: string; // Add description for parameter documentation
+  required?: boolean; // Indicate if parameter is required
+  placeholder?: string; // UI helper for input fields
 }
 
 // Convert parameters object to array for form handling
@@ -112,4 +115,77 @@ export const getReservedParameterNames = (): string[] => {
     'amount', 'status', 'startDate', 'endDate', 
     'files', 'createdAt', 'updatedAt'
   ];
+};
+
+// Create a new parameter with default values based on type
+export const createDefaultParameter = (type: 'text' | 'number' | 'date' | 'boolean' | 'select' = 'text'): AssetParameter => {
+  const param: AssetParameter = {
+    name: '',
+    type: type,
+    value: getDefaultValueForType(type),
+    required: false,
+    description: ''
+  };
+  
+  if (type === 'select') {
+    param.options = [''];
+  }
+  
+  return param;
+};
+
+// Get default value for parameter type
+export const getDefaultValueForType = (type: string): any => {
+  switch (type) {
+    case 'number':
+      return 0;
+    case 'boolean':
+      return false;
+    case 'date':
+      return new Date();
+    case 'select':
+      return '';
+    default:
+      return '';
+  }
+};
+
+// Validate all parameters in an array
+export const validateParameters = (parameters: AssetParameter[]): { valid: boolean, errors: Record<string, string> } => {
+  const errors: Record<string, string> = {};
+  const reservedNames = getReservedParameterNames();
+  const parameterNames = new Set<string>();
+  
+  parameters.forEach((param, index) => {
+    // Check for empty names
+    if (!param.name.trim()) {
+      errors[`param-${index}`] = 'Nome do parâmetro não pode ser vazio';
+    }
+    
+    // Check for reserved names
+    if (reservedNames.includes(param.name.trim())) {
+      errors[`param-${index}`] = `"${param.name}" é um nome reservado pelo sistema`;
+    }
+    
+    // Check for duplicate names
+    if (parameterNames.has(param.name.trim())) {
+      errors[`param-${index}`] = `Parâmetro "${param.name}" já existe`;
+    } else {
+      parameterNames.add(param.name.trim());
+    }
+    
+    // Validate based on type
+    if (param.type === 'number' && isNaN(Number(param.value))) {
+      errors[`param-${index}-value`] = 'Valor deve ser um número';
+    }
+    
+    if (param.type === 'select' && (!param.options || param.options.length === 0)) {
+      errors[`param-${index}-options`] = 'Pelo menos uma opção deve ser definida';
+    }
+  });
+  
+  return {
+    valid: Object.keys(errors).length === 0,
+    errors
+  };
 };
