@@ -12,6 +12,7 @@ interface ParameterDisplayProps {
   onDelete?: () => void;
   onUpdate?: (value: any) => void;
   readOnly?: boolean;
+  onAddParameter?: () => void;
 }
 
 const ParameterDisplay: React.FC<ParameterDisplayProps> = ({ 
@@ -20,14 +21,19 @@ const ParameterDisplay: React.FC<ParameterDisplayProps> = ({
   maxHeight = "500px",
   onDelete,
   onUpdate,
-  readOnly = false
+  readOnly = false,
+  onAddParameter
 }) => {
   return (
     <div className={`space-y-4 ${className}`}>
       <ScrollArea className={`max-h-[${maxHeight}]`}>
         <div className="space-y-3">
           {parameters.length === 0 ? (
-            <EmptyParametersState />
+            <EmptyParametersState 
+              showAddButton={!readOnly} 
+              onAddParameter={onAddParameter}
+              message="Nenhum parâmetro adicional configurado. Adicione parâmetros para personalizar este item."
+            />
           ) : (
             parameters.map((param, index) => (
               <ParameterItemDisplay

@@ -5,6 +5,7 @@ import { PlusCircle } from 'lucide-react';
 import { Asset } from '@/pages/Workflows/models/WorkflowModels';
 import ParameterDisplay from '../../parameters/ParameterDisplay';
 import ParameterForm from '../../parameters/ParameterForm';
+import EmptyParametersState from '../../parameters/components/EmptyParametersState';
 
 interface ParameterSectionProps {
   asset: Asset;
@@ -22,19 +23,25 @@ const ParameterSection: React.FC<ParameterSectionProps> = ({
   readOnly = false
 }) => {
   const [isAddingParameter, setIsAddingParameter] = useState(false);
+  
+  const handleAddParameterClick = () => {
+    setIsAddingParameter(true);
+  };
+
+  const hasParameters = asset.parameters && Object.keys(asset.parameters).length > 0;
 
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-medium">Parâmetros Adicionais</h3>
-        {!readOnly && (
+        {!readOnly && !isAddingParameter && (
           <Button 
             variant="outline" 
             size="sm" 
-            onClick={() => setIsAddingParameter(true)}
-            className="flex items-center"
+            onClick={handleAddParameterClick}
+            className="flex items-center gap-2"
           >
-            <PlusCircle className="h-4 w-4 mr-2" />
+            <PlusCircle className="h-4 w-4" />
             Adicionar Parâmetro
           </Button>
         )}
@@ -55,7 +62,7 @@ const ParameterSection: React.FC<ParameterSectionProps> = ({
       )}
       
       <div className="space-y-3">
-        {asset.parameters && Object.keys(asset.parameters).length > 0 ? (
+        {hasParameters ? (
           Object.entries(asset.parameters).map(([paramName, paramData]) => (
             <ParameterDisplay
               key={paramName}
@@ -71,9 +78,11 @@ const ParameterSection: React.FC<ParameterSectionProps> = ({
             />
           ))
         ) : (
-          <div className="text-muted-foreground text-center py-4">
-            Nenhum parâmetro adicional configurado
-          </div>
+          <EmptyParametersState 
+            showAddButton={!readOnly && !isAddingParameter}
+            onAddParameter={handleAddParameterClick}
+            message="Nenhum parâmetro adicional configurado para este asset"
+          />
         )}
       </div>
     </div>
