@@ -258,3 +258,21 @@ export const validateAssetRequiredFields = (asset: any): { valid: boolean, error
     errors
   };
 };
+
+export const normalizeAssetType = (assetType: string): string => {
+  return assetType.toLowerCase().replace(/\s+/g, '-');
+};
+
+export const getDefaultAssetValues = (type: string) => {
+  return {
+    title: '',
+    type,
+    description: '',
+    status: 'open' as const,
+    amount: 0,
+    files: [],
+    parameters: {},
+    createdAt: new Date(),
+    updatedAt: new Date()
+  };
+};

@@ -25,7 +25,6 @@ const ParameterTypeSelect: React.FC<ParameterTypeSelectProps> = ({
     <Select
       value={value}
       onValueChange={(value) => onValueChange(value as ParameterType)}
-      className={className}
     >
       <SelectTrigger className={className}>
         <SelectValue placeholder="Tipo" />
