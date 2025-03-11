@@ -64,7 +64,15 @@ export const useWorkflowState = () => {
     setAdvancedFilters 
   } = useSearch(deals);
   
-  const { viewMode, setViewMode } = useWorkflowViews();
+  // Now we get all properties including setViewMode
+  const { 
+    contentMode, 
+    setContentMode, 
+    displayMode, 
+    setDisplayMode,
+    viewMode, 
+    setViewMode 
+  } = useWorkflowViews();
   
   const { 
     selectedWorkflow, 
@@ -132,6 +140,10 @@ export const useWorkflowState = () => {
     setIsAssetModalOpen,
     selectedAsset,
     setSelectedAsset,
+    contentMode,
+    setContentMode,
+    displayMode,
+    setDisplayMode,
     viewMode,
     setViewMode,
     selectedWorkflow,
