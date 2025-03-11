@@ -14,9 +14,10 @@ interface ParameterDisplayProps {
   readOnly?: boolean;
   onAddParameter?: () => void;
   emptyMessage?: string;
-  emptyStateIcon?: 'settings' | 'document' | 'database';
+  emptyStateIcon?: 'settings' | 'document' | 'database' | 'parameters';
   showEmptyStateAddButton?: boolean;
   size?: 'default' | 'small';
+  hideScrollArea?: boolean;
 }
 
 const ParameterDisplay: React.FC<ParameterDisplayProps> = ({ 
@@ -30,7 +31,8 @@ const ParameterDisplay: React.FC<ParameterDisplayProps> = ({
   emptyMessage = "Nenhum parâmetro adicional configurado. Adicione parâmetros para personalizar este item.",
   emptyStateIcon = "document",
   showEmptyStateAddButton = true,
-  size = 'default'
+  size = 'default',
+  hideScrollArea = false
 }) => {
   const handleDelete = (paramName: string) => {
     if (onDelete) {
@@ -38,35 +40,64 @@ const ParameterDisplay: React.FC<ParameterDisplayProps> = ({
     }
   };
 
+  const handleUpdate = (paramName: string, value: any) => {
+    if (onUpdate) {
+      onUpdate(paramName, value);
+    }
+  };
+
+  // Convert parameters object to array if it's not already
+  const paramArray = Array.isArray(parameters) 
+    ? parameters 
+    : parameters 
+      ? Object.entries(parameters).map(([name, param]) => ({
+          name,
+          type: param.type || 'text',
+          value: param.value,
+          options: param.options,
+          ...param
+        })) 
+      : [];
+
   // Set dynamic max height
   const scrollAreaStyles = {
     maxHeight: maxHeight
   };
 
+  const renderContent = () => (
+    <div className="space-y-3 pr-4">
+      {paramArray.length === 0 ? (
+        <EmptyParametersState 
+          showAddButton={!readOnly && showEmptyStateAddButton} 
+          onAddParameter={onAddParameter}
+          message={emptyMessage}
+          icon={emptyStateIcon}
+          size={size}
+        />
+      ) : (
+        paramArray.map((param, index) => (
+          <ParameterItemDisplay
+            key={index}
+            parameter={param}
+            onDelete={() => handleDelete(param.name)}
+            onUpdate={(value) => handleUpdate(param.name, value)}
+            readOnly={readOnly}
+            size={size}
+          />
+        ))
+      )}
+    </div>
+  );
+
   return (
     <div className={`space-y-4 ${className}`}>
-      <ScrollArea className="w-full" style={scrollAreaStyles}>
-        <div className="space-y-3 pr-4">
-          {parameters.length === 0 ? (
-            <EmptyParametersState 
-              showAddButton={!readOnly && showEmptyStateAddButton} 
-              onAddParameter={onAddParameter}
-              message={emptyMessage}
-              icon={emptyStateIcon}
-              size={size}
-            />
-          ) : (
-            parameters.map((param, index) => (
-              <ParameterItemDisplay
-                key={index}
-                parameter={param}
-                onDelete={() => handleDelete(param.name)}
-                readOnly={readOnly}
-              />
-            ))
-          )}
-        </div>
-      </ScrollArea>
+      {hideScrollArea ? (
+        renderContent()
+      ) : (
+        <ScrollArea className="w-full" style={scrollAreaStyles}>
+          {renderContent()}
+        </ScrollArea>
+      )}
     </div>
   );
 };

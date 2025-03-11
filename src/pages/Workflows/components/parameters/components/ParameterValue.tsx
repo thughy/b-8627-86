@@ -9,9 +9,10 @@ import { AssetParameter } from '../../asset-modal/utils/parameterUtils';
 interface ParameterValueProps {
   parameter: AssetParameter;
   className?: string;
+  size?: 'default' | 'small';
 }
 
-const ParameterValue: React.FC<ParameterValueProps> = ({ parameter, className }) => {
+const ParameterValue: React.FC<ParameterValueProps> = ({ parameter, className, size = 'default' }) => {
   const formatValue = (value: any, type: string) => {
     if (value === null || value === undefined) {
       return <span className="text-muted-foreground italic">Não definido</span>;
@@ -37,13 +38,13 @@ const ParameterValue: React.FC<ParameterValueProps> = ({ parameter, className })
       case 'boolean':
         return value ? (
           <span className="flex items-center gap-1 text-green-600">
-            <Check className="h-4 w-4" />
-            <span>Sim</span>
+            <Check className={size === 'default' ? 'h-4 w-4' : 'h-3 w-3'} />
+            <span className={size === 'small' ? 'text-sm' : ''}>Sim</span>
           </span>
         ) : (
           <span className="flex items-center gap-1 text-red-600">
-            <X className="h-4 w-4" />
-            <span>Não</span>
+            <X className={size === 'default' ? 'h-4 w-4' : 'h-3 w-3'} />
+            <span className={size === 'small' ? 'text-sm' : ''}>Não</span>
           </span>
         );
       
@@ -53,7 +54,7 @@ const ParameterValue: React.FC<ParameterValueProps> = ({ parameter, className })
         }
         
         if (Array.isArray(parameter.options) && parameter.options.length > 0) {
-          return <Badge variant="outline">{value}</Badge>;
+          return <Badge variant="outline" className={size === 'small' ? 'text-xs px-2 py-0' : ''}>{value}</Badge>;
         }
         
         return value;

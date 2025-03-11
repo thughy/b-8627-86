@@ -1,56 +1,60 @@
 
 import React from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
-import { AssetParameter, getParameterTypeLabel } from '../../asset-modal/utils/parameterUtils';
-import ParameterIcon from './ParameterIcon';
+import { Button } from '@/components/ui/button';
+import { AssetParameter } from '../../asset-modal/utils/parameterUtils';
 import ParameterValue from './ParameterValue';
+import { cn } from '@/lib/utils';
 
 interface ParameterItemDisplayProps {
   parameter: AssetParameter;
   onDelete?: () => void;
+  onUpdate?: (value: any) => void;
   readOnly?: boolean;
+  size?: 'default' | 'small';
 }
 
 const ParameterItemDisplay: React.FC<ParameterItemDisplayProps> = ({ 
   parameter, 
-  onDelete, 
-  readOnly = false 
+  onDelete,
+  onUpdate,
+  readOnly = false,
+  size = 'default'
 }) => {
+  // Format parameter name for display (capitalize first letter, replace underscores with spaces)
+  const formatParameterName = (name: string) => {
+    if (!name) return '';
+    return name
+      .replace(/_/g, ' ')
+      .replace(/^(.)|\s+(.)/g, (letter) => letter.toUpperCase());
+  };
+
   return (
-    <div className="border rounded-md p-3 bg-card">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <div className="bg-primary/10 p-1 rounded">
-            <ParameterIcon type={parameter.type} />
-          </div>
-          <span className="font-medium">{parameter.name}</span>
+    <div className={cn(
+      "flex justify-between items-center border rounded-md p-3 bg-background",
+      size === 'small' ? 'text-sm' : ''
+    )}>
+      <div className="flex-1 min-w-0">
+        <div className={cn(
+          "font-medium truncate",
+          size === 'small' ? 'text-sm' : ''
+        )}>
+          {formatParameterName(parameter.name || parameter.label || '')}
         </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="outline">{getParameterTypeLabel(parameter.type)}</Badge>
-          {!readOnly && onDelete && (
-            <Button variant="ghost" size="sm" onClick={onDelete} className="h-7 w-7 p-0">
-              <Trash2 className="h-4 w-4 text-destructive" />
-            </Button>
-          )}
+        <div className="mt-1">
+          <ParameterValue parameter={parameter} size={size} />
         </div>
       </div>
       
-      {parameter.description && (
-        <p className="text-sm text-muted-foreground mb-2">
-          {parameter.description}
-        </p>
-      )}
-      
-      <div className="bg-muted/50 px-3 py-2 rounded-sm text-sm">
-        <ParameterValue parameter={parameter} />
-      </div>
-      
-      {parameter.required && (
-        <div className="mt-2">
-          <Badge variant="secondary" className="text-xs">Obrigatório</Badge>
-        </div>
+      {!readOnly && onDelete && (
+        <Button 
+          variant="ghost" 
+          size={size === 'default' ? 'sm' : 'xs'} 
+          className="ml-2 text-muted-foreground hover:text-destructive" 
+          onClick={onDelete}
+        >
+          <Trash2 className={size === 'default' ? 'h-4 w-4' : 'h-3 w-3'} />
+        </Button>
       )}
     </div>
   );

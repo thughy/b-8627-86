@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Settings, PlusCircle, FileText, Database } from 'lucide-react';
+import { Settings, PlusCircle, FileText, Database, Parameters } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -8,7 +8,7 @@ interface EmptyParametersStateProps {
   onAddParameter?: () => void;
   showAddButton?: boolean;
   message?: string;
-  icon?: 'settings' | 'document' | 'database';
+  icon?: 'settings' | 'document' | 'database' | 'parameters';
   className?: string;
   size?: 'default' | 'small';
 }
@@ -22,11 +22,14 @@ const EmptyParametersState: React.FC<EmptyParametersStateProps> = ({
   size = 'default'
 }) => {
   const getIcon = () => {
+    const iconSize = size === 'default' ? "h-10 w-10 text-muted-foreground/60" : "h-8 w-8 text-muted-foreground/60";
+    
     switch (icon) {
-      case 'settings': return <Settings className={size === 'default' ? "h-10 w-10 text-muted-foreground/60" : "h-8 w-8 text-muted-foreground/60"} />;
-      case 'document': return <FileText className={size === 'default' ? "h-10 w-10 text-muted-foreground/60" : "h-8 w-8 text-muted-foreground/60"} />;
-      case 'database': return <Database className={size === 'default' ? "h-10 w-10 text-muted-foreground/60" : "h-8 w-8 text-muted-foreground/60"} />;
-      default: return <Settings className={size === 'default' ? "h-10 w-10 text-muted-foreground/60" : "h-8 w-8 text-muted-foreground/60"} />;
+      case 'settings': return <Settings className={iconSize} />;
+      case 'document': return <FileText className={iconSize} />;
+      case 'database': return <Database className={iconSize} />;
+      case 'parameters': return <Parameters className={iconSize} />;
+      default: return <Settings className={iconSize} />;
     }
   };
 
