@@ -12,8 +12,8 @@ interface WorkflowHeaderSectionProps {
   setSelectedWorkflow: (id: string) => void;
   selectedPipeline: string;
   setSelectedPipeline: (id: string) => void;
-  viewMode: 'kanban' | 'list';
-  setViewMode: (mode: 'kanban' | 'list') => void;
+  viewMode: 'deals' | 'tasks' | 'kanban' | 'list';
+  setViewMode: (mode: 'deals' | 'tasks' | 'kanban' | 'list') => void;
   workflows: Workflow[];
   pipelines: Pipeline[];
   onCreateDeal: () => void;
@@ -44,7 +44,7 @@ const WorkflowHeaderSection: React.FC<WorkflowHeaderSectionProps> = ({
         onWorkflowChange={setSelectedWorkflow}
         selectedPipeline={selectedPipeline}
         onPipelineChange={setSelectedPipeline}
-        viewMode={viewMode}
+        viewMode={viewMode === 'kanban' || viewMode === 'list' ? viewMode : 'kanban'}
         onViewModeChange={(value) => {
           if (value === 'kanban' || value === 'list') {
             setViewMode(value);

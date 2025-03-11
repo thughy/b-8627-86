@@ -4,7 +4,7 @@ import WorkflowViewSelector from './WorkflowViewSelector';
 import { Deal, Pipeline, Stage } from '../models/WorkflowModels';
 
 interface WorkflowViewContentProps {
-  viewMode: 'deals' | 'tasks';
+  viewMode: 'deals' | 'tasks' | 'kanban' | 'list';
   onViewModeChange: (value: 'deals' | 'tasks') => void;
   filteredDeals: Deal[];
   stages: Stage[];
