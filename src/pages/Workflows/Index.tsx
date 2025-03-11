@@ -7,7 +7,6 @@ import WorkflowModalsContainer from './components/WorkflowModalsContainer';
 
 export default function WorkflowsPage() {
   const {
-    // Workflow state
     workflows,
     pipelines,
     stages,
@@ -22,7 +21,6 @@ export default function WorkflowsPage() {
     selectedPipeline,
     setSelectedPipeline,
     
-    // Modal states
     isDealModalOpen,
     isDealCreationModalOpen,
     selectedDeal,
@@ -32,7 +30,6 @@ export default function WorkflowsPage() {
     selectedAsset,
     editingAsset,
     
-    // Modal operations
     openDealModal,
     closeDealModal,
     openDealCreationModal,
@@ -42,7 +39,6 @@ export default function WorkflowsPage() {
     openAssetCreationModal,
     closeAssetCreationModal,
     
-    // CRUD operations
     handleDragEnd,
     handleCreateDeal,
     handleSaveDeal,
@@ -58,7 +54,6 @@ export default function WorkflowsPage() {
     handleCompleteAsset,
     handleCancelAsset,
     
-    // Other operations
     handleCreateTask,
     handleCreateNote,
     handleCreateDocument,
@@ -70,7 +65,6 @@ export default function WorkflowsPage() {
     isLoading
   } = useWorkflowMain();
 
-  // Create wrapper functions with the correct signatures for the WorkflowModalsContainer props
   const handleCreateNoteForAssetWrapper = (assetId: string, note: string) => {
     return handleCreateNoteForAsset(assetId, note);
   };
@@ -82,7 +76,6 @@ export default function WorkflowsPage() {
   return (
     <DashboardLayout>
       <div className="container mx-auto py-4 px-4">
-        {/* Header Section with Filters */}
         <WorkflowHeaderSection 
           filteredDeals={filteredDeals}
           searchTerm={searchTerm}
@@ -98,7 +91,6 @@ export default function WorkflowsPage() {
           onCreateDeal={handleCreateDeal}
         />
 
-        {/* View Content (Kanban or List) */}
         <WorkflowViewContent 
           viewMode={viewMode}
           onViewModeChange={(value) => {
@@ -117,9 +109,7 @@ export default function WorkflowsPage() {
           getChatPreview={getChatPreview}
         />
 
-        {/* Modals */}
         <WorkflowModalsContainer 
-          // Deal modal props
           isDealModalOpen={isDealModalOpen}
           closeDealModal={closeDealModal}
           selectedDeal={selectedDeal}
@@ -129,7 +119,6 @@ export default function WorkflowsPage() {
           onWinDeal={handleWinDeal}
           onLoseDeal={handleLoseDeal}
           
-          // Asset modal props
           isAssetModalOpen={isAssetModalOpen}
           closeAssetModal={closeAssetModal}
           selectedAsset={selectedAsset}
@@ -138,19 +127,16 @@ export default function WorkflowsPage() {
           onCompleteAsset={handleCompleteAsset}
           onCancelAsset={handleCancelAsset}
           
-          // Creation modal props
           isDealCreationModalOpen={isDealCreationModalOpen}
           closeDealCreationModal={closeDealCreationModal}
           isAssetCreationModalOpen={isAssetCreationModalOpen}
           closeAssetCreationModal={closeAssetCreationModal}
           
-          // Data props
           editingDeal={editingDeal}
           editingAsset={editingAsset}
           stages={stages}
           selectedStageForNewDeal={selectedStageForNewDeal}
           
-          // Action handlers
           onCreateAsset={handleCreateAsset}
           onCreateTask={handleCreateTask}
           onCreateNote={handleCreateNote}

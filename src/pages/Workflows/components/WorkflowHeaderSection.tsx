@@ -1,7 +1,6 @@
 
 import React from 'react';
 import WorkflowHeader from './WorkflowHeader';
-import WorkflowStats from './WorkflowStats';
 import WorkflowFilters from './WorkflowFilters';
 import { Deal, Pipeline, Workflow } from '../models/WorkflowModels';
 
@@ -37,11 +36,6 @@ const WorkflowHeaderSection: React.FC<WorkflowHeaderSectionProps> = ({
   return (
     <>
       <WorkflowHeader onCreateDeal={onCreateDeal} />
-
-      <WorkflowStats 
-        deals={filteredDeals}
-        selectedPipeline={selectedPipeline}
-      />
 
       <WorkflowFilters
         searchTerm={searchTerm}
