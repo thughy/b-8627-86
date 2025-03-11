@@ -29,6 +29,9 @@ const ParameterItemDisplay: React.FC<ParameterItemDisplayProps> = ({
       .replace(/^(.)|\s+(.)/g, (letter) => letter.toUpperCase());
   };
 
+  // Get the display name from parameter name, fallback to empty string
+  const displayName = parameter.name || '';
+
   return (
     <div className={cn(
       "flex justify-between items-center border rounded-md p-3 bg-background",
@@ -39,7 +42,7 @@ const ParameterItemDisplay: React.FC<ParameterItemDisplayProps> = ({
           "font-medium truncate",
           size === 'small' ? 'text-sm' : ''
         )}>
-          {formatParameterName(parameter.name || parameter.label || '')}
+          {formatParameterName(displayName)}
         </div>
         <div className="mt-1">
           <ParameterValue parameter={parameter} size={size} />
@@ -49,7 +52,7 @@ const ParameterItemDisplay: React.FC<ParameterItemDisplayProps> = ({
       {!readOnly && onDelete && (
         <Button 
           variant="ghost" 
-          size={size === 'default' ? 'sm' : 'xs'} 
+          size={size === 'default' ? 'sm' : 'sm'} // Fixed: using only valid button sizes
           className="ml-2 text-muted-foreground hover:text-destructive" 
           onClick={onDelete}
         >

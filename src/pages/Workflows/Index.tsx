@@ -1,3 +1,4 @@
+
 import React from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useWorkflowMain } from './hooks/useWorkflowMain';
@@ -69,6 +70,15 @@ export default function WorkflowsPage() {
     selectedStageForNewDeal,
     isLoading
   } = useWorkflowMain();
+
+  // Create wrapper functions with the correct signatures for the WorkflowModalsContainer props
+  const handleCreateNoteForAssetWrapper = (assetId: string, note: string) => {
+    return handleCreateNoteForAsset(assetId, note);
+  };
+
+  const handleCreateDocumentForAssetWrapper = (assetId: string, documentUrl: string, documentName: string) => {
+    return handleCreateDocumentForAsset(assetId, documentUrl, documentName);
+  };
 
   return (
     <DashboardLayout>
@@ -147,8 +157,8 @@ export default function WorkflowsPage() {
           onCreateNote={handleCreateNote}
           onCreateDocument={handleCreateDocument}
           onCreateEmail={handleCreateEmail}
-          onCreateNoteForAsset={handleCreateNoteForAsset}
-          onCreateDocumentForAsset={handleCreateDocumentForAsset}
+          onCreateNoteForAsset={handleCreateNoteForAssetWrapper}
+          onCreateDocumentForAsset={handleCreateDocumentForAssetWrapper}
           onSaveDeal={handleSaveDeal}
           onSaveAsset={handleSaveAsset}
         />

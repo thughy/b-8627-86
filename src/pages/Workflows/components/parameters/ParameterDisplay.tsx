@@ -50,13 +50,24 @@ const ParameterDisplay: React.FC<ParameterDisplayProps> = ({
   const paramArray = Array.isArray(parameters) 
     ? parameters 
     : parameters 
-      ? Object.entries(parameters).map(([name, param]) => ({
-          name,
-          type: param.type || 'text',
-          value: param.value,
-          options: param.options,
-          ...param
-        })) 
+      ? Object.entries(parameters).map(([name, paramData]) => {
+          // Ensure we're working with a proper AssetParameter
+          if (paramData && typeof paramData === 'object') {
+            return {
+              name,
+              type: (paramData as any).type || 'text',
+              value: (paramData as any).value,
+              options: (paramData as any).options,
+              ...(paramData as object)
+            } as AssetParameter;
+          }
+          // Default parameter if data is not in expected format
+          return {
+            name,
+            type: 'text',
+            value: paramData
+          } as AssetParameter;
+        }) 
       : [];
 
   // Set dynamic max height

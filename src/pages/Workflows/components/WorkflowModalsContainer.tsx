@@ -44,8 +44,8 @@ interface WorkflowModalsContainerProps {
   onCreateNote: (dealId: string) => void;
   onCreateDocument: (dealId: string) => void;
   onCreateEmail: (dealId: string) => void;
-  onCreateNoteForAsset: (assetId: string) => void;
-  onCreateDocumentForAsset: (assetId: string) => void;
+  onCreateNoteForAsset: (assetId: string, note: string) => void; // Fixed type signature
+  onCreateDocumentForAsset: (assetId: string, documentUrl: string, documentName: string) => void; // Fixed type signature
   onSaveDeal: (dealData: Partial<Deal>) => void;
   onSaveAsset: (assetData: Partial<Asset>) => void;
 }
@@ -96,13 +96,17 @@ const WorkflowModalsContainer: React.FC<WorkflowModalsContainerProps> = ({
   // Define wrapper functions to make type signatures compatible
   const handleCreateNoteWrapper = (assetId: string) => {
     if (onCreateNoteForAsset) {
-      onCreateNoteForAsset(assetId);
+      // Since we expect a note parameter but can't provide it in the current context,
+      // we'll pass an empty string as default
+      onCreateNoteForAsset(assetId, "");
     }
   };
 
   const handleCreateDocumentWrapper = (assetId: string) => {
     if (onCreateDocumentForAsset) {
-      onCreateDocumentForAsset(assetId);
+      // Since we expect document url and name parameters but can't provide them in the current context,
+      // we'll pass empty strings as defaults
+      onCreateDocumentForAsset(assetId, "", "");
     }
   };
 
