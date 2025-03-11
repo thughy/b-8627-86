@@ -1,69 +1,194 @@
-
 import { Asset } from '@/pages/Workflows/models/WorkflowModels';
 
-// Define asset type options
-export const assetTypes = [
-  { value: 'contract', label: 'Contrato' },
-  { value: 'proposal', label: 'Proposta' },
-  { value: 'order', label: 'Pedido' },
-  { value: 'service', label: 'Serviço' },
-  { value: 'product', label: 'Produto' },
-  { value: 'project', label: 'Projeto' },
-  { value: 'task', label: 'Tarefa' },
-  { value: 'document', label: 'Documento' },
-  { value: 'property', label: 'Imóvel' },
-  { value: 'vehicle', label: 'Veículo' },
-  { value: 'subscription', label: 'Assinatura' },
-  { value: 'custom', label: 'Personalizado' },
-];
+export interface AssetParameter {
+  name: string;
+  type: 'text' | 'number' | 'date' | 'boolean' | 'select';
+  value: any;
+  options?: string[]; // For select type
+  description?: string; // Add description for parameter documentation
+  required?: boolean; // Indicate if parameter is required
+  placeholder?: string; // UI helper for input fields
+}
 
-// Get background style based on asset type
-export const getAssetBackground = (type: string): string => {
+// Convert parameters object to array for form handling
+export const parametersToArray = (asset: Asset): AssetParameter[] => {
+  if (!asset.parameters) return [];
+  
+  return Object.entries(asset.parameters).map(([name, value]) => {
+    const param: AssetParameter = {
+      name,
+      value,
+      type: determineParameterType(value)
+    };
+    
+    if (param.type === 'select' && Array.isArray(value)) {
+      param.options = value;
+      param.value = value[0] || '';
+    }
+    
+    return param;
+  });
+};
+
+// Convert parameter array back to object for saving
+export const arrayToParameters = (params: AssetParameter[]): Record<string, any> => {
+  const result: Record<string, any> = {};
+  
+  params.forEach(param => {
+    if (param.name.trim()) {
+      result[param.name] = formatParameterValue(param.value, param.type);
+    }
+  });
+  
+  return result;
+};
+
+// This function converts parameters from the Settings format to the Workflow format
+export const parametersToObject = (params: any[]): Record<string, any> => {
+  const result: Record<string, any> = {};
+  
+  params.forEach(param => {
+    if (param.name && param.name.trim()) {
+      result[param.name] = formatParameterValue(param.value, param.type);
+    }
+  });
+  
+  return result;
+};
+
+// Format parameter value based on type
+export const formatParameterValue = (value: any, type: string): any => {
   switch (type) {
-    case 'contract':
-      return 'bg-gradient-to-r from-blue-50 to-white dark:from-blue-950/50 dark:to-background';
-    case 'proposal':
-      return 'bg-gradient-to-r from-purple-50 to-white dark:from-purple-950/50 dark:to-background';
-    case 'order':
-      return 'bg-gradient-to-r from-green-50 to-white dark:from-green-950/50 dark:to-background';
-    case 'service':
-      return 'bg-gradient-to-r from-indigo-50 to-white dark:from-indigo-950/50 dark:to-background';
-    case 'product':
-      return 'bg-gradient-to-r from-amber-50 to-white dark:from-amber-950/50 dark:to-background';
-    case 'project':
-      return 'bg-gradient-to-r from-teal-50 to-white dark:from-teal-950/50 dark:to-background';
+    case 'number':
+      return Number(value);
+    case 'boolean':
+      return Boolean(value);
+    case 'date':
+      return value instanceof Date ? value : new Date(value);
     default:
-      return 'bg-gradient-to-r from-gray-50 to-white dark:from-gray-900/50 dark:to-background';
+      return String(value);
   }
 };
 
-// Get color for asset status badge
-export const getAssetStatusColor = (status: Asset['status']): string => {
-  switch (status) {
-    case 'open':
-      return 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-500';
-    case 'processing':
-      return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-500';
-    case 'completed':
-      return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-500';
-    case 'cancelled':
-      return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-500';
-    default:
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400';
+// Determine parameter type based on value
+export const determineParameterType = (value: any): 'text' | 'number' | 'date' | 'boolean' | 'select' => {
+  if (typeof value === 'number') return 'number';
+  if (typeof value === 'boolean') return 'boolean';
+  if (value instanceof Date) return 'date';
+  if (Array.isArray(value)) return 'select';
+  
+  // Try to parse as date
+  if (typeof value === 'string') {
+    const datePattern = /^\d{4}-\d{2}-\d{2}|^\d{2}\/\d{2}\/\d{4}/;
+    if (datePattern.test(value)) {
+      const parsedDate = new Date(value);
+      if (!isNaN(parsedDate.getTime())) return 'date';
+    }
   }
+  
+  return 'text';
 };
 
-// Get status options for asset
-export const getAssetStatusOptions = () => {
+// Get label for parameter type
+export const getParameterTypeLabel = (type: string): string => {
+  const typeMap: Record<string, string> = {
+    'text': 'Texto',
+    'number': 'Número',
+    'date': 'Data',
+    'boolean': 'Sim/Não',
+    'select': 'Seleção'
+  };
+  
+  return typeMap[type] || 'Texto';
+};
+
+// Check if a parameter name is valid
+export const isValidParameterName = (name: string): boolean => {
+  return name.trim().length > 0;
+};
+
+// Get a list of system reserved parameter names
+export const getReservedParameterNames = (): string[] => {
   return [
-    { value: 'open', label: 'Aberto' },
-    { value: 'processing', label: 'Em processamento' },
-    { value: 'completed', label: 'Concluído' },
-    { value: 'cancelled', label: 'Cancelado' },
+    'id', 'dealId', 'title', 'description', 'type', 
+    'amount', 'status', 'startDate', 'endDate', 
+    'files', 'createdAt', 'updatedAt'
   ];
 };
 
-// Format currency to BRL
+// Create a new parameter with default values based on type
+export const createDefaultParameter = (type: 'text' | 'number' | 'date' | 'boolean' | 'select' = 'text'): AssetParameter => {
+  const param: AssetParameter = {
+    name: '',
+    type: type,
+    value: getDefaultValueForType(type),
+    required: false,
+    description: ''
+  };
+  
+  if (type === 'select') {
+    param.options = [''];
+  }
+  
+  return param;
+};
+
+// Get default value for parameter type
+export const getDefaultValueForType = (type: string): any => {
+  switch (type) {
+    case 'number':
+      return 0;
+    case 'boolean':
+      return false;
+    case 'date':
+      return new Date();
+    case 'select':
+      return '';
+    default:
+      return '';
+  }
+};
+
+// Validate all parameters in an array
+export const validateParameters = (parameters: AssetParameter[]): { valid: boolean, errors: Record<string, string> } => {
+  const errors: Record<string, string> = {};
+  const reservedNames = getReservedParameterNames();
+  const parameterNames = new Set<string>();
+  
+  parameters.forEach((param, index) => {
+    // Check for empty names
+    if (!param.name.trim()) {
+      errors[`param-${index}`] = 'Nome do parâmetro não pode ser vazio';
+    }
+    
+    // Check for reserved names
+    if (reservedNames.includes(param.name.trim())) {
+      errors[`param-${index}`] = `"${param.name}" é um nome reservado pelo sistema`;
+    }
+    
+    // Check for duplicate names
+    if (parameterNames.has(param.name.trim())) {
+      errors[`param-${index}`] = `Parâmetro "${param.name}" já existe`;
+    } else {
+      parameterNames.add(param.name.trim());
+    }
+    
+    // Validate based on type
+    if (param.type === 'number' && isNaN(Number(param.value))) {
+      errors[`param-${index}-value`] = 'Valor deve ser um número';
+    }
+    
+    if (param.type === 'select' && (!param.options || param.options.length === 0)) {
+      errors[`param-${index}-options`] = 'Pelo menos uma opção deve ser definida';
+    }
+  });
+  
+  return {
+    valid: Object.keys(errors).length === 0,
+    errors
+  };
+};
+
 export const formatCurrency = (value: number): string => {
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
@@ -71,24 +196,65 @@ export const formatCurrency = (value: number): string => {
   }).format(value);
 };
 
-// Get default values for new asset
-export const getDefaultAssetValues = (dealId: string): Partial<Asset> => {
-  return {
-    dealId,
-    title: '',
-    description: '',
-    type: 'contract',
-    amount: 0,
-    status: 'open',
-    parameters: {},
-    workEnvironment: {},
-    files: []
-  };
+export const getAssetStatusOptions = () => {
+  return [
+    { value: 'open', label: 'Aberto' },
+    { value: 'processing', label: 'Processando' },
+    { value: 'completed', label: 'Concluído' },
+    { value: 'canceled', label: 'Cancelado' }
+  ];
 };
 
-// Normalize asset type string for consistent usage
-export const normalizeAssetType = (type: string): string => {
-  const normalizedType = type.toLowerCase().trim();
-  const foundType = assetTypes.find(t => t.value === normalizedType);
-  return foundType ? foundType.value : 'custom';
+// Add any missing exports that might be referenced in other files
+export const assetTypes = [
+  { value: 'contract', label: 'Contrato' },
+  { value: 'proposal', label: 'Proposta' },
+  { value: 'product', label: 'Produto' },
+  { value: 'service', label: 'Serviço' },
+  { value: 'project', label: 'Projeto' },
+  { value: 'document', label: 'Documento' },
+  { value: 'other', label: 'Outro' }
+];
+
+export const getAssetTypeColor = (type: string): string => {
+  switch (type) {
+    case 'contract': return 'bg-blue-500';
+    case 'proposal': return 'bg-green-500';
+    case 'product': return 'bg-purple-500';
+    case 'service': return 'bg-amber-500';
+    case 'project': return 'bg-teal-500';
+    case 'document': return 'bg-rose-500';
+    default: return 'bg-slate-500';
+  }
+};
+
+export const getAssetTypeIcon = (type: string): string => {
+  switch (type) {
+    case 'contract': return 'FileText';
+    case 'proposal': return 'FileCheck';
+    case 'product': return 'Package';
+    case 'service': return 'Tool';
+    case 'project': return 'GitBranch';
+    case 'document': return 'File';
+    default: return 'File';
+  }
+};
+
+export const formatAssetAmount = formatCurrency;
+
+export const validateAssetRequiredFields = (asset: any): { valid: boolean, errors: string[] } => {
+  const errors: string[] = [];
+  
+  if (!asset.title?.trim()) {
+    errors.push('O título do asset é obrigatório');
+  }
+  
+  if (!asset.type) {
+    errors.push('O tipo do asset é obrigatório');
+  }
+  
+  return {
+    valid: errors.length === 0,
+    errors
+  };
 };
