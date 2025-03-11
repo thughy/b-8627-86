@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { PlusCircle, FileText, HistoryIcon } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { AssetParametersTab } from '../asset-detail/AssetParametersTab';
-import { AssetFocusTab } from '../asset-detail/AssetFocusTab';
-import { AssetHistoryTab } from '../asset-detail/AssetHistoryTab';
+import AssetFocusTab from '../asset-detail/AssetFocusTab';
+import AssetHistoryTab from '../asset-detail/AssetHistoryTab';
 
 interface AssetContentProps {
   asset: Asset;

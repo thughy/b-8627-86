@@ -4,17 +4,25 @@ import { AssetParameter, getParameterTypeLabel } from '@/pages/Workflows/compone
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Calendar, CheckSquare, Type, Hash, ListFilter } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Trash2 } from 'lucide-react';
 
 interface ParameterDisplayProps {
   parameters: AssetParameter[];
   className?: string;
   maxHeight?: string;
+  onDelete?: () => void;
+  onUpdate?: (value: any) => void;
+  readOnly?: boolean;
 }
 
 const ParameterDisplay: React.FC<ParameterDisplayProps> = ({ 
   parameters, 
   className = '',
-  maxHeight = "500px"
+  maxHeight = "500px",
+  onDelete,
+  onUpdate,
+  readOnly = false
 }) => {
   const getParameterIcon = (type: string) => {
     switch (type) {
@@ -51,8 +59,6 @@ const ParameterDisplay: React.FC<ParameterDisplayProps> = ({
   
   return (
     <div className={`space-y-4 ${className}`}>
-      <h3 className="text-base font-medium">Parâmetros</h3>
-      
       <ScrollArea className={`max-h-[${maxHeight}]`}>
         <div className="space-y-3">
           {parameters.length === 0 ? (
@@ -72,7 +78,14 @@ const ParameterDisplay: React.FC<ParameterDisplayProps> = ({
                     </div>
                     <span className="font-medium">{param.name}</span>
                   </div>
-                  <Badge variant="outline">{getParameterTypeLabel(param.type)}</Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline">{getParameterTypeLabel(param.type)}</Badge>
+                    {!readOnly && onDelete && (
+                      <Button variant="ghost" size="sm" onClick={onDelete} className="h-7 w-7 p-0">
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    )}
+                  </div>
                 </div>
                 
                 {param.description && (
