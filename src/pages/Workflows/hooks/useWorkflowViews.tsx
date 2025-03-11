@@ -1,8 +1,20 @@
 
 import { useState } from 'react';
 
-export const useWorkflowViews = () => {
-  const [viewMode, setViewMode] = useState<'kanban' | 'list' | 'deals' | 'tasks'>('deals');
+export type ContentViewMode = 'deals' | 'tasks';
+export type DisplayViewMode = 'kanban' | 'list';
+export type ViewMode = ContentViewMode | DisplayViewMode;
 
-  return { viewMode, setViewMode };
+export const useWorkflowViews = () => {
+  const [contentMode, setContentMode] = useState<ContentViewMode>('deals');
+  const [displayMode, setDisplayMode] = useState<DisplayViewMode>('kanban');
+
+  return { 
+    contentMode, 
+    setContentMode,
+    displayMode,
+    setDisplayMode,
+    // Combined getter for backward compatibility
+    viewMode: contentMode as ViewMode
+  };
 };

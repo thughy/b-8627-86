@@ -3,11 +3,14 @@ import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import WorkflowKanbanView from './WorkflowKanbanView';
 import WorkflowTaskView from './WorkflowTaskView';
+import { ContentViewMode, DisplayViewMode } from '../hooks/useWorkflowViews';
 import { Deal, Pipeline, Stage } from '../models/WorkflowModels';
 
 interface WorkflowViewSelectorProps {
-  viewMode: 'deals' | 'tasks' | 'kanban' | 'list';
-  onViewModeChange: (value: 'deals' | 'tasks') => void;
+  contentMode: ContentViewMode;
+  displayMode: DisplayViewMode;
+  onContentModeChange: (value: ContentViewMode) => void;
+  onDisplayModeChange: (value: DisplayViewMode) => void;
   filteredDeals: Deal[];
   stages: Stage[];
   handleDragEnd: (result: any) => void;
@@ -20,8 +23,10 @@ interface WorkflowViewSelectorProps {
 }
 
 const WorkflowViewSelector: React.FC<WorkflowViewSelectorProps> = ({
-  viewMode,
-  onViewModeChange,
+  contentMode,
+  displayMode,
+  onContentModeChange,
+  onDisplayModeChange,
   filteredDeals,
   stages,
   handleDragEnd,
@@ -34,10 +39,10 @@ const WorkflowViewSelector: React.FC<WorkflowViewSelectorProps> = ({
 }) => {
   return (
     <Tabs 
-      value={viewMode} 
+      value={contentMode} 
       onValueChange={(value: string) => {
         if (value === 'deals' || value === 'tasks') {
-          onViewModeChange(value as 'deals' | 'tasks');
+          onContentModeChange(value as ContentViewMode);
         }
       }} 
       className="mt-4"

@@ -1,6 +1,8 @@
+
 import React from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useWorkflowMain } from './hooks/useWorkflowMain';
+import { useWorkflowViews } from './hooks/useWorkflowViews';
 import WorkflowHeaderSection from './components/WorkflowHeaderSection';
 import WorkflowViewContent from './components/WorkflowViewContent';
 import WorkflowModalsContainer from './components/WorkflowModalsContainer';
@@ -14,8 +16,6 @@ export default function WorkflowsPage() {
     filteredDeals,
     searchTerm,
     setSearchTerm,
-    viewMode,
-    setViewMode,
     selectedWorkflow,
     setSelectedWorkflow,
     selectedPipeline,
@@ -65,6 +65,13 @@ export default function WorkflowsPage() {
     isLoading
   } = useWorkflowMain();
 
+  const { 
+    contentMode, 
+    setContentMode, 
+    displayMode, 
+    setDisplayMode 
+  } = useWorkflowViews();
+
   const handleCreateNoteForAssetWrapper = (assetId: string, note: string) => {
     return handleCreateNoteForAsset(assetId, note);
   };
@@ -84,20 +91,20 @@ export default function WorkflowsPage() {
           setSelectedWorkflow={setSelectedWorkflow}
           selectedPipeline={selectedPipeline}
           setSelectedPipeline={setSelectedPipeline}
-          viewMode={viewMode}
-          setViewMode={setViewMode}
+          contentMode={contentMode}
+          displayMode={displayMode}
+          setContentMode={setContentMode}
+          setDisplayMode={setDisplayMode}
           workflows={workflows}
           pipelines={pipelines}
           onCreateDeal={handleCreateDeal}
         />
 
         <WorkflowViewContent 
-          viewMode={viewMode}
-          onViewModeChange={(value) => {
-            if (value === 'kanban' || value === 'list') {
-              setViewMode(value as 'kanban' | 'list');
-            }
-          }}
+          contentMode={contentMode}
+          displayMode={displayMode}
+          onContentModeChange={setContentMode}
+          onDisplayModeChange={setDisplayMode}
           filteredDeals={filteredDeals}
           stages={stages}
           handleDragEnd={handleDragEnd}

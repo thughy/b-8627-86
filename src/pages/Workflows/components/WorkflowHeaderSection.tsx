@@ -2,6 +2,7 @@
 import React from 'react';
 import WorkflowHeader from './WorkflowHeader';
 import WorkflowFilters from './WorkflowFilters';
+import { ContentViewMode, DisplayViewMode } from '../hooks/useWorkflowViews';
 import { Deal, Pipeline, Workflow } from '../models/WorkflowModels';
 
 interface WorkflowHeaderSectionProps {
@@ -12,8 +13,10 @@ interface WorkflowHeaderSectionProps {
   setSelectedWorkflow: (id: string) => void;
   selectedPipeline: string;
   setSelectedPipeline: (id: string) => void;
-  viewMode: 'deals' | 'tasks' | 'kanban' | 'list';
-  setViewMode: (mode: 'deals' | 'tasks' | 'kanban' | 'list') => void;
+  contentMode: ContentViewMode;
+  displayMode: DisplayViewMode;
+  setContentMode: (mode: ContentViewMode) => void;
+  setDisplayMode: (mode: DisplayViewMode) => void;
   workflows: Workflow[];
   pipelines: Pipeline[];
   onCreateDeal: () => void;
@@ -27,8 +30,10 @@ const WorkflowHeaderSection: React.FC<WorkflowHeaderSectionProps> = ({
   setSelectedWorkflow,
   selectedPipeline,
   setSelectedPipeline,
-  viewMode,
-  setViewMode,
+  contentMode,
+  displayMode,
+  setContentMode,
+  setDisplayMode,
   workflows,
   pipelines,
   onCreateDeal
@@ -44,12 +49,8 @@ const WorkflowHeaderSection: React.FC<WorkflowHeaderSectionProps> = ({
         onWorkflowChange={setSelectedWorkflow}
         selectedPipeline={selectedPipeline}
         onPipelineChange={setSelectedPipeline}
-        viewMode={viewMode === 'kanban' || viewMode === 'list' ? viewMode : 'kanban'}
-        onViewModeChange={(value) => {
-          if (value === 'kanban' || value === 'list') {
-            setViewMode(value);
-          }
-        }}
+        viewMode={displayMode}
+        onViewModeChange={setDisplayMode}
         workflows={workflows}
         pipelines={pipelines}
       />

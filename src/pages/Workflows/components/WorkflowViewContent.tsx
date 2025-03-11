@@ -1,11 +1,14 @@
 
 import React from 'react';
 import WorkflowViewSelector from './WorkflowViewSelector';
+import { ContentViewMode, DisplayViewMode } from '../hooks/useWorkflowViews';
 import { Deal, Pipeline, Stage } from '../models/WorkflowModels';
 
 interface WorkflowViewContentProps {
-  viewMode: 'deals' | 'tasks' | 'kanban' | 'list';
-  onViewModeChange: (value: 'deals' | 'tasks') => void;
+  contentMode: ContentViewMode;
+  displayMode: DisplayViewMode;
+  onContentModeChange: (value: ContentViewMode) => void;
+  onDisplayModeChange: (value: DisplayViewMode) => void;
   filteredDeals: Deal[];
   stages: Stage[];
   handleDragEnd: (result: any) => void;
@@ -18,8 +21,10 @@ interface WorkflowViewContentProps {
 }
 
 const WorkflowViewContent: React.FC<WorkflowViewContentProps> = ({
-  viewMode,
-  onViewModeChange,
+  contentMode,
+  displayMode,
+  onContentModeChange,
+  onDisplayModeChange,
   filteredDeals,
   stages,
   handleDragEnd,
@@ -32,8 +37,10 @@ const WorkflowViewContent: React.FC<WorkflowViewContentProps> = ({
 }) => {
   return (
     <WorkflowViewSelector 
-      viewMode={viewMode}
-      onViewModeChange={onViewModeChange}
+      contentMode={contentMode}
+      displayMode={displayMode}
+      onContentModeChange={onContentModeChange}
+      onDisplayModeChange={onDisplayModeChange}
       filteredDeals={filteredDeals}
       stages={stages}
       handleDragEnd={handleDragEnd}
