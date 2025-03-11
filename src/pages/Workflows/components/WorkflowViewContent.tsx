@@ -33,41 +33,19 @@ const WorkflowViewContent: React.FC<WorkflowViewContentProps> = ({
   getChatPreview
 }) => {
   return (
-    <Tabs 
-      value={viewMode} 
-      onValueChange={(value) => {
-        if (value === 'kanban' || value === 'list') {
-          onViewModeChange(value);
-        }
-      }} 
-      className="mt-4"
-    >
-      <TabsList className="mb-4">
-        <TabsTrigger value="kanban">Kanban</TabsTrigger>
-        <TabsTrigger value="list">Lista</TabsTrigger>
-      </TabsList>
-      
-      <TabsContent value="kanban" className="mt-0">
-        <WorkflowKanbanView 
-          stages={stages} 
-          deals={filteredDeals} 
-          onDragEnd={handleDragEnd} 
-          onDealClick={openDealModal}
-          onCreateDeal={handleCreateDeal}
-          selectedPipeline={selectedPipeline}
-          pipelines={pipelines}
-          onPipelineChange={setSelectedPipeline}
-          getChatPreview={getChatPreview}
-        />
-      </TabsContent>
-      
-      <TabsContent value="list" className="mt-0">
-        <DealListView 
-          deals={filteredDeals} 
-          onDealClick={openDealModal} 
-        />
-      </TabsContent>
-    </Tabs>
+    <div className="mt-4">
+      <WorkflowKanbanView 
+        stages={stages} 
+        deals={filteredDeals} 
+        onDragEnd={handleDragEnd} 
+        onDealClick={openDealModal}
+        onCreateDeal={handleCreateDeal}
+        selectedPipeline={selectedPipeline}
+        pipelines={pipelines}
+        onPipelineChange={setSelectedPipeline}
+        getChatPreview={getChatPreview}
+      />
+    </div>
   );
 };
 
