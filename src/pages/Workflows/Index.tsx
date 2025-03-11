@@ -80,15 +80,15 @@ export default function WorkflowsPage() {
 
   // Define wrapper functions to make type signatures compatible
   const handleCreateNoteWrapper = (assetId: string) => {
-    // This function will be called with only assetId from the DealCardModal
-    // We provide a default value for the note
-    handleCreateNoteForAsset && handleCreateNoteForAsset(assetId, "Nova nota");
+    if (handleCreateNoteForAsset) {
+      handleCreateNoteForAsset(assetId, "Nova nota");
+    }
   };
 
   const handleCreateDocumentWrapper = (assetId: string) => {
-    // This function will be called with only assetId from the DealCardModal
-    // We provide default values for documentUrl and documentName
-    handleCreateDocumentForAsset && handleCreateDocumentForAsset(assetId, "https://example.com/document", "Novo documento");
+    if (handleCreateDocumentForAsset) {
+      handleCreateDocumentForAsset(assetId, "https://example.com/document", "Novo documento");
+    }
   };
 
   return (
@@ -170,9 +170,9 @@ export default function WorkflowsPage() {
             onCloseAssetModal={closeAssetModal}
             selectedAsset={selectedAsset}
             onEditAsset={handleEditAsset}
-            onDeleteAsset={(assetId) => handleDeleteAsset(assetId)}
-            onCompleteAsset={(assetId) => handleCompleteAsset(assetId)}
-            onCancelAsset={(assetId) => handleCancelAsset(assetId)}
+            onDeleteAsset={handleDeleteAsset}
+            onCompleteAsset={handleCompleteAsset}
+            onCancelAsset={handleCancelAsset}
             onCreateNoteForAsset={handleCreateNoteWrapper}
             onCreateDocumentForAsset={handleCreateDocumentWrapper}
           />

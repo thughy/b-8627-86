@@ -60,7 +60,7 @@ export const useWorkflowMain = () => {
         });
       } else {
         // Criar novo deal
-        const newDeal = workflowState.handleCreateDeal(dealData);
+        const newDeal = workflowState.handleCreateDeal();
         
         toast({
           title: "Deal criado",

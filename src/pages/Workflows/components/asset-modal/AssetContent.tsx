@@ -1,11 +1,13 @@
 
 import React, { useState } from 'react';
-import { Asset } from '@/pages/Workflows/models/WorkflowModels';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import AssetParametersTab from '../asset-detail/AssetParametersTab';
-import AssetFocusTab from '../asset-detail/AssetFocusTab';
-import AssetHistoryTab from '../asset-detail/AssetHistoryTab';
+import { Asset } from '@/pages/Workflows/models/WorkflowModels';
+import { Button } from '@/components/ui/button';
+import { PlusCircle, FileText, HistoryIcon } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { AssetParametersTab } from '../asset-detail/AssetParametersTab';
+import { AssetFocusTab } from '../asset-detail/AssetFocusTab';
+import { AssetHistoryTab } from '../asset-detail/AssetHistoryTab';
 
 interface AssetContentProps {
   asset: Asset;
@@ -21,60 +23,88 @@ const AssetContent: React.FC<AssetContentProps> = ({
   onCreateDocument
 }) => {
   const [activeTab, setActiveTab] = useState('parameters');
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleAssetUpdate = (updatedAsset: Asset) => {
+    if (onEditAsset) {
+      onEditAsset(updatedAsset);
+    }
+  };
+
+  const toggleEditing = () => {
+    setIsEditing(!isEditing);
+  };
 
   return (
-    <div className="flex-1 grid grid-cols-12 gap-6 px-6 pb-6 overflow-hidden">
-      {/* Coluna de Parâmetros com ScrollArea independente */}
-      <div className="col-span-4 flex flex-col overflow-hidden">
-        <h3 className="text-lg font-medium mb-3">Parâmetros</h3>
-        <div className="border rounded-md flex-1 overflow-hidden bg-background/80 backdrop-blur-sm">
-          <ScrollArea className="h-[calc(80vh-250px)]">
-            <div className="p-4">
-              <AssetParametersTab asset={asset} onEditAsset={onEditAsset} />
+    <div className="flex-1 overflow-hidden p-4 bg-white rounded-b-lg">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
+        <div className="flex justify-between items-center mb-4">
+          <TabsList>
+            <TabsTrigger value="parameters">Parâmetros</TabsTrigger>
+            <TabsTrigger value="focus">Foco</TabsTrigger>
+            <TabsTrigger value="history">Histórico</TabsTrigger>
+          </TabsList>
+
+          {activeTab === 'focus' && (
+            <div className="flex gap-2">
+              {onCreateNote && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => onCreateNote(asset.id)}
+                  className="flex items-center"
+                >
+                  <PlusCircle className="h-4 w-4 mr-2" />
+                  Nota
+                </Button>
+              )}
+              {onCreateDocument && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => onCreateDocument(asset.id)}
+                  className="flex items-center"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  Documento
+                </Button>
+              )}
             </div>
-          </ScrollArea>
+          )}
+
+          {activeTab === 'parameters' && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={toggleEditing}
+            >
+              {isEditing ? 'Concluir Edição' : 'Editar Parâmetros'}
+            </Button>
+          )}
         </div>
-      </div>
-      
-      {/* Coluna de Workspace com ScrollArea independente */}
-      <div className="col-span-8 flex flex-col overflow-hidden">
-        <h3 className="text-lg font-medium mb-3">Workspace</h3>
-        <div className="border rounded-md flex-1 overflow-hidden bg-background/80 backdrop-blur-sm">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
-            <div className="px-4 pt-4">
-              <TabsList>
-                <TabsTrigger value="parameters">Detalhes</TabsTrigger>
-                <TabsTrigger value="focus">Foco</TabsTrigger>
-                <TabsTrigger value="history">Histórico</TabsTrigger>
-              </TabsList>
-            </div>
-            
-            <ScrollArea className="flex-1 h-[calc(80vh-300px)]">
-              <div className="p-4">
-                <TabsContent value="parameters" className="m-0 h-full">
-                  <AssetFocusTab 
-                    asset={asset} 
-                    onCreateNote={onCreateNote}
-                    onCreateDocument={onCreateDocument}
-                  />
-                </TabsContent>
-                
-                <TabsContent value="focus" className="m-0 h-full">
-                  <AssetFocusTab 
-                    asset={asset} 
-                    onCreateNote={onCreateNote}
-                    onCreateDocument={onCreateDocument}
-                  />
-                </TabsContent>
-                
-                <TabsContent value="history" className="m-0 h-full">
-                  <AssetHistoryTab asset={asset} />
-                </TabsContent>
-              </div>
-            </ScrollArea>
-          </Tabs>
-        </div>
-      </div>
+
+        <ScrollArea className="flex-1">
+          <TabsContent value="parameters" className="mt-0 h-full">
+            <AssetParametersTab 
+              asset={asset} 
+              onUpdate={handleAssetUpdate} 
+              readOnly={!isEditing}
+            />
+          </TabsContent>
+          
+          <TabsContent value="focus" className="mt-0 h-full">
+            <AssetFocusTab 
+              asset={asset}
+            />
+          </TabsContent>
+          
+          <TabsContent value="history" className="mt-0 h-full">
+            <AssetHistoryTab 
+              asset={asset}
+            />
+          </TabsContent>
+        </ScrollArea>
+      </Tabs>
     </div>
   );
 };
