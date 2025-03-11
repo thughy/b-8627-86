@@ -29,7 +29,7 @@ const AssetParametersTab: React.FC<AssetParametersTabProps> = ({ asset, onEditAs
   const [description, setDescription] = useState(asset.description || '');
   const [type, setType] = useState(asset.type);
   const [amount, setAmount] = useState(asset.amount || 0);
-  const [status, setStatus] = useState(asset.status);
+  const [status, setStatus] = useState<'open' | 'processing' | 'completed' | 'cancelled'>(asset.status);
   const [startDate, setStartDate] = useState(asset.startDate ? new Date(asset.startDate) : undefined);
   const [endDate, setEndDate] = useState(asset.endDate ? new Date(asset.endDate) : undefined);
   const [parameters, setParameters] = useState<AssetParameter[]>(
@@ -72,6 +72,10 @@ const AssetParametersTab: React.FC<AssetParametersTabProps> = ({ asset, onEditAs
     const updatedParams = [...parameters];
     updatedParams[index].value = value;
     setParameters(updatedParams);
+  };
+  
+  const handleStatusChange = (value: string) => {
+    setStatus(value as 'open' | 'processing' | 'completed' | 'cancelled');
   };
   
   const renderParameterField = (param: AssetParameter, index: number) => {
@@ -229,7 +233,7 @@ const AssetParametersTab: React.FC<AssetParametersTabProps> = ({ asset, onEditAs
             <Label htmlFor="status">Status</Label>
             <Select 
               value={status} 
-              onValueChange={setStatus}
+              onValueChange={handleStatusChange}
               disabled={!isEditing}
             >
               <SelectTrigger id="status">

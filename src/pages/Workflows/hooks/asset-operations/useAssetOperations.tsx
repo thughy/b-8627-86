@@ -1,177 +1,109 @@
 
 import { useState } from 'react';
-import { Asset } from '@/pages/Workflows/models/WorkflowModels';
 import { useToast } from '@/hooks/use-toast';
-import { getAssetBackground } from '../../components/asset-modal/utils/assetStyleUtils';
-import { validateAssetRequiredFields, getDefaultAssetValues } from '../../components/asset-modal/utils/assetTypeUtils';
+import { Asset } from '@/pages/Workflows/models/WorkflowModels';
+import { validateAssetRequiredFields } from '../../components/asset-modal/utils/assetTypeUtils';
 
-export const useAssetOperations = (onUpdate?: (assets: Asset[]) => void) => {
-  const [isProcessing, setIsProcessing] = useState(false);
+export const useAssetOperations = () => {
   const { toast } = useToast();
-
-  const createAsset = async (dealId: string, initialData?: Partial<Asset>): Promise<Asset> => {
-    setIsProcessing(true);
+  const [isAssetLoading, setIsAssetLoading] = useState(false);
+  
+  const createAsset = (asset: Partial<Asset>) => {
+    setIsAssetLoading(true);
     
     try {
-      const defaultValues = getDefaultAssetValues(dealId);
-      const newAsset: Asset = {
-        ...defaultValues,
-        ...initialData,
-        id: `asset-${Date.now()}`,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      } as Asset;
+      // Validate required fields
+      const validation = validateAssetRequiredFields(asset);
       
-      console.log('Created new asset:', newAsset);
+      if (!validation.valid) {
+        toast({
+          title: "Campos obrigatórios",
+          description: validation.errors.join('\n'),
+          variant: "destructive"
+        });
+        setIsAssetLoading(false);
+        return null;
+      }
       
-      toast({
-        title: "Ativo criado",
-        description: "O ativo foi criado com sucesso",
-      });
+      // Simulate API call
+      console.log('Creating asset:', asset);
       
-      return newAsset;
+      // Return success
+      return asset as Asset;
     } catch (error) {
       console.error('Error creating asset:', error);
       toast({
-        title: "Erro ao criar ativo",
-        description: "Ocorreu um erro ao criar o ativo",
-        variant: "destructive",
+        title: "Erro",
+        description: "Ocorreu um erro ao criar o asset",
+        variant: "destructive"
       });
-      throw error;
+      return null;
     } finally {
-      setIsProcessing(false);
+      setIsAssetLoading(false);
     }
   };
   
-  const updateAsset = async (asset: Asset): Promise<Asset> => {
-    setIsProcessing(true);
+  const updateAsset = (asset: Asset) => {
+    setIsAssetLoading(true);
     
     try {
-      if (!validateAssetRequiredFields(asset)) {
-        throw new Error('Missing required fields');
+      // Validate required fields
+      const validation = validateAssetRequiredFields(asset);
+      
+      if (!validation.valid) {
+        toast({
+          title: "Campos obrigatórios",
+          description: validation.errors.join('\n'),
+          variant: "destructive"
+        });
+        setIsAssetLoading(false);
+        return null;
       }
       
-      const updatedAsset = {
-        ...asset,
-        updatedAt: new Date()
-      };
+      // Simulate API call
+      console.log('Updating asset:', asset);
       
-      console.log('Updated asset:', updatedAsset);
-      
-      toast({
-        title: "Ativo atualizado",
-        description: "O ativo foi atualizado com sucesso",
-      });
-      
-      return updatedAsset;
+      // Return success
+      return asset;
     } catch (error) {
       console.error('Error updating asset:', error);
       toast({
-        title: "Erro ao atualizar ativo",
-        description: "Ocorreu um erro ao atualizar o ativo",
-        variant: "destructive",
+        title: "Erro",
+        description: "Ocorreu um erro ao atualizar o asset",
+        variant: "destructive"
       });
-      throw error;
+      return null;
     } finally {
-      setIsProcessing(false);
+      setIsAssetLoading(false);
     }
   };
   
-  const deleteAsset = async (assetId: string): Promise<string> => {
-    setIsProcessing(true);
+  const deleteAsset = (assetId: string) => {
+    setIsAssetLoading(true);
     
     try {
-      console.log('Deleted asset:', assetId);
+      // Simulate API call
+      console.log('Deleting asset:', assetId);
       
-      toast({
-        title: "Ativo excluído",
-        description: "O ativo foi excluído com sucesso",
-      });
-      
-      return assetId;
+      // Return success
+      return true;
     } catch (error) {
       console.error('Error deleting asset:', error);
       toast({
-        title: "Erro ao excluir ativo",
-        description: "Ocorreu um erro ao excluir o ativo",
-        variant: "destructive",
+        title: "Erro",
+        description: "Ocorreu um erro ao excluir o asset",
+        variant: "destructive"
       });
-      throw error;
+      return false;
     } finally {
-      setIsProcessing(false);
+      setIsAssetLoading(false);
     }
-  };
-  
-  const changeAssetStatus = async (asset: Asset, newStatus: Asset['status'], reasonForCancellation?: string): Promise<Asset> => {
-    setIsProcessing(true);
-    
-    try {
-      const updatedAsset = {
-        ...asset,
-        status: newStatus,
-        ...(newStatus === 'cancelled' && reasonForCancellation ? { cancellationReason: reasonForCancellation } : {}),
-        updatedAt: new Date()
-      };
-      
-      console.log('Changed asset status:', updatedAsset);
-      
-      const statusMessages = {
-        'open': "Ativo reaberto",
-        'processing': "Ativo em processamento",
-        'completed': "Ativo concluído",
-        'cancelled': "Ativo cancelado"
-      };
-      
-      toast({
-        title: statusMessages[newStatus] || "Status atualizado",
-        description: "O status do ativo foi atualizado com sucesso",
-      });
-      
-      return updatedAsset;
-    } catch (error) {
-      console.error('Error changing asset status:', error);
-      toast({
-        title: "Erro ao mudar status",
-        description: "Ocorreu um erro ao alterar o status do ativo",
-        variant: "destructive",
-      });
-      throw error;
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-  
-  const getAssetById = (assets: Asset[], assetId: string): Asset | undefined => {
-    return assets.find(asset => asset.id === assetId);
-  };
-  
-  const getAssetsByDeal = (assets: Asset[], dealId: string): Asset[] => {
-    return assets.filter(asset => asset.dealId === dealId);
-  };
-  
-  const getAssetSummary = (asset: Asset) => {
-    const background = getAssetBackground(asset.type);
-    const isCompleted = asset.status === 'completed';
-    const isCancelled = asset.status === 'cancelled';
-    
-    return {
-      background,
-      isCompleted,
-      isCancelled,
-      statusLabel: asset.status === 'open' ? 'Aberto' : 
-                  asset.status === 'processing' ? 'Em processamento' : 
-                  asset.status === 'completed' ? 'Concluído' : 'Cancelado'
-    };
   };
   
   return {
-    isProcessing,
+    isAssetLoading,
     createAsset,
     updateAsset,
-    deleteAsset,
-    changeAssetStatus,
-    getAssetById,
-    getAssetsByDeal,
-    getAssetSummary
+    deleteAsset
   };
 };

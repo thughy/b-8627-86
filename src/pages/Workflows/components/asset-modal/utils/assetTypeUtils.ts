@@ -20,6 +20,11 @@ export const assetTypes = [
   { value: 'other', label: 'Outro' },
 ];
 
+// Return common asset types for dropdown selection
+export const getCommonAssetTypes = (): string[] => {
+  return assetTypes.map(type => type.value);
+};
+
 // Status options
 export const getAssetStatusOptions = () => [
   { value: 'open', label: 'Aberto' },
@@ -61,6 +66,42 @@ export const getAssetTypeColor = (type: string): string => {
       return 'bg-lime-500';
     default:
       return 'bg-gray-500';
+  }
+};
+
+// Get icon based on asset type
+export const getAssetTypeIcon = (type: string): string => {
+  const normalizedType = normalizeAssetType(type);
+  
+  switch (normalizedType) {
+    case 'contract':
+      return 'file-text';
+    case 'product':
+      return 'package';
+    case 'service':
+      return 'tool';
+    case 'lead':
+      return 'user';
+    case 'proposal':
+      return 'file-check';
+    case 'project':
+      return 'briefcase';
+    case 'property':
+      return 'home';
+    case 'vehicle':
+      return 'car';
+    case 'legal':
+      return 'scale';
+    case 'document':
+      return 'file';
+    case 'ticket':
+      return 'ticket';
+    case 'order':
+      return 'shopping-cart';
+    case 'payment':
+      return 'credit-card';
+    default:
+      return 'box';
   }
 };
 
@@ -124,6 +165,11 @@ export const formatCurrency = (value?: number): string => {
   }).format(value);
 };
 
+// Format asset amount for display
+export const formatAssetAmount = (amount?: number): string => {
+  return formatCurrency(amount);
+};
+
 // Get default asset values for a new asset
 export const getDefaultAssetValues = (dealId: string): Partial<Asset> => {
   return {
@@ -158,4 +204,22 @@ export const getStatusChangeLabel = (status: string): string => {
     default:
       return `Status alterado para ${status}`;
   }
+};
+
+// Validate that required fields are present
+export const validateAssetRequiredFields = (asset: Partial<Asset>): { valid: boolean; errors: string[] } => {
+  const errors: string[] = [];
+  
+  if (!asset.title || asset.title.trim() === '') {
+    errors.push('O título do asset é obrigatório');
+  }
+  
+  if (!asset.type || asset.type.trim() === '') {
+    errors.push('O tipo do asset é obrigatório');
+  }
+  
+  return {
+    valid: errors.length === 0,
+    errors
+  };
 };

@@ -10,7 +10,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { getCommonAssetTypes, getAssetStatusOptions } from './asset-modal/utils/assetTypeUtils';
+import { assetTypes, getAssetStatusOptions } from './asset-modal/utils/assetTypeUtils';
 import {
   Select,
   SelectContent,
@@ -104,8 +104,8 @@ const AssetForm: React.FC<AssetFormProps> = ({
     onSubmit({ ...formData, parameters });
   };
 
-  // Obter opções comuns para types e status
-  const assetTypes = getCommonAssetTypes();
+  // Get common asset types as array
+  const commonAssetTypes = assetTypes.map(type => type.value);
   const statusOptions = getAssetStatusOptions();
 
   return (
@@ -144,9 +144,9 @@ const AssetForm: React.FC<AssetFormProps> = ({
               <SelectValue placeholder="Selecione o tipo" />
             </SelectTrigger>
             <SelectContent>
-              {assetTypes.map((type) => (
+              {commonAssetTypes.map((type) => (
                 <SelectItem key={type} value={type}>
-                  {type}
+                  {assetTypes.find(t => t.value === type)?.label || type}
                 </SelectItem>
               ))}
               <SelectItem value="custom">Outro (personalizado)</SelectItem>

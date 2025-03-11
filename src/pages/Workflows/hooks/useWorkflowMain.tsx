@@ -34,11 +34,8 @@ export const useWorkflowMain = () => {
   }, [workflowState.selectedAsset, workflowState.selectedDeal]);
 
   // Manipuladores de ações para Deal
-  const handleCreateDeal = (stageId?: string) => {
-    if (stageId) {
-      setSelectedStageForNewDeal(stageId);
-    }
-    modals.openDealCreationModal({ stageId });
+  const handleCreateDeal = () => {
+    modals.openDealCreationModal();
   };
   
   const handleEditDeal = (deal: Deal) => {
