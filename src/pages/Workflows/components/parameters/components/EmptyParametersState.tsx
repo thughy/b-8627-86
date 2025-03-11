@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Settings, PlusCircle, FileText } from 'lucide-react';
+import { Settings, PlusCircle, FileText, Database } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -8,8 +8,9 @@ interface EmptyParametersStateProps {
   onAddParameter?: () => void;
   showAddButton?: boolean;
   message?: string;
-  icon?: 'settings' | 'document';
+  icon?: 'settings' | 'document' | 'database';
   className?: string;
+  size?: 'default' | 'small';
 }
 
 const EmptyParametersState: React.FC<EmptyParametersStateProps> = ({ 
@@ -17,26 +18,40 @@ const EmptyParametersState: React.FC<EmptyParametersStateProps> = ({
   showAddButton = false,
   message = "Nenhum parâmetro definido.",
   icon = 'settings',
-  className
+  className,
+  size = 'default'
 }) => {
+  const getIcon = () => {
+    switch (icon) {
+      case 'settings': return <Settings className={size === 'default' ? "h-10 w-10 text-muted-foreground/60" : "h-8 w-8 text-muted-foreground/60"} />;
+      case 'document': return <FileText className={size === 'default' ? "h-10 w-10 text-muted-foreground/60" : "h-8 w-8 text-muted-foreground/60"} />;
+      case 'database': return <Database className={size === 'default' ? "h-10 w-10 text-muted-foreground/60" : "h-8 w-8 text-muted-foreground/60"} />;
+      default: return <Settings className={size === 'default' ? "h-10 w-10 text-muted-foreground/60" : "h-8 w-8 text-muted-foreground/60"} />;
+    }
+  };
+
   return (
     <div className={cn(
-      "text-center py-8 px-4 border border-dashed rounded-md border-muted-foreground/30 bg-muted/20",
+      "text-center border border-dashed rounded-md border-muted-foreground/30 bg-muted/20",
+      size === 'default' ? "py-8 px-4" : "py-4 px-3",
       className
     )}>
       <div className="flex justify-center mb-3">
-        {icon === 'settings' ? (
-          <Settings className="h-10 w-10 text-muted-foreground/60" />
-        ) : (
-          <FileText className="h-10 w-10 text-muted-foreground/60" />
-        )}
+        <div className="bg-muted/30 p-3 rounded-full">
+          {getIcon()}
+        </div>
       </div>
-      <p className="text-muted-foreground mb-4">{message}</p>
+      <p className={cn(
+        "text-muted-foreground",
+        size === 'default' ? "mb-4" : "mb-3 text-sm"
+      )}>
+        {message}
+      </p>
       
       {showAddButton && onAddParameter && (
         <Button 
           variant="outline" 
-          size="sm" 
+          size={size === 'default' ? "sm" : "xs"}
           onClick={onAddParameter}
           className="flex items-center gap-2"
         >
