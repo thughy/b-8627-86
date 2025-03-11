@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Settings, PlusCircle, FileText, Database, Gantt } from 'lucide-react';
+import { Settings, PlusCircle, FileText, Database, LayoutList } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -28,7 +28,7 @@ const EmptyParametersState: React.FC<EmptyParametersStateProps> = ({
       case 'settings': return <Settings className={iconSize} />;
       case 'document': return <FileText className={iconSize} />;
       case 'database': return <Database className={iconSize} />;
-      case 'parameters': return <Gantt className={iconSize} />; // Using Gantt instead of Parameters which doesn't exist
+      case 'parameters': return <LayoutList className={iconSize} />; // Using LayoutList instead of Gantt which doesn't exist
       default: return <Settings className={iconSize} />;
     }
   };
@@ -54,7 +54,7 @@ const EmptyParametersState: React.FC<EmptyParametersStateProps> = ({
       {showAddButton && onAddParameter && (
         <Button 
           variant="outline" 
-          size={size === 'default' ? "sm" : "sm"} // Fixed: using only valid button sizes
+          size="sm" 
           onClick={onAddParameter}
           className="flex items-center gap-2"
         >
