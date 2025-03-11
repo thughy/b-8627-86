@@ -96,12 +96,20 @@ export default function WorkflowsPage() {
           selectedPipeline={selectedPipeline}
           onPipelineChange={setSelectedPipeline}
           viewMode={viewMode}
-          onViewModeChange={setViewMode}
+          onViewModeChange={(value) => {
+            if (value === 'kanban' || value === 'list') {
+              setViewMode(value);
+            }
+          }}
           workflows={workflows}
           pipelines={pipelines}
         />
 
-        <Tabs value={viewMode} onValueChange={setViewMode} className="mt-4">
+        <Tabs value={viewMode} onValueChange={(value) => {
+          if (value === 'kanban' || value === 'list') {
+            setViewMode(value);
+          }
+        }} className="mt-4">
           <TabsList className="mb-4">
             <TabsTrigger value="kanban">Kanban</TabsTrigger>
             <TabsTrigger value="list">Lista</TabsTrigger>
@@ -140,7 +148,7 @@ export default function WorkflowsPage() {
             onCancelDeal={handleCancelDeal}
             onWinDeal={handleWinDeal}
             onLoseDeal={handleLoseDeal}
-            onCreateAsset={(dealId) => openAssetCreationModal(dealId)}
+            onCreateAsset={handleCreateAsset}
             onCreateTask={handleCreateTask}
             onCreateNote={handleCreateNote}
             onCreateDocument={handleCreateDocument}
@@ -149,9 +157,9 @@ export default function WorkflowsPage() {
             onCloseAssetModal={closeAssetModal}
             selectedAsset={selectedAsset}
             onEditAsset={handleEditAsset}
-            onDeleteAsset={handleDeleteAsset}
-            onCompleteAsset={handleCompleteAsset}
-            onCancelAsset={handleCancelAsset}
+            onDeleteAsset={(assetId) => handleDeleteAsset(assetId)}
+            onCompleteAsset={(assetId) => handleCompleteAsset(assetId)}
+            onCancelAsset={(assetId) => handleCancelAsset(assetId)}
             onCreateNoteForAsset={handleCreateNoteForAsset}
             onCreateDocumentForAsset={handleCreateDocumentForAsset}
           />
