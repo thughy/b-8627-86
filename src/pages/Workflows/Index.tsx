@@ -1,21 +1,13 @@
-
 import React from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import WorkflowHeader from './components/WorkflowHeader';
-import WorkflowFilters from './components/WorkflowFilters';
-import DealListView from './components/DealListView';
-import DealCardModal from './components/DealCardModal';
-import AssetCardModal from './components/AssetCardModal';
-import WorkflowKanbanView from './components/WorkflowKanbanView';
-import WorkflowStats from './components/WorkflowStats';
-import DealCreationModal from './components/DealCreationModal';
-import AssetCreationModal from './components/AssetCreationModal';
 import { useWorkflowMain } from './hooks/useWorkflowMain';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import WorkflowHeaderSection from './components/WorkflowHeaderSection';
+import WorkflowViewContent from './components/WorkflowViewContent';
+import WorkflowModalsContainer from './components/WorkflowModalsContainer';
 
 export default function WorkflowsPage() {
   const {
-    // Estado do workflow
+    // Workflow state
     workflows,
     pipelines,
     stages,
@@ -30,7 +22,7 @@ export default function WorkflowsPage() {
     selectedPipeline,
     setSelectedPipeline,
     
-    // Estado dos modais
+    // Modal states
     isDealModalOpen,
     isDealCreationModalOpen,
     selectedDeal,
@@ -40,7 +32,7 @@ export default function WorkflowsPage() {
     selectedAsset,
     editingAsset,
     
-    // Operações de modais
+    // Modal operations
     openDealModal,
     closeDealModal,
     openDealCreationModal,
@@ -50,7 +42,7 @@ export default function WorkflowsPage() {
     openAssetCreationModal,
     closeAssetCreationModal,
     
-    // Operações CRUD
+    // CRUD operations
     handleDragEnd,
     handleCreateDeal,
     handleSaveDeal,
@@ -66,7 +58,7 @@ export default function WorkflowsPage() {
     handleCompleteAsset,
     handleCancelAsset,
     
-    // Outras operações
+    // Other operations
     handleCreateTask,
     handleCreateNote,
     handleCreateDocument,
@@ -78,124 +70,88 @@ export default function WorkflowsPage() {
     isLoading
   } = useWorkflowMain();
 
-  // Define wrapper functions to make type signatures compatible
-  const handleCreateNoteWrapper = (assetId: string) => {
-    if (handleCreateNoteForAsset) {
-      handleCreateNoteForAsset(assetId, "Nova nota");
-    }
-  };
-
-  const handleCreateDocumentWrapper = (assetId: string) => {
-    if (handleCreateDocumentForAsset) {
-      handleCreateDocumentForAsset(assetId, "https://example.com/document", "Novo documento");
-    }
-  };
-
   return (
     <DashboardLayout>
       <div className="container mx-auto py-4 px-4">
-        <WorkflowHeader onCreateDeal={handleCreateDeal} />
-
-        <WorkflowStats 
-          deals={filteredDeals}
+        {/* Header Section with Filters */}
+        <WorkflowHeaderSection 
+          filteredDeals={filteredDeals}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          selectedWorkflow={selectedWorkflow}
+          setSelectedWorkflow={setSelectedWorkflow}
           selectedPipeline={selectedPipeline}
+          setSelectedPipeline={setSelectedPipeline}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+          workflows={workflows}
+          pipelines={pipelines}
+          onCreateDeal={handleCreateDeal}
         />
 
-        <WorkflowFilters
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          selectedWorkflow={selectedWorkflow}
-          onWorkflowChange={setSelectedWorkflow}
-          selectedPipeline={selectedPipeline}
-          onPipelineChange={setSelectedPipeline}
+        {/* View Content (Kanban or List) */}
+        <WorkflowViewContent 
           viewMode={viewMode}
           onViewModeChange={(value) => {
             if (value === 'kanban' || value === 'list') {
-              setViewMode(value);
+              setViewMode(value as 'kanban' | 'list');
             }
           }}
-          workflows={workflows}
-          pipelines={pipelines}
-        />
-
-        <Tabs value={viewMode} onValueChange={(value) => {
-          if (value === 'kanban' || value === 'list') {
-            setViewMode(value);
-          }
-        }} className="mt-4">
-          <TabsList className="mb-4">
-            <TabsTrigger value="kanban">Kanban</TabsTrigger>
-            <TabsTrigger value="list">Lista</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="kanban" className="mt-0">
-            <WorkflowKanbanView 
-              stages={stages} 
-              deals={filteredDeals} 
-              onDragEnd={handleDragEnd} 
-              onDealClick={openDealModal}
-              onCreateDeal={handleCreateDeal}
-              selectedPipeline={selectedPipeline}
-              pipelines={pipelines}
-              onPipelineChange={setSelectedPipeline}
-              getChatPreview={getChatPreview}
-            />
-          </TabsContent>
-          
-          <TabsContent value="list" className="mt-0">
-            <DealListView 
-              deals={filteredDeals} 
-              onDealClick={openDealModal} 
-            />
-          </TabsContent>
-        </Tabs>
-
-        {/* Modais */}
-        {selectedDeal && (
-          <DealCardModal 
-            isOpen={isDealModalOpen}
-            onClose={closeDealModal}
-            deal={selectedDeal}
-            onEditDeal={handleEditDeal}
-            onDeleteDeal={handleDeleteDeal}
-            onCancelDeal={handleCancelDeal}
-            onWinDeal={handleWinDeal}
-            onLoseDeal={handleLoseDeal}
-            onCreateAsset={handleCreateAsset}
-            onCreateTask={handleCreateTask}
-            onCreateNote={handleCreateNote}
-            onCreateDocument={handleCreateDocument}
-            onCreateEmail={handleCreateEmail}
-            isAssetModalOpen={isAssetModalOpen}
-            onCloseAssetModal={closeAssetModal}
-            selectedAsset={selectedAsset}
-            onEditAsset={handleEditAsset}
-            onDeleteAsset={handleDeleteAsset}
-            onCompleteAsset={handleCompleteAsset}
-            onCancelAsset={handleCancelAsset}
-            onCreateNoteForAsset={handleCreateNoteWrapper}
-            onCreateDocumentForAsset={handleCreateDocumentWrapper}
-          />
-        )}
-
-        <DealCreationModal 
-          isOpen={isDealCreationModalOpen}
-          onClose={closeDealCreationModal}
-          onSave={handleSaveDeal}
+          filteredDeals={filteredDeals}
           stages={stages}
-          initialDeal={editingDeal || undefined}
-          preSelectedStageId={selectedStageForNewDeal || undefined}
+          handleDragEnd={handleDragEnd}
+          openDealModal={openDealModal}
+          handleCreateDeal={handleCreateDeal}
+          selectedPipeline={selectedPipeline}
+          pipelines={pipelines}
+          setSelectedPipeline={setSelectedPipeline}
+          getChatPreview={getChatPreview}
         />
 
-        {editingAsset && (
-          <AssetCreationModal 
-            isOpen={isAssetCreationModalOpen}
-            onClose={closeAssetCreationModal}
-            onSave={handleSaveAsset}
-            dealId={editingAsset.dealId || ''}
-            initialAsset={editingAsset}
-          />
-        )}
+        {/* Modals */}
+        <WorkflowModalsContainer 
+          // Deal modal props
+          isDealModalOpen={isDealModalOpen}
+          closeDealModal={closeDealModal}
+          selectedDeal={selectedDeal}
+          onEditDeal={handleEditDeal}
+          onDeleteDeal={handleDeleteDeal}
+          onCancelDeal={handleCancelDeal}
+          onWinDeal={handleWinDeal}
+          onLoseDeal={handleLoseDeal}
+          
+          // Asset modal props
+          isAssetModalOpen={isAssetModalOpen}
+          closeAssetModal={closeAssetModal}
+          selectedAsset={selectedAsset}
+          onEditAsset={handleEditAsset}
+          onDeleteAsset={handleDeleteAsset}
+          onCompleteAsset={handleCompleteAsset}
+          onCancelAsset={handleCancelAsset}
+          
+          // Creation modal props
+          isDealCreationModalOpen={isDealCreationModalOpen}
+          closeDealCreationModal={closeDealCreationModal}
+          isAssetCreationModalOpen={isAssetCreationModalOpen}
+          closeAssetCreationModal={closeAssetCreationModal}
+          
+          // Data props
+          editingDeal={editingDeal}
+          editingAsset={editingAsset}
+          stages={stages}
+          selectedStageForNewDeal={selectedStageForNewDeal}
+          
+          // Action handlers
+          onCreateAsset={handleCreateAsset}
+          onCreateTask={handleCreateTask}
+          onCreateNote={handleCreateNote}
+          onCreateDocument={handleCreateDocument}
+          onCreateEmail={handleCreateEmail}
+          onCreateNoteForAsset={handleCreateNoteForAsset}
+          onCreateDocumentForAsset={handleCreateDocumentForAsset}
+          onSaveDeal={handleSaveDeal}
+          onSaveAsset={handleSaveAsset}
+        />
       </div>
     </DashboardLayout>
   );
