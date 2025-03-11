@@ -1,13 +1,11 @@
 
 import React from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import WorkflowKanbanView from './WorkflowKanbanView';
-import DealListView from './DealListView';
+import WorkflowViewSelector from './WorkflowViewSelector';
 import { Deal, Pipeline, Stage } from '../models/WorkflowModels';
 
 interface WorkflowViewContentProps {
-  viewMode: 'kanban' | 'list';
-  onViewModeChange: (value: string) => void;
+  viewMode: 'deals' | 'tasks';
+  onViewModeChange: (value: 'deals' | 'tasks') => void;
   filteredDeals: Deal[];
   stages: Stage[];
   handleDragEnd: (result: any) => void;
@@ -33,19 +31,19 @@ const WorkflowViewContent: React.FC<WorkflowViewContentProps> = ({
   getChatPreview
 }) => {
   return (
-    <div className="mt-4">
-      <WorkflowKanbanView 
-        stages={stages} 
-        deals={filteredDeals} 
-        onDragEnd={handleDragEnd} 
-        onDealClick={openDealModal}
-        onCreateDeal={handleCreateDeal}
-        selectedPipeline={selectedPipeline}
-        pipelines={pipelines}
-        onPipelineChange={setSelectedPipeline}
-        getChatPreview={getChatPreview}
-      />
-    </div>
+    <WorkflowViewSelector 
+      viewMode={viewMode}
+      onViewModeChange={onViewModeChange}
+      filteredDeals={filteredDeals}
+      stages={stages}
+      handleDragEnd={handleDragEnd}
+      openDealModal={openDealModal}
+      handleCreateDeal={handleCreateDeal}
+      selectedPipeline={selectedPipeline}
+      pipelines={pipelines}
+      setSelectedPipeline={setSelectedPipeline}
+      getChatPreview={getChatPreview}
+    />
   );
 };
 

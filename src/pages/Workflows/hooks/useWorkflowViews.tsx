@@ -2,10 +2,7 @@
 import { useState } from 'react';
 
 export const useWorkflowViews = () => {
-  const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban');
-  
-  return {
-    viewMode,
-    setViewMode,
-  };
+  const [viewMode, setViewMode] = useState<'deals' | 'tasks'>('deals');
+
+  return { viewMode, setViewMode };
 };
