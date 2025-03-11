@@ -1,14 +1,15 @@
 
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, CheckCircle, XCircle } from 'lucide-react';
+import { Calendar, CheckCircle, XCircle, Type, Hash, ListFilter } from 'lucide-react';
 import { AssetParameter } from '../../asset-modal/utils/parameterUtils';
 
 interface ParameterValueProps {
   parameter: AssetParameter;
+  className?: string;
 }
 
-const ParameterValue: React.FC<ParameterValueProps> = ({ parameter }) => {
+const ParameterValue: React.FC<ParameterValueProps> = ({ parameter, className }) => {
   // Função para formatar valores de parâmetros de acordo com o tipo
   const formatParameterValue = (param: AssetParameter) => {
     // Para tipo booleano, mostra Sim/Não
@@ -43,12 +44,32 @@ const ParameterValue: React.FC<ParameterValueProps> = ({ parameter }) => {
     return String(param.value || '');
   };
 
+  // Pegar o ícone para o tipo
+  const getTypeIcon = () => {
+    switch (parameter.type) {
+      case 'text':
+        return <Type className="h-4 w-4 text-blue-500 mr-1" />;
+      case 'number':
+        return <Hash className="h-4 w-4 text-purple-500 mr-1" />;
+      case 'date':
+        return <Calendar className="h-4 w-4 text-amber-500 mr-1" />;
+      case 'boolean':
+        return parameter.value 
+          ? <CheckCircle className="h-4 w-4 text-green-500 mr-1" /> 
+          : <XCircle className="h-4 w-4 text-red-500 mr-1" />;
+      case 'select':
+        return <ListFilter className="h-4 w-4 text-teal-500 mr-1" />;
+      default:
+        return <Type className="h-4 w-4 text-gray-500 mr-1" />;
+    }
+  };
+
   // Renderização específica para cada tipo
   switch (parameter.type) {
     case 'select':
       // Para tipo select, mostrar opções com badges
       return (
-        <div className="flex flex-wrap gap-1">
+        <div className={`flex flex-wrap gap-1 ${className}`}>
           {parameter.options?.map((option, i) => (
             <Badge
               key={i}
@@ -64,28 +85,20 @@ const ParameterValue: React.FC<ParameterValueProps> = ({ parameter }) => {
     case 'boolean':
       // Para tipo booleano, mostrar ícone de check ou X
       return (
-        <div className="flex items-center">
-          {parameter.value ? (
-            <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
-          ) : (
-            <XCircle className="h-4 w-4 text-red-500 mr-1" />
-          )}
-          <span>{formatParameterValue(parameter)}</span>
-        </div>
-      );
-      
-    case 'date':
-      // Para tipo data, mostrar ícone de calendário
-      return (
-        <div className="flex items-center">
-          <Calendar className="h-4 w-4 text-muted-foreground mr-1" />
+        <div className={`flex items-center ${className}`}>
+          {getTypeIcon()}
           <span>{formatParameterValue(parameter)}</span>
         </div>
       );
       
     default:
-      // Para outros tipos, apenas mostrar o valor formatado
-      return <span>{formatParameterValue(parameter)}</span>;
+      // Para outros tipos, mostrar ícone + valor formatado
+      return (
+        <div className={`flex items-center ${className}`}>
+          {getTypeIcon()}
+          <span>{formatParameterValue(parameter)}</span>
+        </div>
+      );
   }
 };
 

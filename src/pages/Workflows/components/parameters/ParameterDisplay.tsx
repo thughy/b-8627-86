@@ -13,6 +13,7 @@ interface ParameterDisplayProps {
   onUpdate?: (value: any) => void;
   readOnly?: boolean;
   onAddParameter?: () => void;
+  emptyMessage?: string;
 }
 
 const ParameterDisplay: React.FC<ParameterDisplayProps> = ({ 
@@ -22,7 +23,8 @@ const ParameterDisplay: React.FC<ParameterDisplayProps> = ({
   onDelete,
   onUpdate,
   readOnly = false,
-  onAddParameter
+  onAddParameter,
+  emptyMessage = "Nenhum parâmetro adicional configurado. Adicione parâmetros para personalizar este item."
 }) => {
   return (
     <div className={`space-y-4 ${className}`}>
@@ -32,7 +34,8 @@ const ParameterDisplay: React.FC<ParameterDisplayProps> = ({
             <EmptyParametersState 
               showAddButton={!readOnly} 
               onAddParameter={onAddParameter}
-              message="Nenhum parâmetro adicional configurado. Adicione parâmetros para personalizar este item."
+              message={emptyMessage}
+              icon="document"
             />
           ) : (
             parameters.map((param, index) => (
